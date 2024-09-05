@@ -3,25 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/05 14:03:30 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/05 16:44:26 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_HPP
 #define INCLUDES_HPP
-
-
-// #include <fstream>
-// #include <sstream>
-// #include <stdexcept>
-// #include <iostream>
-// #include <string>
-// #include <vector>
-// #include <map>
-// #include <cstdlib>
 
 #include <sys/types.h>    // Provides basic system data types
 #include <sys/socket.h>   // Core socket programming functions
@@ -43,6 +33,5 @@
 #include <sys/stat.h>     // File status and information
 #include <set>            // Set container for unique elements
 #include <dirent.h>       // Directory entry operations
-
 
 #endif
