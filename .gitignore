@@ -1,0 +1,35 @@
+# Ignore compiled executable
+webserv
+
+# Ignore object files and directories
+obj/
+*.o
+
+# Ignore any log files
+*.log
+
+# Ignore temporary files
+*~
+.*.swp
+.*.swo
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore any local configuration files
+*.local
+*.env
+
+# Ignore any build or dependency directories
+build/
+deps/
+
+# Ignore any backup files
+*.bak
