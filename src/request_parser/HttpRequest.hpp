@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/04 20:21:32 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/05 14:01:53 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,8 @@ private:
     std::string path;
     std::string protocol;
 };
+
+//overload << operator to print the request
+std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
 
 #endif
