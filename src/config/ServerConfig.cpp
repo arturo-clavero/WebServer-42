@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:00:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:25:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 12:29:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ std::vector<LocationConfig>& ServerConfig::getLocations() { return locations; }
 const std::vector<LocationConfig>& ServerConfig::getLocations() const { return locations; }
 const CGIConfig& ServerConfig::getCgi() const { return cgi; }
 int ServerConfig::getListenSocket() const { return listen_socket; }
+const struct sockaddr_in& ServerConfig::getAddress() const { return address; }
 // Setters
 void ServerConfig::setListen(int value) { listen = value; }
 void ServerConfig::setHost(const std::string& value) { host = value; }
@@ -72,7 +73,7 @@ void ServerConfig::setIndex(const std::string& value) { index = value; }
 void ServerConfig::setLocations(const std::vector<LocationConfig>& value) { locations = value; }
 void ServerConfig::setCgi(const CGIConfig& value) { cgi = value; }
 void ServerConfig::setListenSocket(int value) { listen_socket = value; }
-
+void ServerConfig::setAddress(const struct sockaddr_in& value) { address = value; }
 void ServerConfig::print() const {
     std::cout << "Server Configuration:" << std::endl;
     std::cout << "Listen: " << listen << std::endl;

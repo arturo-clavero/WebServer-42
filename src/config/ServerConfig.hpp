@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:25:24 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 12:29:04 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ public:
     const std::vector<LocationConfig>& getLocations() const;
     const CGIConfig& getCgi() const;
 	int getListenSocket() const;
-
+	const struct sockaddr_in& getAddress() const;
     // Setters
     void setListen(int value);
     void setHost(const std::string& value);
@@ -63,7 +63,7 @@ public:
     void setLocations(const std::vector<LocationConfig>& value);
     void setCgi(const CGIConfig& value);
 	void setListenSocket(int value);
-
+	void setAddress(const struct sockaddr_in& value);
 	// Debug
 	void print() const;
 
@@ -78,6 +78,7 @@ private:
     std::vector<LocationConfig> locations;
     CGIConfig cgi;
 	int listen_socket;
+	struct sockaddr_in address;	
 };
 
 #endif
