@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 10:25:50 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:35:28 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,15 @@ void	Server::run(){
 		std::cout << "New connection, socket fd is " << new_socket << std::endl;
 		char buffer[30000] = {0};
         read(new_socket, buffer, 30000);
+		std::cout << "------------------Request received-------------------" << std::endl;
         std::cout << buffer << std::endl;
-		
 		HttpRequest request = RequestParser::parse(buffer);
+		std::cout << "------------------Request parsed-------------------" << std::endl;
+		std::cout << request << std::endl;
 		RequestResponse response = ResponseBuilder::build(request, config);
+		std::cout << "------------------Response built-------------------" << std::endl;
+		std::cout << response.toString() << std::endl;
 		std::string responseStr = response.toString();
-
-		// Send the response
 		send(new_socket, responseStr.c_str(), responseStr.length(), 0);
         std::cout << "------------------HTML content sent-------------------" << std::endl;
         close(new_socket);

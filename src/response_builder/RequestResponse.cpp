@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 10:27:41 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:44:49 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,53 @@ RequestResponse::RequestResponse() {
 RequestResponse::~RequestResponse() {
 }
 
+std::string RequestResponse::getBody() const {
+	return this->body;
+}
+
+std::string RequestResponse::getStatusCode() const {
+	return this->statusCode;
+}
+
+std::string RequestResponse::getStatusMessage() const {
+	return this->statusMessage;
+}
+
+std::string RequestResponse::getContentType() const {
+	return this->contentType;
+}
+
+std::string RequestResponse::getContentLength() const {
+	return this->contentLength;
+}
+
+void RequestResponse::setBody(const std::string& body) {
+	this->body = body;
+}
+
+void RequestResponse::setStatusCode(const std::string& statusCode) {
+	this->statusCode = statusCode;
+}
+
+void RequestResponse::setStatusMessage(const std::string& statusMessage) {
+	this->statusMessage = statusMessage;
+}
+
+void RequestResponse::setContentType(const std::string& contentType) {
+	this->contentType = contentType;
+}
+
+void RequestResponse::setContentLength(const std::string& contentLength) {
+	this->contentLength = contentLength;
+}
+
 std::string RequestResponse::toString() const {
-        // Read the content of www/index.html
-        std::ifstream file("www/index.html");
-        std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        file.close();
-        std::stringstream ss;
-        ss << content.length();
-        std::string contentLengthStr = ss.str();
-        std::string response;
-        response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + contentLengthStr + "\r\n\r\n" + content;
+	std::string response;	
+	response += "HTTP/1.1 " + this->statusCode + " " + this->statusMessage + "\r\n";
+	response += "Content-Type: " + this->contentType + "\r\n";
+	response += "Content-Length: " + this->contentLength + "\r\n";
+	response += "\r\n";
+	response += this->body;
 	return response;
 }
 
