@@ -3,16 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/05 17:44:33 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/06 09:30:06 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void	check_non_blocking(int sockfd){
+Server::Server(ServerConfig const &config): config(config){
+	
+}
+
+Server::~Server(){
+	
+}
+
+void	Server::check_non_blocking(int sockfd){
 	 int flags = fcntl(sockfd, F_GETFL, 0);
     if (flags == -1) {
         std::cerr<<"fcntl";
@@ -26,11 +34,8 @@ void	check_non_blocking(int sockfd){
 
 }
 
-void	get_response(HttpRequest &http){
-	
-}
 
-void	server(ServerConfig const &config){
+void	Server::run(){
 	int fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	check_non_blocking(fd);
 	struct sockaddr_in address;
@@ -65,7 +70,6 @@ void	server(ServerConfig const &config){
         std::cout << buffer << std::endl;
 		HttpRequest request;
 		request.parse(buffer);
-		std::cout<<"RESULT: "<<get_response(request)<<"\n\n";
 		
         // Read the content of www/index.html
         std::ifstream file("www/index.html");

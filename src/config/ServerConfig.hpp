@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/04 20:08:26 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 09:31:57 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ public:
     void setIndex(const std::string& value);
     void setLocations(const std::vector<LocationConfig>& value);
     void setCgi(const CGIConfig& value);
+
+	// Debug
+	void print() const;
 
 private:
     int listen;
