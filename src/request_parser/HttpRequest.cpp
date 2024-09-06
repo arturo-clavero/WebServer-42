@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/05 14:02:06 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:02:48 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,19 @@ std::string HttpRequest::getProtocol() const {
     return this->protocol;
 }
 
-void HttpRequest::parse(const std::string& request) {
-    std::istringstream iss(request);
-    std::getline(iss, this->method, ' ');
-    std::getline(iss, this->path, ' ');
-    std::getline(iss, this->protocol);
+void HttpRequest::setMethod(const std::string& method) {
+    this->method = method;
+}
+
+void HttpRequest::setPath(const std::string& path) {
+    this->path = path;
+}
+
+void HttpRequest::setProtocol(const std::string& protocol) {
+	this->protocol = protocol;
 }
 
 
-//overload << operator to print the request
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request) {
     os << "Method: " << request.getMethod() << std::endl;
     os << "Path: " << request.getPath() << std::endl;

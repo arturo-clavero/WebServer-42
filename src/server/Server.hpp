@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 09:30:09 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:28:18 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 #include "config/ConfigParser.hpp"
 #include "config/ServerConfig.hpp"
 #include "request_parser/HttpRequest.hpp"
+#include "request_parser/RequestParser.hpp"
 #include "response_builder/ResponseBuilder.hpp"
 
-//make it a class
 class Server{
 	private:
 		ServerConfig const &config;

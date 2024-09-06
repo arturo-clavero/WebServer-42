@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 09:30:06 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:25:50 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,36 +68,13 @@ void	Server::run(){
 		char buffer[30000] = {0};
         read(new_socket, buffer, 30000);
         std::cout << buffer << std::endl;
-		HttpRequest request;
-		request.parse(buffer);
 		
-        // Read the content of www/index.html
-        std::ifstream file("www/index.html");
-        std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        file.close();
+		HttpRequest request = RequestParser::parse(buffer);
+		RequestResponse response = ResponseBuilder::build(request, config);
+		std::string responseStr = response.toString();
 
-        // Convert content length to string using stringstream
-        std::stringstream ss;
-        ss << content.length();
-        std::string contentLengthStr = ss.str();
-		std::string response;
-        // Prepare the HTTP response
-		// std::string response;s a test, make it so if request _path is favicon.ico, send a favicon
-		if (request.getPath() == "/favicon.ico") {
-			std::ifstream favicon("www/images/favicon.ico", std::ios::binary);
-			std::string faviconContent((std::istreambuf_iterator<char>(favicon)), std::istreambuf_iterator<char>());
-			favicon.close();
-			std::stringstream faviconSS;
-			faviconSS << faviconContent.length();
-			std::string faviconLengthStr = faviconSS.str();
-			response = "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\nContent-Length: " + faviconLengthStr + "\r\n\r\n" + faviconContent;
-		}
-		else {
-        	response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + contentLengthStr + "\r\n\r\n" + content;
-		}
-
-        // Send the response
-        send(new_socket, response.c_str(), response.length(), 0);
+		// Send the response
+		send(new_socket, responseStr.c_str(), responseStr.length(), 0);
         std::cout << "------------------HTML content sent-------------------" << std::endl;
         close(new_socket);
 	}

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/05 14:01:53 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:01:47 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ public:
     std::string getPath() const;
     std::string getProtocol() const;
 
-    void parse(const std::string& request);
+	void setMethod(const std::string& method);
+	void setPath(const std::string& path);
+	void setProtocol(const std::string& protocol);
 
 private:
     std::string method;

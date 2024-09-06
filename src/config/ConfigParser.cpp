@@ -3,19 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigParser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/04 20:19:33 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 10:10:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ConfigParser.hpp"
 
-
-ConfigParser::ConfigParser(const std::string& configFile) : configFile(configFile) {}
-
-ServerConfig ConfigParser::parse() {
+ServerConfig ConfigParser::parse(const std::string& configFile) {
     ServerConfig server;
     std::ifstream file(configFile.c_str());
     if (!file.is_open()) {

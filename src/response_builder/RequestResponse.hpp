@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ConfigParser.hpp                                   :+:      :+:    :+:   */
+/*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/03 13:40:11 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 10:09:54 by bperez-a         ###   ########.fr       */
+/*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
+/*   Updated: 2024/09/06 10:24:51 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONFIG_PARSER_HPP
-#define CONFIG_PARSER_HPP
+#ifndef REQUEST_RESPONSE_HPP
+#define REQUEST_RESPONSE_HPP
 
 #include "includes.hpp"
-#include "ServerConfig.hpp"
 
-class ConfigParser {
+class RequestResponse {
 public:
-    static ServerConfig parse(const std::string& configFile);
+    RequestResponse();
+    ~RequestResponse();
+
+    std::string toString() const;
 
 private:
-    ConfigParser() {}
 };
 
 #endif

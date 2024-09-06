@@ -12,7 +12,9 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/config/ConfigParser.cpp \
        $(SRC_DIR)/config/ServerConfig.cpp \
 	   $(SRC_DIR)/request_parser/HttpRequest.cpp \
+	   $(SRC_DIR)/request_parser/RequestParser.cpp \
 	   $(SRC_DIR)/response_builder/ResponseBuilder.cpp \
+	   $(SRC_DIR)/response_builder/RequestResponse.cpp \
 	   $(SRC_DIR)/server/Server.cpp
 
 # Object files
