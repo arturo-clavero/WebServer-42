@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 10:11:07 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 12:21:51 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    ServerConfig config = ConfigParser::parse(argv[1]);
-	config.print();
+	std::vector<ServerConfig> config = ConfigParser::parse(argv[1]);
+	//print each one
+	for (size_t i = 0; i < config.size(); i++) {
+		config[i].print();
+	}
 	Server server(config);
 	server.run();
     return 0;
