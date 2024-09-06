@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 15:30:28 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:39:41 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ RequestResponse ResponseBuilder::build(const HttpRequest& request, const ServerC
 				response.setContentType(request.getType() + "/" + extension); 
 				std::stringstream buffer;
 				buffer << file.rdbuf();
-				response.setBody(buffer.str());
+				response.setBody(buffer.str()); // if it is an image, put body in html tags
 				std::ostringstream oss;
 				oss << response.getBody().length();
 				response.setContentLength(oss.str());
