@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 13:16:29 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:28:31 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	Server::create_listen_socket(ServerConfig &config){
 }
 
 void	Server::run(){
-	fd_set read_fds;
+	fd_set read_fds, write_fds;
 	int last_fd;
 	for (size_t i = 0; i < config.size(); i++)
 	{
@@ -69,9 +69,13 @@ void	Server::run(){
 	{	
 		
 	FD_ZERO(&read_fds);
+	FD_ZERO(&write_fds);
 	for (size_t i = 0; i < config.size(); i++)
+	{
 		FD_SET(config[i].getListenSocket(), &read_fds); //adds file descriptor
-	if (select(last_fd + 1, &read_fds, NULL, NULL, NULL) < 0 )
+		FD_SET(config[i].getListenSocket(), &write_fds); //adds file descriptor
+	}
+	if (select(last_fd + 1, &read_fds, &write_fds, NULL, NULL) < 0 )
 		std::cerr << "select failed: " << strerror(errno) << std::endl;
 		//std::cout << "-------last fd is " << last_fd << std::endl;
 	for (size_t i = 0; i < config.size(); i++){
@@ -89,7 +93,7 @@ void	Server::run(){
 		}
 		std::cout << "New connection, socket fd is " << new_socket << std::endl;
 		char buffer[30000] = {0};
-        read(new_socket, buffer, 30000);
+        recv(new_socket, buffer, 30000,	0);
 
 		
 		std::cout << "------------------Request received-------------------" << std::endl;
@@ -99,13 +103,12 @@ void	Server::run(){
 		std::cout << request << std::endl;
 		RequestResponse response = ResponseBuilder::build(request, config[i]);
 		std::cout << "------------------Response built-------------------" << std::endl;
-		std::cout << response.toString() << std::endl;
+		std::cout << response << std::endl;
+		//std::cout << response.toString() << std::endl;
 		std::string responseStr = response.toString();
 		send(new_socket, responseStr.c_str(), responseStr.length(), 0);
         std::cout << "------------------HTML content sent-------------------" << std::endl;
         close(new_socket);
-		
-			
 		}
 		
 	}

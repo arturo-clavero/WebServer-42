@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 10:44:49 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:29:38 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,45 +18,17 @@ RequestResponse::RequestResponse() {
 RequestResponse::~RequestResponse() {
 }
 
-std::string RequestResponse::getBody() const {
-	return this->body;
-}
+std::string RequestResponse::getBody() const { return this->body; }
+std::string RequestResponse::getStatusCode() const { return this->statusCode; }
+std::string RequestResponse::getStatusMessage() const { return this->statusMessage; }
+std::string RequestResponse::getContentType() const { return this->contentType; }
+std::string RequestResponse::getContentLength() const { return this->contentLength; }
 
-std::string RequestResponse::getStatusCode() const {
-	return this->statusCode;
-}
-
-std::string RequestResponse::getStatusMessage() const {
-	return this->statusMessage;
-}
-
-std::string RequestResponse::getContentType() const {
-	return this->contentType;
-}
-
-std::string RequestResponse::getContentLength() const {
-	return this->contentLength;
-}
-
-void RequestResponse::setBody(const std::string& body) {
-	this->body = body;
-}
-
-void RequestResponse::setStatusCode(const std::string& statusCode) {
-	this->statusCode = statusCode;
-}
-
-void RequestResponse::setStatusMessage(const std::string& statusMessage) {
-	this->statusMessage = statusMessage;
-}
-
-void RequestResponse::setContentType(const std::string& contentType) {
-	this->contentType = contentType;
-}
-
-void RequestResponse::setContentLength(const std::string& contentLength) {
-	this->contentLength = contentLength;
-}
+void RequestResponse::setBody(const std::string& body) { this->body = body; }
+void RequestResponse::setStatusCode(const std::string& statusCode) { this->statusCode = statusCode; }
+void RequestResponse::setStatusMessage(const std::string& statusMessage) { this->statusMessage = statusMessage; }
+void RequestResponse::setContentType(const std::string& contentType) { this->contentType = contentType; }
+void RequestResponse::setContentLength(const std::string& contentLength) { this->contentLength = contentLength; }
 
 std::string RequestResponse::toString() const {
 	std::string response;	
@@ -68,3 +40,11 @@ std::string RequestResponse::toString() const {
 	return response;
 }
 
+std::ostream& operator<<(std::ostream& os, const RequestResponse& requestResponse) {
+	//prints everything but the body
+	os << "HTTP/1.1 " << requestResponse.getStatusCode() << " " << requestResponse.getStatusMessage() << "\r\n";
+	os << "Content-Type: " << requestResponse.getContentType() << "\r\n";
+	os << "Content-Length: " << requestResponse.getContentLength() << "\r\n";
+	os << "\r\n";
+	return os;
+}
