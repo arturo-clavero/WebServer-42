@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:21:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/07 16:47:41 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	for (size_t i = 0; i < config.size(); i++) {
 		config[i].print();
 	}
-	Server server(config);
-	server.run();
+	// Server server(config);
+	// server.run();
     return 0;
 }

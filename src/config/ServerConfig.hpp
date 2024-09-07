@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:29:04 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/07 18:37:03 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ public:
     ~ServerConfig();
 
     // Getters
-    int getListen() const;
-    const std::string& getHost() const;
+    int getPort() const;
+    int getHost() const;
     const std::string& getServerName() const;
     const std::map<int, std::string>& getErrorPages() const;
     size_t getClientMaxBodySize() const;
@@ -53,7 +53,7 @@ public:
 	int getListenSocket() const;
 	const struct sockaddr_in& getAddress() const;
     // Setters
-    void setListen(int value);
+    void setPort(int value);
     void setHost(const std::string& value);
     void setServerName(const std::string& value);
     void setErrorPages(const std::map<int, std::string>& value);
@@ -68,7 +68,7 @@ public:
 	void print() const;
 
 private:
-    int listen;
+    int port;
     std::string host;
     std::string serverName;
     std::map<int, std::string> errorPages;

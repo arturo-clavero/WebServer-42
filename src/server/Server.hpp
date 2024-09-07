@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 15:14:22 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/07 20:14:15 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,15 @@
 
 class Server {
 private:
-    std::vector<ServerConfig>& config;
 public:
+    std::vector<ServerConfig>& config;
+
     Server(std::vector<ServerConfig>& config);
     ~Server();
     void	run();
-    void	check_non_blocking(int sockfd);
-    std::vector<ServerConfig>& getConfig() ;
-    int	create_listen_socket(ServerConfig& config);
+    // void	check_non_blocking(int sockfd);
+    // std::vector<ServerConfig>& getConfig() ;
+	std::vector<int> Server::create_listen_sockets(struct socaddr &addr);
 };
 
 #endif
