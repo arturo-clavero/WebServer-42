@@ -1,5 +1,17 @@
-#ifndef LIBRARIES_HPP
-#define LIBRARIES_HPP
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   includes.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
+/*   Updated: 2024/09/05 16:44:26 by artclave         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef INCLUDES_HPP
+#define INCLUDES_HPP
 
 #include <sys/types.h>    // Provides basic system data types
 #include <sys/socket.h>   // Core socket programming functions
@@ -12,7 +24,6 @@
 #include <list>           // Doubly linked list container
 #include <sys/select.h>   // Synchronous I/O multiplexing
 #include <iostream>       // C++ standard I/O streams
-#include <ratio>          // Compile-time rational arithmetic
 #include <stdexcept>      // Standard exception classes
 #include <fstream>        // File stream operations
 #include <fcntl.h>        // File control options
@@ -22,6 +33,5 @@
 #include <sys/stat.h>     // File status and information
 #include <set>            // Set container for unique elements
 #include <dirent.h>       // Directory entry operations
-
 
 #endif
