@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/07 20:14:15 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/08 12:34:56 by valeriafedo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,14 @@
 class Server {
 private:
 public:
+    //unique pairs of host and ip address
+    std::set<std::pair<std::string, int > > unique; // automatically prevents duplicate host-port combination
     std::vector<ServerConfig>& config;
-
     Server(std::vector<ServerConfig>& config);
     ~Server();
     void	run();
+    void    createUniquePair();
+    void    createEventManager();
     // void	check_non_blocking(int sockfd);
     // std::vector<ServerConfig>& getConfig() ;
 	std::vector<int> Server::create_listen_sockets(struct socaddr &addr);

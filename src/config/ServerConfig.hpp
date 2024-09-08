@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/07 18:37:03 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/08 12:34:48 by valeriafedo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,10 @@ public:
     ServerConfig& operator=(const ServerConfig& other);
     ~ServerConfig();
 
+    
     // Getters
     int getPort() const;
-    int getHost() const;
+    std::string getHost() const;
     const std::string& getServerName() const;
     const std::map<int, std::string>& getErrorPages() const;
     size_t getClientMaxBodySize() const;

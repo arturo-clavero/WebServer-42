@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:00:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/07 18:51:16 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/08 12:27:21 by valeriafedo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ ServerConfig::~ServerConfig() {
 
 // Getters
 int ServerConfig::getPort() const { return port; }
-int ServerConfig::getHost() const {
+std::string  ServerConfig::getHost() const {
 	return  0;
 	//TODO
 
