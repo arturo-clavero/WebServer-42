@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:00:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:29:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/09 11:18:21 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ ServerConfig::~ServerConfig() {
 int ServerConfig::getListen() const { return listen; }
 const std::string& ServerConfig::getHost() const { return host; }
 const std::string& ServerConfig::getServerName() const { return serverName; }
-const std::map<int, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
+const std::map<std::string, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
 size_t ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }
 const std::string& ServerConfig::getRoot() const { return root; }
 const std::string& ServerConfig::getIndex() const { return index; }
@@ -66,7 +66,7 @@ const struct sockaddr_in& ServerConfig::getAddress() const { return address; }
 void ServerConfig::setListen(int value) { listen = value; }
 void ServerConfig::setHost(const std::string& value) { host = value; }
 void ServerConfig::setServerName(const std::string& value) { serverName = value; }
-void ServerConfig::setErrorPages(const std::map<int, std::string>& value) { errorPages = value; }
+void ServerConfig::setErrorPages(const std::map<std::string, std::string>& value) { errorPages = value; }
 void ServerConfig::setClientMaxBodySize(size_t value) { clientMaxBodySize = value; }
 void ServerConfig::setRoot(const std::string& value) { root = value; }
 void ServerConfig::setIndex(const std::string& value) { index = value; }
@@ -85,10 +85,9 @@ void ServerConfig::print() const {
 
     std::cout << "\nError Pages:" << std::endl;
     std::map<int, std::string>::const_iterator it;
-    for (it = errorPages.begin(); it != errorPages.end(); ++it) {
+    for (std::map<std::string, std::string>::const_iterator it = errorPages.begin(); it != errorPages.end(); ++it) {
         std::cout << "  " << it->first << ": " << it->second << std::endl;
     }
-
     std::cout << "\nLocations:" << std::endl;
     std::vector<LocationConfig>::const_iterator locIt;
     for (locIt = locations.begin(); locIt != locations.end(); ++locIt) {

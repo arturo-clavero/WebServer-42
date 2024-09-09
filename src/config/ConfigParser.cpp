@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:42:59 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/09 11:15:58 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                         iss >> serverName;
                         currentServer.setServerName(serverName);
                     } else if (key == "error_page") {
-                        int errorCode;
+                        std::string errorCode;
                         std::string errorPage;
                         if (iss >> errorCode >> errorPage) {
-                            std::map<int, std::string> errorPages = currentServer.getErrorPages();
+                            std::map<std::string, std::string> errorPages = currentServer.getErrorPages();
                             errorPages[errorCode] = errorPage;
                             currentServer.setErrorPages(errorPages);
                         }
