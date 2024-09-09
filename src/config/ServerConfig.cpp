@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:00:00 by bperez-a          #+#    #+#             */
 /*   Updated: 2024/09/09 11:18:21 by bperez-a         ###   ########.fr       */
@@ -18,7 +18,7 @@ ServerConfig::ServerConfig() { }
 
 // Copy constructor
 ServerConfig::ServerConfig(const ServerConfig& other)
-    : listen(other.listen),
+    : port(other.port),
       host(other.host),
       serverName(other.serverName),
       errorPages(other.errorPages),
@@ -32,7 +32,7 @@ ServerConfig::ServerConfig(const ServerConfig& other)
 // Copy assignment operator
 ServerConfig& ServerConfig::operator=(const ServerConfig& other) {
     if (this != &other) {
-        listen = other.listen;
+        port = other.port;
         host = other.host;
         serverName = other.serverName;
         errorPages = other.errorPages;
@@ -50,8 +50,12 @@ ServerConfig::~ServerConfig() {
 }
 
 // Getters
-int ServerConfig::getListen() const { return listen; }
-const std::string& ServerConfig::getHost() const { return host; }
+int ServerConfig::getPort() const { return port; }
+std::string  ServerConfig::getHost() const {
+	return  0;
+	//TODO
+
+ }
 const std::string& ServerConfig::getServerName() const { return serverName; }
 const std::map<std::string, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
 size_t ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }
@@ -63,7 +67,7 @@ const CGIConfig& ServerConfig::getCgi() const { return cgi; }
 int ServerConfig::getListenSocket() const { return listen_socket; }
 const struct sockaddr_in& ServerConfig::getAddress() const { return address; }
 // Setters
-void ServerConfig::setListen(int value) { listen = value; }
+void ServerConfig::setPort(int value) { port  = value; }
 void ServerConfig::setHost(const std::string& value) { host = value; }
 void ServerConfig::setServerName(const std::string& value) { serverName = value; }
 void ServerConfig::setErrorPages(const std::map<std::string, std::string>& value) { errorPages = value; }
@@ -76,7 +80,7 @@ void ServerConfig::setListenSocket(int value) { listen_socket = value; }
 void ServerConfig::setAddress(const struct sockaddr_in& value) { address = value; }
 void ServerConfig::print() const {
     std::cout << "Server Configuration:" << std::endl;
-    std::cout << "Listen: " << listen << std::endl;
+    std::cout << "Port: " << port << std::endl;
     std::cout << "Host: " << host << std::endl;
     std::cout << "Server Name: " << serverName << std::endl;
     std::cout << "Client Max Body Size: " << clientMaxBodySize << " bytes" << std::endl;

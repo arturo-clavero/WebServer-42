@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/06 15:14:22 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/08 13:28:47 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,18 @@
 
 class Server {
 private:
-    std::vector<ServerConfig>& config;
 public:
+    //unique pairs of host and ip address
+    std::set<std::pair<std::string, int > > unique; // automatically prevents duplicate host-port combination --- but why ? We nned a socket per server even if they have duplicate host-port... if they have a different server-name then we need different sockets... Arturo asking
+    std::vector<ServerConfig>& config;
     Server(std::vector<ServerConfig>& config);
     ~Server();
     void	run();
-    void	check_non_blocking(int sockfd);
-    std::vector<ServerConfig>& getConfig() ;
-    int	create_listen_socket(ServerConfig& config);
+    void    createUniquePair();
+    void    createEventManager();
+    // void	check_non_blocking(int sockfd);
+    // std::vector<ServerConfig>& getConfig() ;
+	std::vector<int> Server::create_listen_sockets(struct socaddr &addr);
 };
 
 #endif

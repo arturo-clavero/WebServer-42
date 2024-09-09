@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/06 12:21:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/08 12:00:02 by valeriafedo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,12 @@ int main(int argc, char* argv[]) {
 	for (size_t i = 0; i < config.size(); i++) {
 		config[i].print();
 	}
-	Server server(config);
-	server.run();
+	try {
+		Server server(config);
+		server.run();	
+	} catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+		return (1);
+	}
     return 0;
 }
