@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/09 14:06:05 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/09 14:19:05 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ void Server::createEventManager() {
 }
 void Server::run(){
 	createUniquePair(); //prevent duplicate configurations, prepares the data for the createEventManager()
-	createEventManager();// uses only unique pairs to set up listening sockets
+	createEventManager();
+	// uses only unique pairs to set up listening sockets
 // 		//1. Creates, binds and listens -> create listening socket ?
 // // Create a Socket: Use socket() to create a socket for communication.
 // // Bind: Use bind() to bind the socket to an address and port.

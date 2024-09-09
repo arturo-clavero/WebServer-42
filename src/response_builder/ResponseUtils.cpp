@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 12:26:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/09 14:49:28 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,55 @@ std::string ResponseUtils::buildBodyFromFile(const ServerConfig& config, const s
 		}
 	}
 	return body;
+}
+
+bool ResponseUtils::shouldForceDownload(const std::string& extension) {
+    const char* downloadExtensions[] = {
+        ".exe", ".zip", ".tar", ".gz", ".rar", ".7z",
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        ".pdf", ".mp3", ".mp4", ".avi", ".mov"
+    };
+    const int numTypes = sizeof(downloadExtensions) / sizeof(downloadExtensions[0]);
+
+    for (int i = 0; i < numTypes; ++i) {
+        if (strcasecmp(extension.c_str(), downloadExtensions[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string ResponseUtils::getContentType(const std::string& path) {
+    const char* extensions[] = {
+        ".html", ".htm", ".txt", ".css", ".js", ".json",
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico",
+        ".pdf", ".mp4", ".mpeg", ".mov", ".avi", ".wmv",
+        ".mp3", ".wav", ".ogg",
+        ".xml", ".zip", ".tar", ".gz",
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        ".svg", ".webp", ".tiff", ".csv"
+    };
+    const char* mimeTypes[] = {
+        "text/html", "text/html", "text/plain", "text/css", "application/javascript", "application/json",
+        "image/png", "image/jpeg", "image/jpeg", "image/gif", "image/bmp", "image/x-icon",
+        "application/pdf", "video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo", "video/x-ms-wmv",
+        "audio/mpeg", "audio/wav", "audio/ogg",
+        "application/xml", "application/zip", "application/x-tar", "application/gzip",
+        "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "image/svg+xml", "image/webp", "image/tiff", "text/csv"
+    };
+    const int numTypes = sizeof(extensions) / sizeof(extensions[0]);
+
+    size_t dotPos = path.find_last_of('.');
+    if (dotPos != std::string::npos) {
+        std::string ext = path.substr(dotPos);
+        for (int i = 0; i < numTypes; ++i) {
+            if (strcasecmp(ext.c_str(), extensions[i]) == 0) {
+                return mimeTypes[i];
+            }
+        }
+    }
+    return "application/octet-stream";
 }

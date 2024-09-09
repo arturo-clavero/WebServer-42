@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 12:25:36 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/09 14:48:56 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,24 +197,34 @@ RequestResponse ResponseBuilder::buildErrorResponse(ServerConfig& config, HttpRe
 }
 
 RequestResponse ResponseBuilder::buildSuccessResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location, std::string& path) {
-	std::cout << "DEBUG: Entering ResponseBuilder::buildSuccessResponse" << std::endl;
-	(void)location;
-	(void)request;
-	RequestResponse response;
-	response.setStatusCode("200");
-	response.setStatusMessage("OK");
-	response.setBody(ResponseUtils::buildBodyFromFile(config, path)); // TODO: if file is browser readable, enclose it in <html> tags
-	response.setContentLength(response.getBody().length());
-	
-	//how to set the content type depending on the file extension?
-	// hardcoding for now for image or html
-	if (path.find(".html") != std::string::npos)
-		response.setContentType("text/html");
-	else if (path.find(".png") != std::string::npos)
-		response.setContentType("image/png");
-	std::cout << "DEBUG: Content-Type set to: " << response.getContentType() << std::endl;
-	std::cout << "DEBUG: Exiting ResponseBuilder::buildSuccessResponse" << std::endl;
-	return response;
+    std::cout << "DEBUG: Entering ResponseBuilder::buildSuccessResponse" << std::endl;
+    (void)location;
+    (void)request;
+    RequestResponse response;
+    response.setStatusCode("200");
+    response.setStatusMessage("OK");
+    response.setBody(ResponseUtils::buildBodyFromFile(config, path));
+    response.setContentLength(response.getBody().length());
+    
+    // Set content type based on file extension
+    std::string contentType = ResponseUtils::getContentType(path);
+    response.setContentType(contentType);
+
+    // Determine if the file should be forced to download
+    size_t dotPos = path.find_last_of('.');
+    if (dotPos != std::string::npos) {
+        std::string extension = path.substr(dotPos);
+        if (ResponseUtils::shouldForceDownload(extension)) {
+            std::string filename = path.substr(path.find_last_of("/\\") + 1);
+            response.setContentDisposition("attachment; filename=\"" + filename + "\"");
+        } else {
+            response.setContentDisposition("inline");
+        }
+    }
+
+    std::cout << "DEBUG: Content-Type set to: " << response.getContentType() << std::endl;
+    std::cout << "DEBUG: Exiting ResponseBuilder::buildSuccessResponse" << std::endl;
+    return response;
 }
 
 RequestResponse ResponseBuilder::buildAutoindexResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location, std::string& path) {
