@@ -10,8 +10,8 @@ class ServerSocket {
         ~ServerSocket();
         int getListenSocket() const;
         void initListenSocket(std::string ipAddress, int port);
-        int getPort() const {return port;}
-        std::string getIp() const {return ipAddress;}
+        int getPort() const;
+        std::string getIp() const;
     private:
         int listenSocket;
         struct sockaddr_in serverAddr;

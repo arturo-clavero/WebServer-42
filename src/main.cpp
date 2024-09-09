@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/08 12:00:02 by valeriafedo      ###   ########.fr       */
+/*   Updated: 2024/09/09 14:09:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
     }
 
 	std::vector<ServerConfig> config = ConfigParser::parse(argv[1]);
+	
 	//print each one
 	for (size_t i = 0; i < config.size(); i++) {
 		config[i].print();

@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/03 14:00:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 11:18:21 by bperez-a         ###   ########.fr       */
+/*   Created: 2024/09/09 14:12:10 by bperez-a          #+#    #+#             */
+/*   Updated: 2024/09/09 14:12:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "ServerConfig.hpp"
 
@@ -51,11 +52,7 @@ ServerConfig::~ServerConfig() {
 
 // Getters
 int ServerConfig::getPort() const { return port; }
-std::string  ServerConfig::getHost() const {
-	return  0;
-	//TODO
-
- }
+std::string ServerConfig::getHost() const { return host; }
 const std::string& ServerConfig::getServerName() const { return serverName; }
 const std::map<std::string, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
 size_t ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }

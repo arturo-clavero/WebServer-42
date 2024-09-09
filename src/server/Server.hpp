@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/08 13:28:47 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/09 13:53:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ public:
     void    createEventManager();
     // void	check_non_blocking(int sockfd);
     // std::vector<ServerConfig>& getConfig() ;
-	std::vector<int> Server::create_listen_sockets(struct socaddr &addr);
+	std::vector<int> create_listen_sockets(struct socaddr &addr);
 };
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/08 13:16:12 by valeriafedo      ###   ########.fr       */
+/*   Updated: 2024/09/09 14:06:05 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,25 @@ void	check_non_blocking(int sockfd){
 // }
 void Server::createUniquePair() //create unique pairs of host (IP address) and port from a collection of server_configs
 {
+	std::cout << "Creating unique pairs of host and port..." << std::endl;
 	for (size_t i = 0; i < config.size(); i++) {
+		std::cout << "Host: " << config[i].getHost() << " Port: " << config[i].getPort() << std::endl;
 		std::pair<std::string, int> uniquePair = std::make_pair(config[i].getHost(), config[i].getPort()); //auto type /pair from different type;
+		std::cout << "Adding pair: " << uniquePair.first << ":" << uniquePair.second << std::endl;
 		unique.insert(uniquePair);
 	}
+	std::cout << "Total unique pairs: " << unique.size() << std::endl;
 }
+
 void Server::createEventManager() {
-	for(std::set<std::pair<std::string, int> >::iterator it = unique.begin(); it != unique.end() ){
+	std::cout << "Creating event manager..." << std::endl;
+	for(std::set<std::pair<std::string, int> >::iterator it = unique.begin(); it != unique.end(); it++){
+		std::cout << "Initializing listen socket for " << it->first << ":" << it->second << std::endl;
 		ServerSocket listenSocket;
 		listenSocket.initListenSocket(it->first, it->second);
+		std::cout << "Listen socket initialized with fd: " << listenSocket.getListenSocket() << std::endl;
 	}
-	
+	std::cout << "Event manager creation completed." << std::endl;
 }
 void Server::run(){
 	createUniquePair(); //prevent duplicate configurations, prepares the data for the createEventManager()
