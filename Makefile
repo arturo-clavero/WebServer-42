@@ -69,7 +69,6 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/response_builder/RequestResponse.cpp \
 	   $(SRC_DIR)/response_builder/ResponseUtils.cpp \
 	   $(SRC_DIR)/server/Server.cpp \
-	   $(SRC_DIR)/server/ServerSocket.cpp
 
 # Object files
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
