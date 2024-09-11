@@ -6,16 +6,14 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:09:40 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 11:58:31 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPREQUEST_HPP
 #define HTTPREQUEST_HPP
 
-#include <string>
-#include <map>
-#include <iostream>
+#include "includes.hpp"
 
 class HttpRequest {
 public:
@@ -50,4 +48,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
 
-#endif // HTTPREQUEST_HPP
+#endif

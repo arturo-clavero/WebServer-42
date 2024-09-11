@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 10:34:50 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 11:59:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,11 @@ struct CGIConfig {
 
 class ServerConfig {
 public:
-	// Orthodox Canonical Form
     ServerConfig();
     ServerConfig(const ServerConfig& other);
     ServerConfig& operator=(const ServerConfig& other);
     ~ServerConfig();
 
-    
-    // Getters
     int getPort() const;
     std::string getHost() const;
     const std::string& getServerName() const;
@@ -53,7 +50,7 @@ public:
     const CGIConfig& getCgi() const;
 	int getListenSocket() const;
 	const struct sockaddr_in& getAddress() const;
-    // Setters
+	
     void setPort(int value);
     void setHost(const std::string& value);
     void setServerName(const std::string& value);
@@ -65,7 +62,7 @@ public:
     void setCgi(const CGIConfig& value);
 	void setListenSocket(int value);
 	void setAddress(const struct sockaddr_in& value);
-	// Debug
+
 	void print() const;	
 
 private:

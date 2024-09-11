@@ -6,12 +6,11 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:08:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 11:57:50 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include <iostream>
 
 HttpRequest::HttpRequest() {}
 
