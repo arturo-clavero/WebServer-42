@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 14:49:28 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 10:23:53 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,15 @@ bool ResponseUtils::isRequestValid(const HttpRequest& request) {
 	return true;
 }
 
-bool ResponseUtils::isMethodAllowed(const HttpRequest& request) {
-	(void)request;
-	return true;
+bool ResponseUtils::isMethodAllowed(const HttpRequest& request, const LocationConfig& location) {
+
+	std::vector<std::string>::const_iterator it;
+	for (it = location.allowMethods.begin(); it != location.allowMethods.end(); ++it) {
+		if (*it == request.getMethod()) {
+			return true;
+		}
+	}
+	return false;
 }
 
 LocationConfig ResponseUtils::findLocation(const std::string& path, const ServerConfig& config) {

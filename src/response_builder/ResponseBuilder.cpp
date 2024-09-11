@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 14:48:56 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 09:51:59 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ RequestResponse ResponseBuilder::buildGetResponse(ServerConfig& config, HttpRequ
 	RequestResponse response;
 
 	//check if method is allowed
-	if (ResponseUtils::isMethodAllowed(request) == false)
+	if (ResponseUtils::isMethodAllowed(request, location) == false)
 	{
 		std::cout << "DEBUG: Method not allowed" << std::endl;
 		//if method is not allowed, build error response

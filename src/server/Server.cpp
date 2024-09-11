@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/10 12:02:49 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/11 10:33:24 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,8 @@ void	Server::run(){
 		std::cout << response << std::endl;
 		//std::cout << response.toString() << std::endl;
 		std::string responseStr = response.toString();
+
+		
 		send(new_socket, responseStr.c_str(), responseStr.length(), 0);
         std::cout << "------------------HTML content sent-------------------" << std::endl;
         close(new_socket);
