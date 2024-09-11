@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 14:11:49 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 14:17:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,7 +308,7 @@ RequestResponse ResponseBuilder::buildPostSuccessResponse(ServerConfig& config, 
 	RequestResponse response;
 	response.setStatusCode("200");
 	response.setStatusMessage("OK");
-	response.setBody("POST response");
+	response.setBody("POST response HELLO");
 	response.setContentLength(response.getBody().length());
 	std::cout << "DEBUG: Exiting ResponseBuilder::buildPostSuccessResponse" << std::endl;
 	return response;
