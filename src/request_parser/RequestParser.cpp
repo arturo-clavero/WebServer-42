@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:10:36 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 12:44:34 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,23 +67,3 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
     return request;
 }
 
-std::string RequestParser::trimAndSanitize(const std::string& str) {
-    std::string result;
-    for (size_t i = 0; i < str.length(); ++i) {
-        if (isprint(static_cast<unsigned char>(str[i]))) {
-            result += str[i];
-        }
-    }
-        size_t start = 0;
-    size_t end = result.length();
-
-    while (start < end && isspace(static_cast<unsigned char>(result[start]))) {
-        ++start;
-    }
-
-    while (end > start && isspace(static_cast<unsigned char>(result[end - 1]))) {
-        --end;
-    }
-
-    return result.substr(start, end - start);
-}

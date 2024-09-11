@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 10:23:53 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 12:46:35 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ ResponseUtils::ResponseUtils() {
 }
 
 bool ResponseUtils::isRequestValid(const HttpRequest& request) {
-	(void)request;
+	if (request.getMethod().empty() && request.getPath().empty() && request.getProtocol().empty()) {
+		return false;
+	}
 	return true;
 }
 

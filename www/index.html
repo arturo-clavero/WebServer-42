@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebServer - Welcome and File Upload</title>
+    <style>
+        .hidden { display: none; }
+        #imageGallery img { max-width: 200px; margin: 10px; }
+    </style>
 </head>
 <body>
     <h1>Welcome to WebServer</h1>
     <p>This is a sample page served by our custom C++ webserver.</p>
     
-    <img src="/images/cat.png" alt="Cat Image" style="max-width: 100%; height: auto;">
+    <div id="imageContainer">
+        <img src="/images/cat.png" alt="Cat Image" style="max-width: 100%; height: auto;">
+    </div>
+    
+    <button id="toggleImage">Toggle Image</button>
     
     <h2>File Upload</h2>
-    <form action="/uploads" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" action="/uploads" method="post" enctype="multipart/form-data">
         <input type="file" name="fileToUpload" id="fileToUpload">
         <input type="submit" value="Upload File" name="submit">
     </form>
@@ -23,25 +31,58 @@
     <p><a href="/about.html">About</a></p>
 
     <script>
-        // Fetch the list of uploaded files
-        fetch('/uploads')
+        // Toggle image visibility
+        const toggleButton = document.getElementById('toggleImage');
+        const imageContainer = document.getElementById('imageContainer');
+        toggleButton.addEventListener('click', () => {
+            imageContainer.classList.toggle('hidden');
+        });
+
+        // File upload with progress
+        const uploadForm = document.getElementById('uploadForm');
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadForm);
+            
+            fetch('/uploads', {
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.text())
             .then(data => {
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(data, 'text/html');
-                const links = htmlDoc.querySelectorAll('a');
-                const fileList = document.getElementById('fileList');
-                
-                links.forEach(link => {
-                    if (link.href.startsWith('http') && !link.href.endsWith('/')) {
-                        const li = document.createElement('li');
-                        li.textContent = link.textContent;
-                        fileList.appendChild(li);
-                    }
-                });
+                console.log('Upload successful:', data);
+                fetchFileList();
             })
-            .catch(error => console.error('Error fetching file list:', error));
+            .catch(error => console.error('Error uploading file:', error));
+        });
+
+        // Fetch and display uploaded files
+        function fetchFileList() {
+            fetch('/uploads')
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const htmlDoc = parser.parseFromString(data, 'text/html');
+                    const links = htmlDoc.querySelectorAll('a');
+                    const fileList = document.getElementById('fileList');
+                    
+                    fileList.innerHTML = '';
+                    links.forEach(link => {
+                        if (link.href.startsWith('http') && !link.href.endsWith('/')) {
+                            const li = document.createElement('li');
+                            li.textContent = link.textContent;
+                            fileList.appendChild(li);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching file list:', error));
+        }
+
+        // Initial file list fetch
+        fetchFileList();
+
+        loadImageGallery();
+
     </script>
 </body>
 </html>
-

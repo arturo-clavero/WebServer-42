@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 14:43:10 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 12:45:38 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ public:
 	std::string getContentType() const;
 	std::string getContentDisposition() const;
 	size_t getContentLength() const;
-	std::string getType() const;
 
 	//Setters
 	void setBody(const std::string& body);
@@ -36,8 +35,8 @@ public:
 	void setStatusMessage(const std::string& statusMessage);
 	void setContentType(const std::string& contentType);
 	void setContentLength(size_t contentLength);
-	void setType(const std::string& type);
 	void setContentDisposition(const std::string& contentDisposition);
+	
     std::string toString() const;
 
 private:
