@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 12:44:34 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 14:08:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,13 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
     }
 
     request.setMethod(method);
-    request.setPath(path);
+    std::string decodedPath = path;
+    size_t pos = 0;
+    while ((pos = decodedPath.find("%20", pos)) != std::string::npos) {
+        decodedPath.replace(pos, 3, " ");
+        pos += 1;
+    }
+    request.setPath(decodedPath);
     request.setProtocol(protocol);
 
     std::cout << "Parsed request line: " << method << " " << path << " " << protocol << std::endl;

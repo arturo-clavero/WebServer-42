@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 12:17:21 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:45:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ public:
 	static RequestResponse buildGetDirectoryResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location);
 
 	static RequestResponse buildPostResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location);
-	//...
+	static RequestResponse buildPostSuccessResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location);
+	static bool processPostData(HttpRequest& request, std::string& path);
 	
 	static RequestResponse buildDeleteResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location);
 	//...

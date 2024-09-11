@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 12:46:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 14:11:53 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,21 +81,6 @@ std::string ResponseUtils::buildBodyFromFile(const ServerConfig& config, const s
 	return body;
 }
 
-bool ResponseUtils::shouldForceDownload(const std::string& extension) {
-    const char* downloadExtensions[] = {
-        ".exe", ".zip", ".tar", ".gz", ".rar", ".7z",
-        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-        ".pdf", ".mp3", ".mp4", ".avi", ".mov"
-    };
-    const int numTypes = sizeof(downloadExtensions) / sizeof(downloadExtensions[0]);
-
-    for (int i = 0; i < numTypes; ++i) {
-        if (strcasecmp(extension.c_str(), downloadExtensions[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
 
 std::string ResponseUtils::getContentType(const std::string& path) {
     const char* extensions[] = {

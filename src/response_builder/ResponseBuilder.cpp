@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 09:51:59 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/11 14:11:49 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,16 +211,7 @@ RequestResponse ResponseBuilder::buildSuccessResponse(ServerConfig& config, Http
     response.setContentType(contentType);
 
     // Determine if the file should be forced to download
-    size_t dotPos = path.find_last_of('.');
-    if (dotPos != std::string::npos) {
-        std::string extension = path.substr(dotPos);
-        if (ResponseUtils::shouldForceDownload(extension)) {
-            std::string filename = path.substr(path.find_last_of("/\\") + 1);
-            response.setContentDisposition("attachment; filename=\"" + filename + "\"");
-        } else {
-            response.setContentDisposition("inline");
-        }
-    }
+    response.setContentDisposition("inline");
 
     std::cout << "DEBUG: Content-Type set to: " << response.getContentType() << std::endl;
     std::cout << "DEBUG: Exiting ResponseBuilder::buildSuccessResponse" << std::endl;
@@ -274,7 +265,43 @@ RequestResponse ResponseBuilder::buildAutoindexResponse(ServerConfig& config, Ht
 
 
 RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location) {
-	std::cout << "DEBUG: Entering ResponseBuilder::buildPostResponse" << std::endl;
+    std::cout << "DEBUG: Entering ResponseBuilder::buildPostResponse" << std::endl;
+    
+    RequestResponse response;
+
+    // Check if method is allowed
+    if (ResponseUtils::isMethodAllowed(request, location) == false) {
+        std::cout << "DEBUG: Method not allowed" << std::endl;
+        response = buildErrorResponse(config, request, "405", "Method Not Allowed");
+        return response;
+    }
+    
+    // Check if the target location exists and is writable
+    std::string path = location.root + request.getPath();
+    if (access(path.c_str(), W_OK) == -1) {
+        std::cout << "DEBUG: Target location not writable" << std::endl;
+        response = buildErrorResponse(config, request, "403", "Forbidden");
+        return response;
+    }
+
+    // Process the POST data (e.g., save uploaded file or process form data)
+    bool success = processPostData(request, path);
+    if (!success) {
+        std::cout << "DEBUG: Failed to process POST data" << std::endl;
+        response = buildErrorResponse(config, request, "500", "Internal Server Error");
+        return response;
+    }
+
+    // Build success response
+    std::cout << "DEBUG: Building success response for POST" << std::endl;
+    response = buildPostSuccessResponse(config, request, location);
+
+    std::cout << "DEBUG: Exiting ResponseBuilder::buildPostResponse" << std::endl;
+    return response;
+}
+
+RequestResponse ResponseBuilder::buildPostSuccessResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location) {
+	std::cout << "DEBUG: Entering ResponseBuilder::buildPostSuccessResponse" << std::endl;
 	(void)config;
 	(void)location;
 	(void)request;
@@ -283,8 +310,17 @@ RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpReq
 	response.setStatusMessage("OK");
 	response.setBody("POST response");
 	response.setContentLength(response.getBody().length());
-	std::cout << "DEBUG: Exiting ResponseBuilder::buildPostResponse" << std::endl;
+	std::cout << "DEBUG: Exiting ResponseBuilder::buildPostSuccessResponse" << std::endl;
 	return response;
+}
+
+//process post data
+bool ResponseBuilder::processPostData(HttpRequest& request, std::string& path) {
+	std::cout << "DEBUG: Entering ResponseBuilder::processPostData" << std::endl;
+	(void)request;
+	(void)path;
+	std::cout << "DEBUG: Exiting ResponseBuilder::processPostData" << std::endl;
+	return true;
 }
 
 RequestResponse ResponseBuilder::buildDeleteResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location) {
