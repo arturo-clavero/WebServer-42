@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:28:02 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:41:55 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ std::string ResponseUtils::getContentType(const std::string& path) {
 
 bool ResponseUtils::saveFile(const std::string& folderPath, const std::string& filename, const std::string& content) {
     // Construct the full path
+    std::cout << "DEBUG: Saving file to: " << folderPath << std::endl;
     std::string fullPath = folderPath;
     if (fullPath[fullPath.length() - 1] != '/') {
         fullPath += '/';

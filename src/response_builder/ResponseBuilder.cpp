@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:26:14 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:44:55 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,9 +317,11 @@ RequestResponse ResponseBuilder::buildPostSuccessResponse(ServerConfig& config, 
 bool  ResponseBuilder::processPostData(HttpRequest& request, std::string& path) {
 	std::cout << "DEBUG: Entering ResponseBuilder::processPostData" << std::endl;
 	//find boundary from content type
-	std::string boundary = request.getHeader("Content-Type").substr(request.getHeader("Content-Type").find("boundary=") + 8);
+	std::string boundary = request.getHeader("Content-Type").substr(request.getHeader("Content-Type").find("boundary=") + 9);
 	std::cout << "DEBUG: Boundary: " << boundary << std::endl;
 	std::vector<PostRequestBodyPart> bodyParts = PostRequestBodySnatcher::parse(request.getBody(), boundary);
+	std::cout << "DEBUG: Body parts size: " << bodyParts.size() << std::endl;
+	
 	for (std::vector<PostRequestBodyPart>::iterator it = bodyParts.begin(); it != bodyParts.end(); ++it)
 	{
 		if (it->getFilename().empty() == false)

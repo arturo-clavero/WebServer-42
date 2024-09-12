@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 22:14:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:21:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:43:38 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 
     std::string::size_type start = 0;
     std::string::size_type end = 0;
+    std::cout << "DEBUG: entering body parse for Post request" << std::endl;
     while ((end = body.find(boundary, start)) != std::string::npos) {
         PostRequestBodyPart part;
         std::string partContent = body.substr(start, end - start);
