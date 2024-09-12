@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 11:43:52 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:31:25 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 			return ; //incomplete body type 2!
 		}
 	}
-	std::cout<<"READ BUFFER\n"<<client.read_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
+	//std::cout<<"READ BUFFER\n"<<client.read_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
 	client.read_complete = true;
 }
 

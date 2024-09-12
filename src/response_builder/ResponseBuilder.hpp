@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 13:45:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:25:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "includes.hpp"
 #include "../request_parser/HttpRequest.hpp"
 #include "../config/ServerConfig.hpp"
+#include "../post_request_body_handling/PostRequestBodySnatcher.hpp"
+#include "../post_request_body_handling/PostRequestBodyPart.hpp"
 #include "RequestResponse.hpp"
 
 class ResponseBuilder {

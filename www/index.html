@@ -110,9 +110,8 @@
         
         <h2>File Upload Zone</h2>
         <form id="uploadForm" action="/uploads" method="post" enctype="multipart/form-data">
-            <input type="file" name="fileToUpload" id="fileToUpload">
-            <label for="fileToUpload" class="upload-btn">Choose a file</label>
-            <button type="submit" class="upload-btn">Upload to the FUTURE!</button>
+            <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
+            <button type="button" id="uploadButton" class="upload-btn">Upload File</button>
         </form>
         
         <h2>Your Awesome Gallery</h2>
@@ -121,20 +120,28 @@
 
     <script>
         const uploadForm = document.getElementById('uploadForm');
-        uploadForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadForm);
-            
-            fetch('/uploads', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log('Upload successful:', data);
-                fetchFileList();
-            })
-            .catch(error => console.error('Error uploading file:', error));
+        const fileInput = document.getElementById('fileToUpload');
+        const uploadButton = document.getElementById('uploadButton');
+
+        uploadButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const formData = new FormData(uploadForm);
+                
+                fetch('/uploads', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Upload successful:', data);
+                    location.reload(); // Refresh the page
+                })
+                .catch(error => console.error('Error uploading file:', error));
+            }
         });
 
         function fetchFileList() {

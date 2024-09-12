@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 14:17:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:26:14 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,8 +285,7 @@ RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpReq
     }
 
     // Process the POST data (e.g., save uploaded file or process form data)
-    bool success = processPostData(request, path);
-    if (!success) {
+    if (!processPostData(request, path)) {
         std::cout << "DEBUG: Failed to process POST data" << std::endl;
         response = buildErrorResponse(config, request, "500", "Internal Server Error");
         return response;
@@ -315,10 +314,18 @@ RequestResponse ResponseBuilder::buildPostSuccessResponse(ServerConfig& config, 
 }
 
 //process post data
-bool ResponseBuilder::processPostData(HttpRequest& request, std::string& path) {
+bool  ResponseBuilder::processPostData(HttpRequest& request, std::string& path) {
 	std::cout << "DEBUG: Entering ResponseBuilder::processPostData" << std::endl;
-	(void)request;
-	(void)path;
+	//find boundary from content type
+	std::string boundary = request.getHeader("Content-Type").substr(request.getHeader("Content-Type").find("boundary=") + 8);
+	std::cout << "DEBUG: Boundary: " << boundary << std::endl;
+	std::vector<PostRequestBodyPart> bodyParts = PostRequestBodySnatcher::parse(request.getBody(), boundary);
+	for (std::vector<PostRequestBodyPart>::iterator it = bodyParts.begin(); it != bodyParts.end(); ++it)
+	{
+		if (it->getFilename().empty() == false)
+			if (ResponseUtils::saveFile(path, it->getFilename(), it->getContent()) == false)
+				return false;
+	}
 	std::cout << "DEBUG: Exiting ResponseBuilder::processPostData" << std::endl;
 	return true;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 12:45:38 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:16:47 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ public:
 	std::string getBody() const;
 	std::string getStatusCode() const;
 	std::string getStatusMessage() const;
-	std::string getContentType() const;
+	std::string getContentType() const;	
 	std::string getContentDisposition() const;
 	size_t getContentLength() const;
 

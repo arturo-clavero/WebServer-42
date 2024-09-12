@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 14:20:05 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:28:02 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,4 +115,30 @@ std::string ResponseUtils::getContentType(const std::string& path) {
         }
     }
     return "application/octet-stream";
+}
+
+bool ResponseUtils::saveFile(const std::string& folderPath, const std::string& filename, const std::string& content) {
+    // Construct the full path
+    std::string fullPath = folderPath;
+    if (fullPath[fullPath.length() - 1] != '/') {
+        fullPath += '/';
+    }
+    fullPath += filename;
+    
+    // Open an output file stream
+    std::ofstream file(fullPath.c_str(), std::ios::out | std::ios::binary);
+    
+    if (file.is_open()) {
+        // Write the contents to the file
+        file << content;
+        
+        // Close the file stream
+        file.close();
+        
+        std::cout << "File saved successfully at: " << fullPath << std::endl;
+    } else {
+        std::cerr << "Unable to open file for writing." << std::endl;
+		return false;
+    }
+    return true;
 }
