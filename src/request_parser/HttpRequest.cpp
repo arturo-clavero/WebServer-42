@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 10:49:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:39:46 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ std::ostream& operator<<(std::ostream& os, const HttpRequest& request) {
     os << "Method: " << request.getMethod() << "\n"
        << "Path: " << request.getPath() << "\n"
        << "Protocol: " << request.getProtocol() << "\n";
+	   	os << "Host: " << request.getHost() << "\n"; //for network version 1
     request.printHeaders();
     os << "Body: " << request.getBody() << "\n";
-	os << "Host: " << request.getHost() << "\n"; //for network version 1
     return os;
 }

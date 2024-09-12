@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 11:35:00 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:42:22 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,19 +47,17 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
 
     // Parse headers
     while (std::getline(iss, line) && !line.empty() && line != "\r") {
-		std::cout<<"LINE: "<<line<<"\n";
         size_t colon_pos = line.find(':');
         if (colon_pos != std::string::npos) {
             std::string key = line.substr(0, colon_pos);
-			std::cout<<"KEY: "<<key<<"\n";
             std::string value = (colon_pos + 1 < line.length()) ? line.substr(colon_pos + 1) : "";
-            std::cout<<"VALUE: "<<value<<"\n";
             // Trim whitespace
             key.erase(0, key.find_first_not_of(" \t"));
             key.erase(key.find_last_not_of(" \t") + 1);
             value.erase(0, value.find_first_not_of(" \t"));
             value.erase(value.find_last_not_of(" \t\r\n") + 1);
-
+			if (key == "Host")
+				request.setHost(value);
             if (!key.empty()) {
                 std::cout << "Adding header: '" << key << "' : '" << value << "'" << std::endl;
                 request.addHeader(key, value);
