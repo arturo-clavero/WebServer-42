@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 10:38:49 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:21:26 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "request_parser/HttpRequest.hpp"
 #include "request_parser/RequestParser.hpp"
 #include "response_builder/ResponseBuilder.hpp"
-# define READ_BUFFER_SIZE 300
+# define READ_BUFFER_SIZE 1024
 # define WRITE_BUFFER_SIZE 1024
 
 

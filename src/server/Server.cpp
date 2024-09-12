@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 11:20:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:27:35 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void	Server::accept_new_client_connection(struct serverSocket &server){
 	client.fd = accept(server.fd, server.address_ptr, &server.address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
 	if (client.fd < 0) //no new connections ....
 		return ;
-	std::cout<<"\n\nnew client connection accepted\n\n\n";
+	std::cout<<"\n\nnew client connection accepted\n\n";
 	setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
 	int enable = 1;
 	setsockopt(client.fd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
@@ -152,7 +152,7 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 	std::string	buff(READ_BUFFER_SIZE, 0);
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	
-	std::cout<<"attempt to read...\n";
+	//std::cout<<"attempt to read...\n";
 	int bytes = recv(client.fd, &buff[0], READ_BUFFER_SIZE, 0);
 	if (bytes <= 0)
 	{
@@ -162,27 +162,27 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 	client.read_operations++;
 	for (int i = 0; i < bytes; i++)
 		client.read_buffer += buff[i];
-	std::cout<<"REading test\n"<<"'"<<client.read_buffer<<"'\n";
+//	std::cout<<"REading test\n"<<"'"<<client.read_buffer<<"'\n";
 	//check for incomplete read:
 	pos_header_end = client.read_buffer.find("\r\n\r\n");
 	if (pos_header_end == std::string::npos) //means header is incomplete because header ends with \r\n\r\h;
 	{
 		setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-		std::cout<<"reading is incomplete (header)\n\n";
+	//	std::cout<<"reading is incomplete (header)\n\n";
 		return ;
 	}
-	std::cout<<"header is complete\n\n";
+	//std::cout<<"header is complete\n\n";
 	pos_content_length = client.read_buffer.find("Content-Length:");
 	//check for body
 	if (pos_content_length != std::string::npos)
 	{
 		int expected_body_size = std::atoi(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
-		std::cout<<"the actual substr: "<<client.read_buffer.substr(pos_content_length + 16, pos_header_end);
-		std::cout<<"content length, expected body size: "<<expected_body_size<<"\n";
+		//std::cout<<"the actual substr: "<<client.read_buffer.substr(pos_content_length + 16, pos_header_end);
+		//std::cout<<"content length, expected body size: "<<expected_body_size<<"\n";
 		if (static_cast<int>(client.read_buffer.size() - pos_header_end) < expected_body_size)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-			std::cout<<"reading incomplete (content len)\n\n";
+			//std::cout<<"reading incomplete (content len)\n\n";
 			return ; //incomplete body type 1!	
 		}
 	}
@@ -192,11 +192,11 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 		if (pos_zero == std::string::npos || client.read_buffer[pos_zero + 5] != 0)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-			std::cout<<"reading incomplete (chunks)\n";
+			//std::cout<<"reading incomplete (chunks)\n";
 			return ; //incomplete body type 2!
 		}
 	}
-	std::cout<<"reading is complete\n\n";
+	std::cout<<"READ BUFFER\n"<<client.read_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
 	client.read_complete = true;
 }
 
@@ -225,13 +225,13 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 {
 	if (client.read_complete == false)
 		return;
-	std::cout<<"gonna parse it ....\n ";
+	//std::cout<<"gonna parse it ....\n ";
 	HttpRequest request = RequestParser::parse(client.read_buffer);
-	std::cout<<"request:\n"<<request;
-	std::cout<<"\nhost is ... "<<request.getHost()<<"\n";
+	std::cout<<"\nREQUEST:\n"<<request<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
+	//std::cout<<"\nhost is ... "<<request.getHost()<<"\n";
 	find_match_config(client, server.possible_configs, request.getHost());
 	client.write_buffer = ResponseBuilder::build(request, client.match_config).toString();
-	std::cout<<"response is ... "<<client.write_buffer<<"\n";
+	std::cout<<"\nRESPONSE:\n"<<client.write_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
 	client.http_done = true;
 }
 
