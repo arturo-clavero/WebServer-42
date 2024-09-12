@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 11:27:35 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:43:52 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	//std::cout<<"gonna parse it ....\n ";
 	HttpRequest request = RequestParser::parse(client.read_buffer);
 	std::cout<<"\nREQUEST:\n"<<request<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
-	//std::cout<<"\nhost is ... "<<request.getHost()<<"\n";
+	std::cout<<"\nhost is ... "<<request.getHost()<<"\n\n";
 	find_match_config(client, server.possible_configs, request.getHost());
 	client.write_buffer = ResponseBuilder::build(request, client.match_config).toString();
 	std::cout<<"\nRESPONSE:\n"<<client.write_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";

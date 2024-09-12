@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 11:42:22 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:44:33 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,8 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
         std::cerr << "Error: Could not read request line" << std::endl;
         return request;
     }
-	//how to add host here ? 
     std::istringstream request_line(line);
-	 //added hsot below for network version 1 :
-	 std::cout<<"request line: "<<request_line<<"\n";
-    std::string method, path, protocol, host;
+    std::string method, path, protocol;
     if (!(request_line >> method >> path >> protocol)) {
         std::cerr << "Error: Invalid request line format" << std::endl;
         return request;
