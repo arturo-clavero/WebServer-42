@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 10:50:01 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:35:00 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
 	//how to add host here ? 
     std::istringstream request_line(line);
 	 //added hsot below for network version 1 :
+	 std::cout<<"request line: "<<request_line<<"\n";
     std::string method, path, protocol, host;
-    if (!(request_line >> method >> path >> protocol >> host)) {
+    if (!(request_line >> method >> path >> protocol)) {
         std::cerr << "Error: Invalid request line format" << std::endl;
         return request;
     }
@@ -41,18 +42,18 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
     }
     request.setPath(decodedPath);
     request.setProtocol(protocol);
-	request.setHost(host); //for network version 1 
-	std::cout<<"Host is: "<<host<<"\n";  //for network version 1 
 
     std::cout << "Parsed request line: " << method << " " << path << " " << protocol << std::endl;
 
     // Parse headers
     while (std::getline(iss, line) && !line.empty() && line != "\r") {
+		std::cout<<"LINE: "<<line<<"\n";
         size_t colon_pos = line.find(':');
         if (colon_pos != std::string::npos) {
             std::string key = line.substr(0, colon_pos);
+			std::cout<<"KEY: "<<key<<"\n";
             std::string value = (colon_pos + 1 < line.length()) ? line.substr(colon_pos + 1) : "";
-            
+            std::cout<<"VALUE: "<<value<<"\n";
             // Trim whitespace
             key.erase(0, key.find_first_not_of(" \t"));
             key.erase(key.find_last_not_of(" \t") + 1);
