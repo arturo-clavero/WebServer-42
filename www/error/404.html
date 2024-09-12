@@ -3,16 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found</title>
+    <title>404 Not Found - WebServer 2000</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
-        h1 { color: #444; }
-        p { color: #666; }
+        body {
+            font-family: "Comic Sans MS", cursive;
+            background-image: url('/images/background.avif');
+            background-repeat: repeat;
+            color: #FF00FF;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #00FF00;
+            border: 3px solid #00FFFF;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 48px;
+            text-shadow: 2px 2px #00FFFF;
+        }
+        .logo {
+            max-width: 200px;
+            animation: spin 5s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .cool-image {
+            max-width: 100%;
+            border: 5px solid #FF00FF;
+            margin: 20px 0;
+        }
+        a {
+            color: #00FFFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <h1>404 - Page Not Found</h1>
-    <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
-    <p><a href="/">Go to Homepage</a></p>
+    <div class="container">
+        <img src="/images/logo.gif" alt="WebServer 2000 Logo" class="logo">
+        <h1>404 - Page Not Found</h1>
+        <p>Oops! The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+        <img src="/images/404.gif" alt="404 Error" class="cool-image">
+        <p><a href="/">Go back to the FUTURE (Homepage)</a></p>
+    </div>
 </body>
 </html>

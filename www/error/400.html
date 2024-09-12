@@ -3,33 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>400 Bad Request</title>
+    <title>400 Bad Request - WebServer 2000</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: "Comic Sans MS", cursive;
+            background-image: url('/images/background.avif');
+            background-repeat: repeat;
+            color: #FF00FF;
+            text-align: center;
             margin: 0;
+            padding: 20px;
         }
         .container {
-            text-align: center;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #00FF00;
+            border: 3px solid #00FFFF;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         h1 {
-            color: #f0ad4e;
+            font-size: 48px;
+            text-shadow: 2px 2px #00FFFF;
         }
-        p {
-            color: #333;
+        .logo {
+            max-width: 200px;
+            animation: spin 5s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .cool-image {
+            max-width: 100%;
+            border: 5px solid #FF00FF;
+            margin: 20px 0;
         }
         a {
-            color: #0275d8;
+            color: #00FFFF;
             text-decoration: none;
+            font-weight: bold;
         }
         a:hover {
             text-decoration: underline;
@@ -38,10 +50,12 @@
 </head>
 <body>
     <div class="container">
+        <img src="/images/logo.gif" alt="WebServer 2000 Logo" class="logo">
         <h1>400 Bad Request</h1>
         <p>Oops! The server cannot process your request due to invalid syntax.</p>
         <p>Please check your request and try again.</p>
-        <p><a href="/">Return to homepage</a></p>
+        <img src="/images/400.gif" alt="400 Error" class="cool-image">
+        <p><a href="/">Return to the RADICAL homepage</a></p>
     </div>
 </body>
 </html>
