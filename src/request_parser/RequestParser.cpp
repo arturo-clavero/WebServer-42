@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 14:23:48 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 10:50:01 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
         std::cerr << "Error: Could not read request line" << std::endl;
         return request;
     }
-
+	//how to add host here ? 
     std::istringstream request_line(line);
-    std::string method, path, protocol;
-    if (!(request_line >> method >> path >> protocol)) {
+	 //added hsot below for network version 1 :
+    std::string method, path, protocol, host;
+    if (!(request_line >> method >> path >> protocol >> host)) {
         std::cerr << "Error: Invalid request line format" << std::endl;
         return request;
     }
@@ -40,6 +41,8 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
     }
     request.setPath(decodedPath);
     request.setProtocol(protocol);
+	request.setHost(host); //for network version 1 
+	std::cout<<"Host is: "<<host<<"\n";  //for network version 1 
 
     std::cout << "Parsed request line: " << method << " " << path << " " << protocol << std::endl;
 

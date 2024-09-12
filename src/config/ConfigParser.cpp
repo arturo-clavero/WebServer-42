@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigParser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 14:09:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:16:45 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,17 +80,27 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                 } else {
                     // Handle server-level configurations
                     if (key == "listen") {
-                        int port;
-                        iss >> port;
-                        currentServer.setPort(port);
-                    } else if (key == "host") {
-                        std::string host;
-                        iss >> host;
-                        currentServer.setHost(host);
+                    //    int port; 
+						std::string listen;
+                        iss >> listen;
+                        //currentServer.setPort(port);
+						currentServer.setListen(listen);
+                    // } else if (key == "host") {
+                    //     std::string host;
+                    //     iss >> host;
+                    //     currentServer.setHost(host);
                     } else if (key == "server_name") {
-                        std::string serverName;
-                        iss >> serverName;
-                        currentServer.setServerName(serverName);
+						std::string::iterator it1, it2;
+						std::vector<std::string> vec;
+						int pos1 = line.find("server_name") + sizeof("server_name");
+						size_t the_rest = std::string::npos;
+                        std::string serverName = line.substr(pos1, the_rest);
+						for (it1 = serverName.begin(); it1 < serverName.end(); it1++){
+							it2 = std::find(it1, serverName.end(), ' ');
+							vec.push_back(std::string(it1, it2));
+							it1 = it2;
+						}
+						currentServer.setServerNames(vec);
                     } else if (key == "error_page") {
                         std::string errorCode;
                         std::string errorPage;

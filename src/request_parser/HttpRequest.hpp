@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:58:31 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 10:48:54 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ public:
     std::string getProtocol() const;
     std::string getBody() const;
     std::string getHeader(const std::string& key) const;
+	std::string getHost() const; //for network version 1
     const std::map<std::string, std::string>& getHeaders() const;
 
     void setMethod(const std::string& method);
@@ -34,6 +35,7 @@ public:
     void setProtocol(const std::string& protocol);
     void setBody(const std::string& body);
     void addHeader(const std::string& key, const std::string& value);
+	void setHost(const std::string & host); //for network version 1
 
     bool hasHeader(const std::string& key) const;
     void printHeaders() const;
@@ -44,6 +46,7 @@ private:
     std::string protocol_;
     std::map<std::string, std::string> headers_;
     std::string body_;
+	std::string host_; //for network version 1
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);

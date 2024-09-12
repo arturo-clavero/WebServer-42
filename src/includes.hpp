@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/05 16:44:26 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/12 10:39:49 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,9 @@
 #include <sys/stat.h>     // File status and information
 #include <set>            // Set container for unique elements
 #include <dirent.h>       // Directory entry operations
-
+#include <string>
+#include <algorithm>      //for find
+#include <netinet/tcp.h> // For TCP_KEEPIDLE
+#include <list>
+#include <signal.h>
 #endif

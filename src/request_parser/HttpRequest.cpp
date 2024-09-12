@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:57:50 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 10:49:14 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ HttpRequest::HttpRequest(const HttpRequest& other)
       path_(other.path_),
       protocol_(other.protocol_),
       headers_(other.headers_),
-      body_(other.body_) {}
+      body_(other.body_),
+	  host_(other.host_) {}
 
 HttpRequest& HttpRequest::operator=(const HttpRequest& other) {
     if (this != &other) {
@@ -28,6 +29,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& other) {
         protocol_ = other.protocol_;
         headers_ = other.headers_;
         body_ = other.body_;
+		host_ = other.host_;
     }
     return *this;
 }
@@ -38,6 +40,8 @@ std::string HttpRequest::getMethod() const { return method_; }
 std::string HttpRequest::getPath() const { return path_; }
 std::string HttpRequest::getProtocol() const { return protocol_; }
 std::string HttpRequest::getBody() const { return body_; }
+std::string HttpRequest::getHost() const { return host_; } //for network version 1
+
 
 std::string HttpRequest::getHeader(const std::string& key) const {
     std::map<std::string, std::string>::const_iterator it = headers_.find(key);
@@ -52,6 +56,8 @@ void HttpRequest::setMethod(const std::string& method) { method_ = method; }
 void HttpRequest::setPath(const std::string& path) { path_ = path; }
 void HttpRequest::setProtocol(const std::string& protocol) { protocol_ = protocol; }
 void HttpRequest::setBody(const std::string& body) { body_ = body; }
+void HttpRequest::setHost(const std::string& host) { host_ = host; } //for network version 1
+
 
 void HttpRequest::addHeader(const std::string& key, const std::string& value) {
     if (!key.empty()) {
@@ -77,5 +83,6 @@ std::ostream& operator<<(std::ostream& os, const HttpRequest& request) {
        << "Protocol: " << request.getProtocol() << "\n";
     request.printHeaders();
     os << "Body: " << request.getBody() << "\n";
+	os << "Host: " << request.getHost() << "\n"; //for network version 1
     return os;
 }

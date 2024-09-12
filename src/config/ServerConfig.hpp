@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/11 11:59:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:05:47 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,10 @@ public:
     ServerConfig& operator=(const ServerConfig& other);
     ~ServerConfig();
 
-    int getPort() const;
-    std::string getHost() const;
-    const std::string& getServerName() const;
+    //int getPort() const;
+   // std::string getHost() const;
+	const std::string& getListen() const;  //for network version 1  
+    const std::vector<std::string>& getServerNames() const;
     const std::map<std::string, std::string>& getErrorPages() const;
     size_t getClientMaxBodySize() const;
     const std::string& getRoot() const;
@@ -51,9 +52,10 @@ public:
 	int getListenSocket() const;
 	const struct sockaddr_in& getAddress() const;
 	
-    void setPort(int value);
-    void setHost(const std::string& value);
-    void setServerName(const std::string& value);
+   // void setPort(int value);
+   // void setHost(const std::string& value);
+	void setListen(const std::string& value);  //for network version 1 
+    void setServerNames(const std::vector<std::string>& value);
     void setErrorPages(const std::map<std::string, std::string>& value);
     void setClientMaxBodySize(size_t value);
     void setRoot(const std::string& value);
@@ -62,21 +64,21 @@ public:
     void setCgi(const CGIConfig& value);
 	void setListenSocket(int value);
 	void setAddress(const struct sockaddr_in& value);
-
 	void print() const;	
 
 private:
-    int port;
-    std::string host;
-    std::string serverName;
+  //  int port;
+   // std::string host;
+	std::string listen; //for network version 1
+	std::vector<std::string> serverNames;
     std::map<std::string, std::string> errorPages;
     size_t clientMaxBodySize;
     std::string root;
     std::string index;
     std::vector<LocationConfig> locations;
     CGIConfig cgi;
-	int listen_socket;
-	struct sockaddr_in address;	
+	int listen_socket; //why ?
+	struct sockaddr_in address;	//why ?
 };
 
 #endif
