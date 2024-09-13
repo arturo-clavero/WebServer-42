@@ -96,6 +96,26 @@
             font-size: 24px;
             font-weight: bold;
         }
+        .custom-context-menu {
+            display: none;
+            position: absolute;
+            background-color: #FFFFFF;
+            border: 1px solid #000000;
+            padding: 5px;
+            z-index: 1000;
+        }
+        .custom-context-menu button {
+            display: block;
+            width: 100%;
+            padding: 5px;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .custom-context-menu button:hover {
+            background-color: #F0F0F0;
+        }
     </style>
 </head>
 <body>
@@ -118,10 +138,17 @@
         <ul id="fileList"></ul>
     </div>
 
+    <div id="customContextMenu" class="custom-context-menu">
+        <button id="deleteButton">DELETE</button>
+    </div>
+
     <script>
         const uploadForm = document.getElementById('uploadForm');
         const fileInput = document.getElementById('fileToUpload');
         const uploadButton = document.getElementById('uploadButton');
+        const customContextMenu = document.getElementById('customContextMenu');
+        const deleteButton = document.getElementById('deleteButton');
+        let currentTarget = null;
 
         uploadButton.addEventListener('click', () => {
             fileInput.click();
@@ -138,7 +165,7 @@
                 .then(response => response.text())
                 .then(data => {
                     console.log('Upload successful:', data);
-                    location.reload(); // Refresh the page
+                    fetchFileList(); // Update the gallery dynamically
                 })
                 .catch(error => console.error('Error uploading file:', error));
             }
@@ -156,33 +183,62 @@
                     fileList.innerHTML = '';
                     links.forEach(link => {
                         if (link.href.startsWith('http') && !link.href.endsWith('/')) {
-                            const li = document.createElement('li');
                             const fileName = link.textContent;
                             const fileExtension = fileName.split('.').pop().toLowerCase();
                             
-                            const a = document.createElement('a');
-                            a.href = link.href;
-                            a.target = '_blank';
-                            
                             if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                                const li = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.href = link.href;
+                                a.target = '_blank';
+                                
                                 const img = document.createElement('img');
                                 img.src = link.href;
                                 img.alt = fileName;
                                 a.appendChild(img);
-                            } else {
-                                const span = document.createElement('span');
-                                span.textContent = fileName;
-                                span.className = 'file-name';
-                                a.appendChild(span);
+                                
+                                // Add context menu event listener
+                                a.addEventListener('contextmenu', showContextMenu);
+                                
+                                li.appendChild(a);
+                                fileList.appendChild(li);
                             }
-                            
-                            li.appendChild(a);
-                            fileList.appendChild(li);
                         }
                     });
                 })
                 .catch(error => console.error('Error fetching file list:', error));
         }
+
+        function showContextMenu(e) {
+            e.preventDefault();
+            currentTarget = e.target;
+            customContextMenu.style.display = 'block';
+            customContextMenu.style.left = `${e.pageX}px`;
+            customContextMenu.style.top = `${e.pageY}px`;
+        }
+
+        deleteButton.addEventListener('click', () => {
+            if (currentTarget) {
+                const imageUrl = currentTarget.src;
+                fetch(imageUrl, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('File deleted successfully');
+                        fetchFileList(); // Update the gallery dynamically
+                    } else {
+                        console.error('Error deleting file');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            customContextMenu.style.display = 'none';
+        });
+
+        document.addEventListener('click', () => {
+            customContextMenu.style.display = 'none';
+        });
 
         // Initial file list fetch
         fetchFileList();

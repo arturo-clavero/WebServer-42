@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:44:55 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/13 08:37:14 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,13 +334,41 @@ bool  ResponseBuilder::processPostData(HttpRequest& request, std::string& path) 
 
 RequestResponse ResponseBuilder::buildDeleteResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location) {
 	std::cout << "DEBUG: Entering ResponseBuilder::buildDeleteResponse" << std::endl;
-	(void)config;
-	(void)location;
-	(void)request;
+	//check if method is allowed
 	RequestResponse response;
-	response.setStatusCode("200");	
+	if (ResponseUtils::isMethodAllowed(request, location) == false)
+	{
+		std::cout << "DEBUG: Method not allowed" << std::endl;
+		response = buildErrorResponse(config, request, "405", "Method Not Allowed");
+		return response;
+	}
+	//check if file exists
+	std::string path = location.root + request.getPath();
+	if (access(path.c_str(), F_OK) == -1)
+	{
+		std::cout << "DEBUG: File not found" << std::endl;
+		response = buildErrorResponse(config, request, "404", "Not Found");
+		return response;
+	}
+	//check if file is writable and not a directory
+	FileType targetType = ResponseUtils::getTargetType(request);
+	if (access(path.c_str(), W_OK) == -1 || targetType == IS_DIRECTORY)
+	{
+		std::cout << "DEBUG: File not writable" << std::endl;
+		response = buildErrorResponse(config, request, "403", "Forbidden");
+		return response;
+	}
+	//delete file
+	if (remove(path.c_str()) == -1)
+	{
+		std::cout << "DEBUG: Failed to delete file" << std::endl;
+		response = buildErrorResponse(config, request, "500", "Internal Server Error");
+		return response;
+	}
+	//build success response
+	response.setStatusCode("200");
 	response.setStatusMessage("OK");
-	response.setBody("DELETE response");
+	response.setBody("File deleted successfully");
 	response.setContentLength(response.getBody().length());
 	std::cout << "DEBUG: Exiting ResponseBuilder::buildDeleteResponse" << std::endl;
 	
