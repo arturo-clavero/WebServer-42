@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:40:51 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:22:57 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:36:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ public:
 	static bool isRequestValid(const HttpRequest& request);
 	static LocationConfig findLocation(const std::string& path, const ServerConfig& config);
 	static bool isMethodAllowed(const HttpRequest& request, const LocationConfig& location);
-	static std::string buildBodyFromFile(const ServerConfig& config, const std::string& path);
 	static FileType getTargetType(const HttpRequest& request);
 	static std::string getContentType(const std::string& path);	
 	static std::string getContentDisposition(const std::string& path);

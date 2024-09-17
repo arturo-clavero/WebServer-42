@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 22:39:55 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:49:50 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,17 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	//std::cout<<"\nREQUEST:\n"<<request<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
 	std::cout<<"\nhost is ... "<<request.getHost()<<"\n\n";
 	find_match_config(client, server.possible_configs, request.getHost());
-	client.write_buffer = ResponseBuilder::build(request, client.match_config).toString();
+	RequestResponse response = ResponseBuilder::build(request, client.match_config);
+	
+	// THIS IS THE BODY SETTING TAKEN OUT
+	if (!response.getFilePathForBody().empty())
+	{
+		response.buildBodyFromFile(client.match_config, response.getFilePathForBody());
+		response.setContentLength(response.getBody().length());
+	}
+	// END OF BODY SETTING TAKEN OUT
+	
+	client.write_buffer = response.toString();
 	//std::cout<<"\nRESPONSE:\n"<<client.write_buffer<<"'..XXXXXXXXXXXXXXXXXXXX..'\n\n";
 	client.http_done = true;
 }

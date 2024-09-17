@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/16 13:53:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:36:02 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,18 +68,6 @@ FileType ResponseUtils::getTargetType(const HttpRequest& request) {
 	}
 }
 
-std::string ResponseUtils::buildBodyFromFile(const ServerConfig& config, const std::string& path) {
-	(void)config;
-	std::ifstream file(path.c_str());
-	std::string body;
-	if (file.is_open()) {
-		std::string line;
-		while (getline(file, line)) {
-			body += line + "\n";
-		}
-	}
-	return body;
-}
 
 
 std::string ResponseUtils::getContentType(const std::string& path) {

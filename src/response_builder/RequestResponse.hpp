@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:16:47 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:38:45 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define REQUEST_RESPONSE_HPP
 
 #include "includes.hpp"
+#include "../config/ServerConfig.hpp"
+
 
 
 class RequestResponse {
@@ -28,6 +30,7 @@ public:
 	std::string getContentType() const;	
 	std::string getContentDisposition() const;
 	size_t getContentLength() const;
+	std::string getFilePathForBody() const;
 
 	//Setters
 	void setBody(const std::string& body);
@@ -36,11 +39,15 @@ public:
 	void setContentType(const std::string& contentType);
 	void setContentLength(size_t contentLength);
 	void setContentDisposition(const std::string& contentDisposition);
+	void setFilePathForBody(const std::string& file_path_for_body);
+
 	
+	void buildBodyFromFile(const ServerConfig& config, const std::string& path);
     std::string toString() const;
 
 private:
 	std::string body;
+	std::string file_path_for_body;
 	std::string statusCode;
 	std::string statusMessage;
 	std::string contentType;

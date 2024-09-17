@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/13 08:37:14 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:38:25 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,9 +189,8 @@ RequestResponse ResponseBuilder::buildErrorResponse(ServerConfig& config, HttpRe
 		std::cout << "DEBUG: Custom error page found for code: " << code << std::endl;
 		response.setContentType("text/html");
 		std::string path = config.getRoot() + config.getErrorPages().find(code)->second;
-		response.setBody(ResponseUtils::buildBodyFromFile(config, path));
+		response.setFilePathForBody(path);
 	}
-	response.setContentLength((response.getBody().length()));
 	std::cout << "DEBUG: Exiting ResponseBuilder::buildErrorResponse" << std::endl;
 	return response;
 }
@@ -200,11 +199,11 @@ RequestResponse ResponseBuilder::buildSuccessResponse(ServerConfig& config, Http
     std::cout << "DEBUG: Entering ResponseBuilder::buildSuccessResponse" << std::endl;
     (void)location;
     (void)request;
+	(void)config;
     RequestResponse response;
     response.setStatusCode("200");
     response.setStatusMessage("OK");
-    response.setBody(ResponseUtils::buildBodyFromFile(config, path));
-    response.setContentLength(response.getBody().length());
+	response.setFilePathForBody(path);
     
     // Set content type based on file extension
     std::string contentType = ResponseUtils::getContentType(path);

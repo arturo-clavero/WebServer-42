@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/09 14:43:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/17 09:49:16 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ std::string RequestResponse::getStatusMessage() const { return this->statusMessa
 std::string RequestResponse::getContentType() const { return this->contentType; }
 size_t RequestResponse::getContentLength() const { return this->contentLength; }
 std::string RequestResponse::getContentDisposition() const { return this->contentDisposition; }
+std::string RequestResponse::getFilePathForBody() const { return this->file_path_for_body; }
 
 void RequestResponse::setBody(const std::string& body) { this->body = body; }
 void RequestResponse::setStatusCode(const std::string& statusCode) { this->statusCode = statusCode; }
@@ -31,6 +32,7 @@ void RequestResponse::setStatusMessage(const std::string& statusMessage) { this-
 void RequestResponse::setContentType(const std::string& contentType) { this->contentType = contentType; }
 void RequestResponse::setContentLength(size_t contentLength) { this->contentLength = contentLength; }
 void RequestResponse::setContentDisposition(const std::string& contentDisposition) { this->contentDisposition = contentDisposition; }
+void RequestResponse::setFilePathForBody(const std::string& file_path_for_body) { this->file_path_for_body = file_path_for_body; }
 
 std::string RequestResponse::toString() const {
 	std::string response;	
@@ -48,6 +50,20 @@ std::string RequestResponse::toString() const {
 	response += this->body;
 	return response;
 }
+
+void RequestResponse::buildBodyFromFile(const ServerConfig& config, const std::string& path) {
+	(void)config;
+	std::ifstream file(path.c_str());
+	if (file.is_open()) {
+		std::string line;
+		while (getline(file, line)) {
+			this->body += line + "\n";
+		}
+	}
+}
+
+
+
 
 std::ostream& operator<<(std::ostream& os, const RequestResponse& requestResponse) {
 	//prints everything but the body
