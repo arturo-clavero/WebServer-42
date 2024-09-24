@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 19:23:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:39:19 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ public:
 	void setContentLengthFromPath(const std::string& path);
 
 	
-	void buildBodyFromFile(const ServerConfig& config, const std::string& path);
+	bool buildBodyFromFile(const ServerConfig& config, int file_fd);
     std::string toString() const;
 
 private:

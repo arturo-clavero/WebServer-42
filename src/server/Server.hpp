@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/12 11:21:26 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:39:37 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include "request_parser/HttpRequest.hpp"
 #include "request_parser/RequestParser.hpp"
 #include "response_builder/ResponseBuilder.hpp"
-# define READ_BUFFER_SIZE 1024
-# define WRITE_BUFFER_SIZE 1024
 
 
 struct	clientSocket{
@@ -28,8 +26,9 @@ struct	clientSocket{
 	ServerConfig	match_config; //we match a config based on request *server_name
 	std::string		read_buffer, write_buffer; //buffer for receive and send, will be initialized to null
 	int				write_offset; //offset to see how much we have read or written (for incomplete operations)
-	bool			read_complete; //bool to see if reading/writing is done
-	bool			wants_to_disconnect, http_done;
+	bool			read_done, http_done, file_done; //bool to see if reading/writing is done
+	int				file_fd;
+	RequestResponse response;
 	int				read_operations, write_operations; //will be initialzed to 0 for every client loop, to track that we are not exceeding one operation
 };
 
@@ -60,6 +59,7 @@ class Server {
 		void	process_client_connection(struct clientSocket &client, struct serverSocket &socket, int j);
 		void	read_request(struct clientSocket &client, struct serverSocket &server, int j);
 		void	find_match_config(struct clientSocket &client, std::vector<ServerConfig> &possible_configs, const std::string host);
+		void	manage_files(struct clientSocket &client, struct serverSocket &server, int j);
 		void	write_response(struct clientSocket &client, struct serverSocket &server, int j);
 		void	init_http_process(struct clientSocket &client, struct serverSocket &server);
 		void	init_sets_for_select();

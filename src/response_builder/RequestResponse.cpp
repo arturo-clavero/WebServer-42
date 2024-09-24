@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 19:24:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:34:32 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,20 @@ void RequestResponse::setContentLengthFromPath(const std::string& path) {
 	}
 }
 
-void RequestResponse::buildBodyFromFile(const ServerConfig& config, const std::string& path) {
+bool RequestResponse::buildBodyFromFile(const ServerConfig& config, int file_fd) {
 	(void)config;
-	std::ifstream file(path.c_str());
-	if (file.is_open()) {
-		std::cout << "File opened successfully: " << path << std::endl;
-		std::string line;
-		int line_number = 0;
-		while (getline(file, line)) {
-			this->body += line + "\n";
-			line_number++;
-			std::cout << "Read line number: " << line_number << std::endl;
-		}
-		std::cout << "Finished reading file. Total body length: " << this->body.length() << std::endl;
-	} else {
-		std::cerr << "Failed to open file: " << path << std::endl;
+	std::string	buff(READ_BUFFER_SIZE, 0);
+	int bytes = read(file_fd, &buff[0], READ_BUFFER_SIZE);
+	for (int i = 0; i < bytes; i++)
+		this->body += buff[i];
+//	if (bytes < 0)
+//		what to do heere?
+	if (bytes < READ_BUFFER_SIZE)
+	{
+		//READING COMPLETE
+		return true;		
 	}
+	return false;
 }
 
 
