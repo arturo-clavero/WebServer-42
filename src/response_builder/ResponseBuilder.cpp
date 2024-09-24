@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/17 09:38:25 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 18:45:17 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,12 @@ RequestResponse ResponseBuilder::build(HttpRequest& request, ServerConfig& confi
 	std::cout << "DEBUG: Entering ResponseBuilder::build" << std::endl;
 	
 	RequestResponse response;
-	//check if request is valid
+	if (ResponseUtils::isRequestTooLarge(request, config.getClientMaxBodySize()) == true)
+	{
+		std::cout << "DEBUG: Request is too large" << std::endl;
+		response = buildErrorResponse(config, request, "413", "Request Entity Too Large");
+		return response;
+	}
 	if (ResponseUtils::isRequestValid(request) == false)
 	{
 		std::cout << "DEBUG: Request is not valid" << std::endl;

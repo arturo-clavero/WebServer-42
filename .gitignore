@@ -33,3 +33,6 @@ deps/
 
 # Ignore any backup files
 *.bak
+
+
+www/images/large_file.jpg

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/17 09:36:02 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 18:46:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 
 
 ResponseUtils::ResponseUtils() {
+}
+
+bool ResponseUtils::isRequestTooLarge(const HttpRequest& request, const size_t& clientMaxBodySize) {
+	if (request.getBody().size() > clientMaxBodySize) {
+		return true;
+	}
+	return false;
 }
 
 bool ResponseUtils::isRequestValid(const HttpRequest& request) {

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/17 09:49:16 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:57:29 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,17 @@ void RequestResponse::buildBodyFromFile(const ServerConfig& config, const std::s
 	(void)config;
 	std::ifstream file(path.c_str());
 	if (file.is_open()) {
+		std::cout << "File opened successfully: " << path << std::endl;
 		std::string line;
+		int line_number = 0;
 		while (getline(file, line)) {
 			this->body += line + "\n";
+			line_number++;
+			std::cout << "Read line number: " << line_number << std::endl;
 		}
+		std::cout << "Finished reading file. Total body length: " << this->body.length() << std::endl;
+	} else {
+		std::cerr << "Failed to open file: " << path << std::endl;
 	}
 }
 
