@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/17 09:49:50 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:22:17 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,6 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	if (!response.getFilePathForBody().empty())
 	{
 		response.buildBodyFromFile(client.match_config, response.getFilePathForBody());
-		response.setContentLength(response.getBody().length());
 	}
 	// END OF BODY SETTING TAKEN OUT
 	

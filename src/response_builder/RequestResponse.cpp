@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 17:57:29 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:24:01 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,15 @@ std::string RequestResponse::toString() const {
 	response += "\r\n";
 	response += this->body;
 	return response;
+}
+
+void RequestResponse::setContentLengthFromPath(const std::string& path) {
+	std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
+	if (file.is_open()) {
+		file.seekg(0, std::ios::end);
+		this->contentLength = file.tellg();
+		file.close();
+	}
 }
 
 void RequestResponse::buildBodyFromFile(const ServerConfig& config, const std::string& path) {

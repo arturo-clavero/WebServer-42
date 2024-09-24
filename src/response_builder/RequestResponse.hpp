@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/17 09:38:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:23:43 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ public:
 	void setContentLength(size_t contentLength);
 	void setContentDisposition(const std::string& contentDisposition);
 	void setFilePathForBody(const std::string& file_path_for_body);
+	void setContentLengthFromPath(const std::string& path);
 
 	
 	void buildBodyFromFile(const ServerConfig& config, const std::string& path);

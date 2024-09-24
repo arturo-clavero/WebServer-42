@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 18:45:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:23:26 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ RequestResponse ResponseBuilder::buildErrorResponse(ServerConfig& config, HttpRe
 		response.setContentType("text/html");
 		std::string path = config.getRoot() + config.getErrorPages().find(code)->second;
 		response.setFilePathForBody(path);
+		response.setContentLengthFromPath(path);
 	}
 	std::cout << "DEBUG: Exiting ResponseBuilder::buildErrorResponse" << std::endl;
 	return response;
@@ -209,6 +210,10 @@ RequestResponse ResponseBuilder::buildSuccessResponse(ServerConfig& config, Http
     response.setStatusCode("200");
     response.setStatusMessage("OK");
 	response.setFilePathForBody(path);
+	response.setContentLengthFromPath(path);
+
+	
+
     
     // Set content type based on file extension
     std::string contentType = ResponseUtils::getContentType(path);
