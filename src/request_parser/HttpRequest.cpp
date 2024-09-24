@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 05:14:52 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 06:03:02 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ std::string HttpRequest::getBody() const { return body_; }
 std::string HttpRequest::getHost() const { return host_; } //for network version 1
 const std::vector<std::string> HttpRequest::getPostFileContents() const {return postFileContents_; }
 const std::vector<int> HttpRequest::getPostFileFds() const {return postFileFds_; }
+std::string HttpRequest::getCgiPath() const { return cgiPath_; }
 
 std::string HttpRequest::getHeader(const std::string& key) const {
     std::map<std::string, std::string>::const_iterator it = headers_.find(key);
@@ -60,7 +61,7 @@ void HttpRequest::setBody(const std::string& body) { body_ = body; }
 void HttpRequest::setHost(const std::string& host) { host_ = host; } //for network version 1
 void HttpRequest::addPostFileContent(const std::string & content) {postFileContents_.push_back(content);}
 void HttpRequest::addPostFileFd(int fd) {postFileFds_.push_back(fd);}
-
+void HttpRequest::setCgiPath(const std::string &cgiPath) { cgiPath_ = cgiPath; }
 void HttpRequest::addHeader(const std::string& key, const std::string& value) {
     if (!key.empty()) {
         headers_[key] = value;
