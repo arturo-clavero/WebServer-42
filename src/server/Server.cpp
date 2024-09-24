@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/24 22:40:24 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:56:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,24 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 		if (body_done == false)
 			return ;
 	}
+	if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
+	{
+		if (client.write_operations > 0)
+			return ;
+		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
+		if (bytes < 0)
+			return ; //some error saving teh file what to do here?
+		client.write_operations++;
+		client.write_offset += bytes;
+		if (client.write_offset < static_cast<int>(client.response.getPostFileContents().back().size()))
+			return ;
+		client.write_offset = 0;
+		close(client.response.getPostFileFds().back());
+		client.response.popBackPostFileFds();
+		client.response.popBackPostFileContents();
+		if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
+			return ;
+	}
 	client.write_buffer = client.response.toString();
 	client.file_done = true;
 }
@@ -196,8 +214,6 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	if (!client.response.getFilePathForBody().empty())
 	{
 		client.file_fd = open(client.response.getFilePathForBody().c_str(), O_RDONLY);
-		//if (client.file_fd == -1)
-		//	what to do ?
 	}	
 	client.http_done = true;
 }

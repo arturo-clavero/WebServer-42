@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 10:48:54 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:14:42 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ public:
     std::string getHeader(const std::string& key) const;
 	std::string getHost() const; //for network version 1
     const std::map<std::string, std::string>& getHeaders() const;
+	const std::vector<std::string> getPostFileContents() const ;
+	const std::vector<int> getPostFileFds() const;
 
     void setMethod(const std::string& method);
     void setPath(const std::string& path);
@@ -36,7 +38,8 @@ public:
     void setBody(const std::string& body);
     void addHeader(const std::string& key, const std::string& value);
 	void setHost(const std::string & host); //for network version 1
-
+	void addPostFileContent(const std::string & content);
+	void addPostFileFd(int fd);
     bool hasHeader(const std::string& key) const;
     void printHeaders() const;
 
@@ -47,6 +50,8 @@ private:
     std::map<std::string, std::string> headers_;
     std::string body_;
 	std::string host_; //for network version 1
+	std::vector<std::string> postFileContents_;
+	std::vector<int> postFileFds_;
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);

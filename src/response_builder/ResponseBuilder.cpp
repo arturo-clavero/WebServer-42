@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 19:23:26 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:28:31 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,11 +268,6 @@ RequestResponse ResponseBuilder::buildAutoindexResponse(ServerConfig& config, Ht
 }
 
 
-
-
-
-
-
 RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location) {
     std::cout << "DEBUG: Entering ResponseBuilder::buildPostResponse" << std::endl;
     
@@ -299,12 +294,15 @@ RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpReq
         response = buildErrorResponse(config, request, "500", "Internal Server Error");
         return response;
     }
-
     // Build success response
     std::cout << "DEBUG: Building success response for POST" << std::endl;
     response = buildPostSuccessResponse(config, request, location);
-
-    std::cout << "DEBUG: Exiting ResponseBuilder::buildPostResponse" << std::endl;
+	if (!request.getPostFileContents().empty() && !request.getPostFileFds().empty())
+	{
+		response.setPostFileContents(request.getPostFileContents());
+		response.setPostFileFds(request.getPostFileFds());
+	}
+	std::cout << "DEBUG: Exiting ResponseBuilder::buildPostResponse" << std::endl;
     return response;
 }
 
@@ -334,7 +332,7 @@ bool  ResponseBuilder::processPostData(HttpRequest& request, std::string& path) 
 	for (std::vector<PostRequestBodyPart>::iterator it = bodyParts.begin(); it != bodyParts.end(); ++it)
 	{
 		if (it->getFilename().empty() == false)
-			if (ResponseUtils::saveFile(path, it->getFilename(), it->getContent()) == false)
+			if (ResponseUtils::openFiles(path, it->getFilename(), it->getContent(), request) == false)
 				return false;
 	}
 	std::cout << "DEBUG: Exiting ResponseBuilder::processPostData" << std::endl;

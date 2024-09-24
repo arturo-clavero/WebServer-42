@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 18:46:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:15:49 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,10 @@ std::string ResponseUtils::getContentType(const std::string& path) {
     return "application/octet-stream";
 }
 
-bool ResponseUtils::saveFile(const std::string& folderPath, const std::string& filename, const std::string& content) {
+bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& filename, const std::string& content, HttpRequest &request) {
     // Construct the full path
+	(void)request;
+	(void)content;
     std::cout << "DEBUG: Saving file to: " << folderPath << std::endl;
     std::string fullPath = folderPath;
     if (fullPath[fullPath.length() - 1] != '/') {
@@ -122,19 +124,10 @@ bool ResponseUtils::saveFile(const std::string& folderPath, const std::string& f
     fullPath += filename;
     
     // Open an output file stream
-    std::ofstream file(fullPath.c_str(), std::ios::out | std::ios::binary);
-    
-    if (file.is_open()) {
-        // Write the contents to the file
-        file << content;
-        
-        // Close the file stream
-        file.close();
-        
-        std::cout << "File saved successfully at: " << fullPath << std::endl;
-    } else {
-        std::cerr << "Unable to open file for writing." << std::endl;
+	int fd = open(fullPath.c_str(), O_RDONLY);
+	if (fd < 0)
 		return false;
-    }
+	request.addPostFileFd(fd);
+	request.addPostFileContent(content);
     return true;
 }

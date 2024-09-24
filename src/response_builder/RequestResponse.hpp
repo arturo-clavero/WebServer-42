@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 22:39:19 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:48:55 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ public:
 	std::string getContentDisposition() const;
 	size_t getContentLength() const;
 	std::string getFilePathForBody() const;
-
+	const std::vector<int> getPostFileFds() const;
+	const std::vector<std::string> getPostFileContents() const;
 	//Setters
 	void setBody(const std::string& body);
 	void setStatusCode(const std::string& statusCode);
@@ -41,8 +42,12 @@ public:
 	void setContentDisposition(const std::string& contentDisposition);
 	void setFilePathForBody(const std::string& file_path_for_body);
 	void setContentLengthFromPath(const std::string& path);
-
+	void setPostFileContents(const std::vector<std::string> & contents);
+	void setPostFileFds(const std::vector<int> & fds);
 	
+	void popBackPostFileContents();
+	void popBackPostFileFds();
+
 	bool buildBodyFromFile(const ServerConfig& config, int file_fd);
     std::string toString() const;
 
@@ -54,6 +59,8 @@ private:
 	std::string contentType;
 	std::string contentDisposition;
 	size_t contentLength;
+	std::vector<std::string> postFileContents;
+	std::vector<int> postFileFds;
 
 };
 

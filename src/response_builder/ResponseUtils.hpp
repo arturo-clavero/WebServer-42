@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:40:51 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 18:45:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 04:58:57 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ public:
 	static FileType getTargetType(const HttpRequest& request);
 	static std::string getContentType(const std::string& path);	
 	static std::string getContentDisposition(const std::string& path);
-	static bool saveFile(const std::string& path, const std::string& filename, const std::string& content);
+	static bool openFiles(const std::string& path, const std::string& filename, const std::string& content, HttpRequest &request);
 	
 private:
     ResponseUtils();

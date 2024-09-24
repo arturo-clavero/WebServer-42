@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 22:34:32 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 05:49:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ std::string RequestResponse::getContentType() const { return this->contentType; 
 size_t RequestResponse::getContentLength() const { return this->contentLength; }
 std::string RequestResponse::getContentDisposition() const { return this->contentDisposition; }
 std::string RequestResponse::getFilePathForBody() const { return this->file_path_for_body; }
+const std::vector<int> RequestResponse::getPostFileFds() const { return postFileFds; }
+const std::vector<std::string> RequestResponse::getPostFileContents() const { return postFileContents;}
+
 
 void RequestResponse::setBody(const std::string& body) { this->body = body; }
 void RequestResponse::setStatusCode(const std::string& statusCode) { this->statusCode = statusCode; }
@@ -33,6 +36,11 @@ void RequestResponse::setContentType(const std::string& contentType) { this->con
 void RequestResponse::setContentLength(size_t contentLength) { this->contentLength = contentLength; }
 void RequestResponse::setContentDisposition(const std::string& contentDisposition) { this->contentDisposition = contentDisposition; }
 void RequestResponse::setFilePathForBody(const std::string& file_path_for_body) { this->file_path_for_body = file_path_for_body; }
+void RequestResponse::setPostFileContents(const std::vector<std::string> & contents) {postFileContents = contents; }
+void RequestResponse::setPostFileFds(const std::vector<int> & fds) {postFileFds = fds;}
+	
+void RequestResponse::popBackPostFileContents() {postFileContents.pop_back();}
+void RequestResponse::popBackPostFileFds() {postFileFds.pop_back();}
 
 std::string RequestResponse::toString() const {
 	std::string response;	
