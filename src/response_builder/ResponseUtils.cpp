@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 12:34:37 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:01:12 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,15 +146,12 @@ bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& 
     // Construct the full path
 	(void)request;
 	(void)content;
-    std::cout << "DEBUG: Saving file to: " << folderPath << std::endl;
-    std::string fullPath = folderPath;
     if (fullPath[fullPath.length() - 1] != '/') {
         fullPath += '/';
     }
     fullPath += filename;
-    
     // Open an output file stream
-	int fd = open(fullPath.c_str(), O_RDONLY);
+	int fd = open(fullPath.c_str(), O_WRONLY | O_CREAT | O_APPEND);
 	if (fd < 0)
 		return false;
 	request.addPostFileFd(fd);
