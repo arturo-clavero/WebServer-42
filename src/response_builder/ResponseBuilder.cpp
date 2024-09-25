@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 05:28:31 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:44:48 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,13 @@ RequestResponse ResponseBuilder::build(HttpRequest& request, ServerConfig& confi
 		std::cout << "DEBUG: Request is not valid" << std::endl;
 		//if request is not valid, build error response
 		response = buildErrorResponse(config, request, "400", "Bad Request");
+		return response;
+	}
+	//if CGI request, build CGI response
+	if (ResponseUtils::isCGIRequest(config, request) == true)
+	{
+		std::cout << "DEBUG: Request is a CGI request" << std::endl;
+		response = buildCGIResponse(config, request);
 		return response;
 	}
 	//find location
@@ -380,4 +387,87 @@ RequestResponse ResponseBuilder::buildDeleteResponse(ServerConfig& config, HttpR
 	std::cout << "DEBUG: Exiting ResponseBuilder::buildDeleteResponse" << std::endl;
 	
 	return response;
+}
+
+RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequest& request) {
+    std::cout << "DEBUG: Entering ResponseBuilder::buildCGIResponse" << std::endl;
+    
+    const CGIConfig& cgiConfig = config.getCgi();
+    std::string requestPath = request.getPath();
+    std::string fullPath = cgiConfig.root + requestPath;
+
+    std::cout << "DEBUG: CGI Config - Root: " << cgiConfig.root << ", Path: " << cgiConfig.path << ", Extension: " << cgiConfig.ext << std::endl;
+    std::cout << "DEBUG: Request Path: " << requestPath << std::endl;
+    std::cout << "DEBUG: Full Path: " << fullPath << std::endl;
+
+    // Check if the file exists
+    if (access(fullPath.c_str(), F_OK) == -1) {
+        std::cout << "DEBUG: CGI file not found at path: " << fullPath << std::endl;
+        return buildErrorResponse(config, request, "404", "Not Found");
+    }
+
+    // Check if the file has the correct extension
+    size_t dotPos = fullPath.find_last_of('.');
+    if (dotPos == std::string::npos || fullPath.substr(dotPos) != cgiConfig.ext) {
+        std::cout << "DEBUG: Invalid CGI file extension. Expected: " << cgiConfig.ext << ", Found: " << (dotPos != std::string::npos ? fullPath.substr(dotPos) : "no extension") << std::endl;
+        return buildErrorResponse(config, request, "404", "Not Found");
+    }
+
+    int pipefd[2];
+    if (pipe(pipefd) == -1) {
+        std::cerr << "ERROR: Failed to create pipe. Errno: " << errno << " - " << strerror(errno) << std::endl;
+        return buildErrorResponse(config, request, "500", "Internal Server Error");
+    }
+
+    std::cout << "DEBUG: Forking process to execute CGI" << std::endl;
+    pid_t pid = fork();
+    if (pid == -1) {
+        std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
+        close(pipefd[0]);
+        close(pipefd[1]);
+        return buildErrorResponse(config, request, "500", "Internal Server Error");
+    } else if (pid == 0) {
+        // Child process
+        std::cout << "DEBUG: Child process. Executing CGI script" << std::endl;
+        close(pipefd[0]);  // Close read end of the pipe
+        dup2(pipefd[1], STDOUT_FILENO);  // Redirect stdout to the pipe
+        close(pipefd[1]);
+
+        char* args[] = {const_cast<char*>(cgiConfig.path.c_str()), const_cast<char*>(fullPath.c_str()), NULL};
+        execv(cgiConfig.path.c_str(), args);
+        // If execv returns, it must have failed
+        std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
+        exit(1);
+    } else {
+        // Parent process
+        std::cout << "DEBUG: Parent process. Waiting for child to complete" << std::endl;
+        close(pipefd[1]);  // Close write end of the pipe
+
+        std::string cgiOutput;
+        char buffer[4096];
+        ssize_t bytesRead;
+        while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
+            cgiOutput.append(buffer, bytesRead);
+        }
+        close(pipefd[0]);
+
+        int status;
+        waitpid(pid, &status, 0);
+
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+            std::cout << "DEBUG: CGI program executed successfully" << std::endl;
+            std::cout << "DEBUG: CGI Output size: " << cgiOutput.length() << " bytes" << std::endl;
+
+            RequestResponse response;
+            response.setCgiContent(cgiOutput);
+            std::cout << "DEBUG: CGI Output: " << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
+            std::cout << cgiOutput << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
+            return response;
+        } else {
+            std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
+            return buildErrorResponse(config, request, "500", "Internal Server Error");
+        }
+    }
 }

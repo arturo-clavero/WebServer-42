@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigParser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 11:16:45 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:07:18 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,11 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
     std::string line;
     bool inServer = false;
     bool inLocation = false;
+    bool inCGI = false;
     LocationConfig currentLocation;
+    CGIConfig currentCGI;
     int braceCount = 0;
+	currentServer.setClientMaxBodySize(-1);
 
     while (std::getline(file, line)) {
         std::istringstream iss(line);
@@ -40,18 +43,33 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                 braceCount = 1;
             } else if (key == "location" && inServer) {
                 if (inLocation) {
-                    currentServer.getLocations().push_back(currentLocation);
+                    if (!inCGI) {
+                        currentServer.getLocations().push_back(currentLocation);
+                    }
                 }
                 inLocation = true;
-                currentLocation = LocationConfig();
-                iss >> currentLocation.path >> value; // Read path and opening brace
+                iss >> value;
+                if (value == "/cgi-bin") {
+                    inCGI = true;
+                    currentCGI = CGIConfig();
+                } else {
+                    inCGI = false;
+                    currentLocation = LocationConfig();
+                    currentLocation.path = value;
+                }
+                iss >> value; // Read opening brace
                 braceCount++;
             } else if (key == "{") {
                 braceCount++;
             } else if (key == "}") {
                 braceCount--;
                 if (braceCount == 1 && inLocation) {
-                    currentServer.getLocations().push_back(currentLocation);
+                    if (inCGI) {
+                        currentServer.setCgi(currentCGI);
+                        inCGI = false;
+                    } else {
+                        currentServer.getLocations().push_back(currentLocation);
+                    }
                     inLocation = false;
                 } else if (braceCount == 0) {
                     servers.push_back(currentServer);
@@ -60,22 +78,33 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                 }
             } else if (inServer) {
                 if (inLocation) {
-                    // Parse location-specific configurations
-                    if (key == "allow_methods") {
-                        std::string method;
-                        while (iss >> method) {
-                            currentLocation.allowMethods.push_back(method);
+                    if (inCGI) {
+                        // Parse CGI-specific configurations
+                        if (key == "root") {
+                            iss >> currentCGI.root;
+                        } else if (key == "cgi_path") {
+                            iss >> currentCGI.path;
+                        } else if (key == "cgi_ext") {
+                            iss >> currentCGI.ext;
                         }
-                    } else if (key == "autoindex") {
-                        std::string value;
-                        iss >> value;
-                        currentLocation.autoindex = (value == "on");
-                    } else if (key == "root") {
-                        iss >> currentLocation.root;
-                    } else if (key == "index") {
-                        iss >> currentLocation.index;
-                    } else if (key == "directory_listing") {
-                        // Handle directory_listing if needed
+                    } else {
+                        // Parse location-specific configurations
+                        if (key == "allow_methods") {
+                            std::string method;
+                            while (iss >> method) {
+                                currentLocation.allowMethods.push_back(method);
+                            }
+                        } else if (key == "autoindex") {
+                            std::string value;
+                            iss >> value;
+                            currentLocation.autoindex = (value == "on");
+                        } else if (key == "root") {
+                            iss >> currentLocation.root;
+                        } else if (key == "index") {
+                            iss >> currentLocation.index;
+                        } else if (key == "directory_listing") {
+                            // Handle directory_listing if needed
+                        }
                     }
                 } else {
                     // Handle server-level configurations

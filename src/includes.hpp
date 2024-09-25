@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/24 22:39:43 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:22:31 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 #include <netinet/tcp.h> // For TCP_KEEPIDLE
 #include <list>
 #include <signal.h>
+#include <sys/wait.h>
 
 # define READ_BUFFER_SIZE 1024
 # define WRITE_BUFFER_SIZE 1024

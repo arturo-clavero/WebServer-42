@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 05:49:44 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:37:20 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ std::string RequestResponse::getContentDisposition() const { return this->conten
 std::string RequestResponse::getFilePathForBody() const { return this->file_path_for_body; }
 const std::vector<int> RequestResponse::getPostFileFds() const { return postFileFds; }
 const std::vector<std::string> RequestResponse::getPostFileContents() const { return postFileContents;}
+std::string RequestResponse::getCgiContent() const { return this->cgiContent; }
 
 
 void RequestResponse::setBody(const std::string& body) { this->body = body; }
@@ -38,12 +39,18 @@ void RequestResponse::setContentDisposition(const std::string& contentDispositio
 void RequestResponse::setFilePathForBody(const std::string& file_path_for_body) { this->file_path_for_body = file_path_for_body; }
 void RequestResponse::setPostFileContents(const std::vector<std::string> & contents) {postFileContents = contents; }
 void RequestResponse::setPostFileFds(const std::vector<int> & fds) {postFileFds = fds;}
+void RequestResponse::setCgiContent(const std::string& cgiContent) {this->cgiContent = cgiContent;}
 	
 void RequestResponse::popBackPostFileContents() {postFileContents.pop_back();}
 void RequestResponse::popBackPostFileFds() {postFileFds.pop_back();}
 
 std::string RequestResponse::toString() const {
-	std::string response;	
+	
+	if (!this->cgiContent.empty())
+		return this->cgiContent;
+		
+	std::string response;
+
 	response += "HTTP/1.1 " + this->statusCode + " " + this->statusMessage + "\r\n";
 	response += "Content-Type: " + this->contentType + "\r\n";
 	

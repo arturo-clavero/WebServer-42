@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:40:51 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 04:58:57 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:10:42 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ class ResponseUtils {
 public:
 	static bool isRequestValid(const HttpRequest& request);
 	static bool isRequestTooLarge(const HttpRequest& request, const size_t& clientMaxBodySize);
+	static bool isCGIRequest(const ServerConfig& config, const HttpRequest& request);
 	static LocationConfig findLocation(const std::string& path, const ServerConfig& config);
 	static bool isMethodAllowed(const HttpRequest& request, const LocationConfig& location);
 	static FileType getTargetType(const HttpRequest& request);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:25:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:13:12 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ public:
 	static RequestResponse buildErrorResponse(ServerConfig& config, HttpRequest& request, const std::string& code, const std::string& message);
 	static RequestResponse buildSuccessResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location, std::string& path);
 	static RequestResponse buildAutoindexResponse(ServerConfig& config, HttpRequest& request, LocationConfig& location, std::string& path);
+
+	static RequestResponse buildCGIResponse(ServerConfig& config, HttpRequest& request);
 
 
 private:

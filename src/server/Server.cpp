@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/25 05:56:44 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:26:41 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	HttpRequest request = RequestParser::parse(client.read_buffer);
 	find_match_config(client, server.possible_configs, request.getHost());
 	client.response = ResponseBuilder::build(request, client.match_config);
+	std::cout << "DEBUG: Response built" << std::endl;
 	// OPEN GET FILES
 	if (!client.response.getFilePathForBody().empty())
 	{

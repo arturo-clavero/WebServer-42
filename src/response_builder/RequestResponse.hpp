@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 05:48:55 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:15:22 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ public:
 	std::string getFilePathForBody() const;
 	const std::vector<int> getPostFileFds() const;
 	const std::vector<std::string> getPostFileContents() const;
+	std::string getCgiContent() const;
 	//Setters
 	void setBody(const std::string& body);
 	void setStatusCode(const std::string& statusCode);
@@ -44,6 +45,7 @@ public:
 	void setContentLengthFromPath(const std::string& path);
 	void setPostFileContents(const std::vector<std::string> & contents);
 	void setPostFileFds(const std::vector<int> & fds);
+	void setCgiContent(const std::string& cgiContent);
 	
 	void popBackPostFileContents();
 	void popBackPostFileFds();
@@ -61,6 +63,8 @@ private:
 	size_t contentLength;
 	std::vector<std::string> postFileContents;
 	std::vector<int> postFileFds;
+
+	std::string cgiContent;
 
 };
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 05:15:49 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:34:37 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ ResponseUtils::ResponseUtils() {
 }
 
 bool ResponseUtils::isRequestTooLarge(const HttpRequest& request, const size_t& clientMaxBodySize) {
-	if (request.getBody().size() > clientMaxBodySize) {
+	if (clientMaxBodySize > 0 && request.getBody().size() > clientMaxBodySize) {
 		return true;
 	}
 	return false;
@@ -28,6 +28,36 @@ bool ResponseUtils::isRequestValid(const HttpRequest& request) {
 		return false;
 	}
 	return true;
+}
+bool ResponseUtils::isCGIRequest(const ServerConfig& config, const HttpRequest& request) {
+    std::cout << "DEBUG: Entering isCGIRequest" << std::endl;
+    const CGIConfig& cgiConfig = config.getCgi();
+    if (cgiConfig.root.empty()) {
+        std::cout << "DEBUG: CGI root is empty, not a CGI request" << std::endl;
+        return false;
+    }
+    
+    std::string requestPath = request.getPath();
+    std::cout << "DEBUG: Request path: " << requestPath << std::endl;
+    std::cout << "DEBUG: CGI root: " << cgiConfig.root << std::endl;
+    
+    if (requestPath.compare(0, 8, "/cgi-bin") == 0) {
+        std::cout << "DEBUG: Request path starts with /cgi-bin" << std::endl;
+        
+        // Check if the file has the correct extension
+        size_t dotPos = requestPath.find_last_of('.');
+        if (dotPos != std::string::npos) {
+            std::string extension = requestPath.substr(dotPos);
+            std::cout << "DEBUG: File extension: " << extension << std::endl;
+            if (extension == cgiConfig.ext) {
+                std::cout << "DEBUG: CGI request detected" << std::endl;
+                return true;
+            }
+        }
+    }
+    
+    std::cout << "DEBUG: Not a CGI request" << std::endl;
+    return false;
 }
 
 bool ResponseUtils::isMethodAllowed(const HttpRequest& request, const LocationConfig& location) {
