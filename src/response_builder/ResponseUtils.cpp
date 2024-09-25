@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 14:01:12 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:25:12 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,7 @@ bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& 
     // Construct the full path
 	(void)request;
 	(void)content;
+	std::string fullPath = folderPath;
     if (fullPath[fullPath.length() - 1] != '/') {
         fullPath += '/';
     }
