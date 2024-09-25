@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 15:00:48 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:36:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -416,6 +416,11 @@ RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequ
         std::cout << "DEBUG: Invalid CGI file extension. Expected: " << cgiConfig.ext << ", Found: " << (dotPos != std::string::npos ? fullPath.substr(dotPos) : "no extension") << std::endl;
         return buildErrorResponse(config, request, "404", "Not Found");
     }
+	RequestResponse response;
+
+	response.setCgiPath(fullPath);
+	
+	return response;
 
     int pipefd[2];
     if (pipe(pipefd) == -1) {
@@ -424,6 +429,7 @@ RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequ
     }
 
     std::cout << "DEBUG: Forking process to execute CGI" << std::endl;
+	//we stop, just return
     pid_t pid = fork();
     if (pid == -1) {
         std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
@@ -463,7 +469,6 @@ RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequ
             std::cout << "DEBUG: CGI Output size: " << cgiOutput.length() << " bytes" << std::endl;
 
             RequestResponse response;
-            response.setCgiContent(cgiOutput);
             std::cout << "DEBUG: CGI Output: " << std::endl;
             std::cout << "----------------------------------------" << std::endl;
             std::cout << cgiOutput << std::endl;

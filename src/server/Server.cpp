@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/25 15:52:22 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:22:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,8 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 	{
 		if (client.write_operations > 0)
 			return ;
-		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
+		std::cout<<"writing file\n";
+		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], 1);
 		//std::cout << "DEBUG: bytes written: " << bytes << std::endl;
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
