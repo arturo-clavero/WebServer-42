@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 11:44:33 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 15:49:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,14 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
             }
         }
     }
-
+	std::cout << "DEBUG: Headers parsed" << std::endl;
     // Parse body (if present)
     std::string body;
     while (std::getline(iss, line)) {
         body += line + "\n";
     }
     request.setBody(body);
-
+	std::cout << "DEBUG: Request parsed"  << std::endl;
     return request;
 }
 

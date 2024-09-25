@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequestBodyPart.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 22:07:49 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:27:41 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:05:07 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ public:
     void setFilename(const std::string& filename);
     void setContentType(const std::string& content_type);
     void setContent(const std::string& content);
+
+    void appendContent(const std::string& content);
 
 private:
     std::string name_;

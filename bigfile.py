@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import sys
 
 def generate_random_string(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
@@ -20,6 +21,10 @@ def generate_large_file(filename, size_in_gb):
     print(f"Actual size: {actual_size / (1024**3):.2f} GB")
 
 if __name__ == "__main__":
-    filename = "large_file.txt"
-    size_in_gb = 5
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <size_in_gb>")
+        sys.exit(1)
+    
+    size_in_gb = int(sys.argv[1])
+    filename = f"large_file_{size_in_gb}GB.txt"
     generate_large_file(filename, size_in_gb)

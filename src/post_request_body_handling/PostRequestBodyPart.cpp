@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequestBodyPart.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 22:13:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/12 22:13:47 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:05:19 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,3 +24,6 @@ void PostRequestBodyPart::setFilename(const std::string& filename) { filename_ =
 void PostRequestBodyPart::setContentType(const std::string& content_type) { content_type_ = content_type; }
 void PostRequestBodyPart::setContent(const std::string& content) { content_ = content; }
 
+void PostRequestBodyPart::appendContent(const std::string& content) {
+	content_ += content;
+}

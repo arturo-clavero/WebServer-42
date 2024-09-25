@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/25 14:01:00 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 15:52:22 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,15 +162,18 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 		if (body_done == false)
 			return ;
 	}
+	//std::cout<<"hello\n\n";
 	if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
 	{
 		if (client.write_operations > 0)
 			return ;
 		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
+		//std::cout << "DEBUG: bytes written: " << bytes << std::endl;
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
 		client.write_operations++;
 		client.write_offset += bytes;
+		//std::cout << "DEBUG: file size: " << static_cast<int>(client.response.getPostFileContents().back().size()) << std::endl;
 		if (client.write_offset < static_cast<int>(client.response.getPostFileContents().back().size()))
 			return ;
 		client.write_offset = 0;
@@ -207,6 +210,19 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 {
 	if (client.read_done == false || client.http_done == true)
 		return ;
+	std::cout << "DEBUG: Client read buffer---------------------------" << std::endl;
+	std::string buffer = client.read_buffer;
+	std::istringstream iss(buffer);
+	std::string line;
+	std::vector<std::string> lines;
+	while (std::getline(iss, line)) {
+		lines.push_back(line);
+	}
+	int start = std::max(0, static_cast<int>(lines.size()) - 10);
+	for (int i = start; i < static_cast<int>(lines.size()); ++i) {
+		std::cout << "Line " << (i + 1) << ": " << lines[i] << std::endl;
+	}
+	std::cout << "DEBUG: ----------------------------------------" << std::endl;
 	HttpRequest request = RequestParser::parse(client.read_buffer);
 	find_match_config(client, server.possible_configs, request.getHost());
 	client.response = ResponseBuilder::build(request, client.match_config);
@@ -241,9 +257,11 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 		return ;
 	}
 	pos_content_length = client.read_buffer.find("Content-Length:");
+	//std::cout << "DEBUG: pos_content_length: " << pos_content_length << std::endl;
 	if (pos_content_length != std::string::npos)
 	{
-		int expected_body_size = std::atoi(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
+		long expected_body_size = std::atol(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
+		//std::cout << "DEBUG: Expected body size: " << expected_body_size << std::endl;
 		if (static_cast<int>(client.read_buffer.size() - pos_header_end) < expected_body_size)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
@@ -295,12 +313,16 @@ void	Server::run(){
 		}
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
+					int z = 0;
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 			{
+				z++;
+				std::cout<<"checking old client"<<z<<"\n";
 				process_client_connection(serverList[i].clientList[j], serverList[i], j);
 			}
 			if (FD_ISSET(serverList[i].fd, &read_set))
 			{
+				//std::cout<<"accepting new client\n";
 				accept_new_client_connection(serverList[i]);
 			}
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 14:25:12 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:54:32 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,8 @@ std::string ResponseUtils::getContentType(const std::string& path) {
 }
 
 bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& filename, const std::string& content, HttpRequest &request) {
-    // Construct the full path
+    
+	std::cout<<"CHECK\n\n";// Construct the full path
 	(void)request;
 	(void)content;
 	std::string fullPath = folderPath;
@@ -152,9 +153,12 @@ bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& 
     }
     fullPath += filename;
     // Open an output file stream
-	int fd = open(fullPath.c_str(), O_WRONLY | O_CREAT | O_APPEND);
+	int fd = open(fullPath.c_str(), O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 		return false;
+	std::cout<<"fd: "<<fd<<std::endl;
+	//std::cout<<"content: "<<content<<std::endl;
+	std::cout<<"size: "<<content.size()<<std::endl;
 	request.addPostFileFd(fd);
 	request.addPostFileContent(content);
     return true;

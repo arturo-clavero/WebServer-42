@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 12:44:48 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/25 15:00:48 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ RequestResponse ResponseBuilder::build(HttpRequest& request, ServerConfig& confi
 		response = buildErrorResponse(config, request, "501", "Not Implemented");
 	}
 	std::cout << "DEBUG: Exiting ResponseBuilder::build" << std::endl;
+	
 	return response;
 }
 
@@ -334,10 +335,13 @@ bool  ResponseBuilder::processPostData(HttpRequest& request, std::string& path) 
 	std::string boundary = request.getHeader("Content-Type").substr(request.getHeader("Content-Type").find("boundary=") + 9);
 	std::cout << "DEBUG: Boundary: " << boundary << std::endl;
 	std::vector<PostRequestBodyPart> bodyParts = PostRequestBodySnatcher::parse(request.getBody(), boundary);
-	std::cout << "DEBUG: Body parts size: " << bodyParts.size() << std::endl;
+	
+
 	
 	for (std::vector<PostRequestBodyPart>::iterator it = bodyParts.begin(); it != bodyParts.end(); ++it)
 	{
+		//print filename
+		std::cout << "DEBUG: Filename: " << it->getFilename() << std::endl;
 		if (it->getFilename().empty() == false)
 			if (ResponseUtils::openFiles(path, it->getFilename(), it->getContent(), request) == false)
 				return false;
