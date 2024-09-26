@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 16:36:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/26 16:33:22 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,62 +421,4 @@ RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequ
 	response.setCgiPath(fullPath);
 	
 	return response;
-
-    int pipefd[2];
-    if (pipe(pipefd) == -1) {
-        std::cerr << "ERROR: Failed to create pipe. Errno: " << errno << " - " << strerror(errno) << std::endl;
-        return buildErrorResponse(config, request, "500", "Internal Server Error");
-    }
-
-    std::cout << "DEBUG: Forking process to execute CGI" << std::endl;
-	//we stop, just return
-    pid_t pid = fork();
-    if (pid == -1) {
-        std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
-        close(pipefd[0]);
-        close(pipefd[1]);
-        return buildErrorResponse(config, request, "500", "Internal Server Error");
-    } else if (pid == 0) {
-        // Child process
-        std::cout << "DEBUG: Child process. Executing CGI script" << std::endl;
-        close(pipefd[0]);  // Close read end of the pipe
-        dup2(pipefd[1], STDOUT_FILENO);  // Redirect stdout to the pipe
-        close(pipefd[1]);
-
-        char* args[] = {const_cast<char*>(cgiConfig.path.c_str()), const_cast<char*>(fullPath.c_str()), NULL};
-        execv(cgiConfig.path.c_str(), args);
-        // If execv returns, it must have failed
-        std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
-        exit(1);
-    } else {
-        // Parent process
-        std::cout << "DEBUG: Parent process. Waiting for child to complete" << std::endl;
-        close(pipefd[1]);  // Close write end of the pipe
-
-        std::string cgiOutput;
-        char buffer[4096];
-        ssize_t bytesRead;
-        while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
-            cgiOutput.append(buffer, bytesRead);
-        }
-        close(pipefd[0]);
-
-        int status;
-        waitpid(pid, &status, 0);
-
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-            std::cout << "DEBUG: CGI program executed successfully" << std::endl;
-            std::cout << "DEBUG: CGI Output size: " << cgiOutput.length() << " bytes" << std::endl;
-
-            RequestResponse response;
-            std::cout << "DEBUG: CGI Output: " << std::endl;
-            std::cout << "----------------------------------------" << std::endl;
-            std::cout << cgiOutput << std::endl;
-            std::cout << "----------------------------------------" << std::endl;
-            return response;
-        } else {
-            std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
-            return buildErrorResponse(config, request, "500", "Internal Server Error");
-        }
-    }
 }

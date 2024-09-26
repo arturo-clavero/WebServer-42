@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/25 16:22:11 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/26 18:42:13 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,24 +35,19 @@ uint32_t	extract_host(const std::string &str){
 }
 
 Server::Server(std::vector<ServerConfig>& config) : config(config) {
-	//1. we map each unique "host-port" combo to a vector of all the configs that match that combo.
 	std::map<std::string, std::vector<ServerConfig>	> combos;
 	for (int i = 0; i < static_cast<int>(config.size()); i++)
 		combos[config[i].getListen()].push_back(config[i]);
-	//2.Translate map to vector of servers: (used map at first because it makes matching easier than with vector.... Now use vector instead of map for more efficient iteration in loop server)
-	 //we use this specific address structure for info about ipv4, then we will cast it to general structure sockaddr which is accepted by networking fts
 	std::vector<struct serverSocket>	new_server(combos.size());
 	int i = 0;
 	for (std::map<std::string, std::vector<ServerConfig> >::iterator it = combos.begin(); it != combos.end(); it++)
 	{
 		new_server[i].port = extract_port(it->first);
 		new_server[i].host = extract_host(it->first);
-		// std::cout<<"test server constructor\n"<<"port '"<<new_server[i].port<<"'\nhost '"<<new_server[i].host<<"'\n";
 		new_server[i].possible_configs = it->second;
 		serverList.push_back(new_server[i]);//add server struct to vector of servers...
 		i++;
 	}
-	// std::cout<<"serverlist size() is "<<serverList.size()<<"\n\n";
 	timeout.tv_sec = 2;       // 2 seconds
     timeout.tv_usec = 500000; // 500 milliseconds
 	signal(SIGPIPE, SIG_IGN);
@@ -70,7 +65,6 @@ int	Server::server_socket_error(std::string type, int *i){
 }
 
 int	Server::server_sockets_for_listening(){
-	// std::cout<<"server_sockets_for_listening()\nserverlist size-> "<<serverList.size()<<"\n";
 	int opt = 1;
 	struct sockaddr_in address_ipv4;
 	for (int i = 0; i < static_cast<int>(serverList.size()); i++)
@@ -89,7 +83,6 @@ int	Server::server_sockets_for_listening(){
 			return (server_socket_error("Listen", &i));
 		monitor_fds.push_back(serverList[i].fd);
 	}
-	// std::cout<<"testing server sockets for listening\n";
 	return 0;
 }
 
@@ -99,11 +92,12 @@ void	Server::init_client_struct(struct clientSocket &client){
 	client.write_offset = 0;
 	client.read_done = false;
 	client.http_done = false;
+	client.cgi_executing = false;
+	client.cgi_done = false;
 	client.file_done = false;
 }
 
 void	Server::accept_new_client_connection(struct serverSocket &server){
-//	std::cout<<"new client connection attempted\n";
 	client.fd = accept(server.fd, server.address_ptr, &server.address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
 	if (client.fd < 0) //no new connections ....
 		return ;
@@ -131,8 +125,15 @@ void	Server::write_response(struct clientSocket &client, struct serverSocket &se
 {
 	if (client.file_done == false || client.write_operations > 0 || !FD_ISSET(client.fd, &write_set))
 		return ;
+	if (client.cgi_executing == true && client.cgi_done == false)
+		return ;
+	if (client.cgi_executing == false && client.cgi_done == true)
+	{
+		close_connection(client, server, j);
+		return ;
+	}
 	setsockopt(client.fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
-	int bytes = send(client.fd, &client.write_buffer[client.write_offset], sizeof(client.write_buffer), 0);
+	int bytes = send(client.fd, &client.write_buffer[client.write_offset], WRITE_BUFFER_SIZE, 0);
 	if (bytes < 0)
 	{
 		 close_connection(client, server, j);
@@ -153,6 +154,9 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 	(void)j;
 	if (client.http_done == false || client.file_done == true)
 		return ;
+	if (client.cgi_executing == true && client.cgi_done == false)
+		return ;
+	//std::cout<<"MANAGING FILES\n";
 	if (!client.response.getFilePathForBody().empty() && client.file_fd > 0)
 	{
 		if (client.read_operations > 0)
@@ -162,19 +166,16 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 		if (body_done == false)
 			return ;
 	}
-	//std::cout<<"hello\n\n";
 	if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
 	{
 		if (client.write_operations > 0)
 			return ;
 		std::cout<<"writing file\n";
 		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], 1);
-		//std::cout << "DEBUG: bytes written: " << bytes << std::endl;
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
 		client.write_operations++;
 		client.write_offset += bytes;
-		//std::cout << "DEBUG: file size: " << static_cast<int>(client.response.getPostFileContents().back().size()) << std::endl;
 		if (client.write_offset < static_cast<int>(client.response.getPostFileContents().back().size()))
 			return ;
 		client.write_offset = 0;
@@ -211,24 +212,23 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 {
 	if (client.read_done == false || client.http_done == true)
 		return ;
-	std::cout << "DEBUG: Client read buffer---------------------------" << std::endl;
-	std::string buffer = client.read_buffer;
-	std::istringstream iss(buffer);
-	std::string line;
-	std::vector<std::string> lines;
-	while (std::getline(iss, line)) {
-		lines.push_back(line);
-	}
-	int start = std::max(0, static_cast<int>(lines.size()) - 10);
-	for (int i = start; i < static_cast<int>(lines.size()); ++i) {
-		std::cout << "Line " << (i + 1) << ": " << lines[i] << std::endl;
-	}
-	std::cout << "DEBUG: ----------------------------------------" << std::endl;
-	HttpRequest request = RequestParser::parse(client.read_buffer);
-	find_match_config(client, server.possible_configs, request.getHost());
-	client.response = ResponseBuilder::build(request, client.match_config);
+	// //std::cout << "DEBUG: Client read buffer---------------------------" << std::endl;
+	// std::string buffer = client.read_buffer;
+	// std::istringstream iss(buffer);
+	// std::string line;
+	// std::vector<std::string> lines;
+	// while (std::getline(iss, line)) {
+	// 	lines.push_back(line);
+	// }
+	// int start = std::max(0, static_cast<int>(lines.size()) - 10);
+	// for (int i = start; i < static_cast<int>(lines.size()); ++i) {
+	// 	std::cout << "Line " << (i + 1) << ": " << lines[i] << std::endl;
+	// }
+	// std::cout << "DEBUG: ----------------------------------------" << std::endl;
+	client.request = RequestParser::parse(client.read_buffer);
+	find_match_config(client, server.possible_configs, client.request.getHost());
+	client.response = ResponseBuilder::build(client.request, client.match_config);
 	std::cout << "DEBUG: Response built" << std::endl;
-	// OPEN GET FILES
 	if (!client.response.getFilePathForBody().empty())
 	{
 		client.file_fd = open(client.response.getFilePathForBody().c_str(), O_RDONLY);
@@ -258,11 +258,9 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 		return ;
 	}
 	pos_content_length = client.read_buffer.find("Content-Length:");
-	//std::cout << "DEBUG: pos_content_length: " << pos_content_length << std::endl;
 	if (pos_content_length != std::string::npos)
 	{
 		long expected_body_size = std::atol(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
-		//std::cout << "DEBUG: Expected body size: " << expected_body_size << std::endl;
 		if (static_cast<int>(client.read_buffer.size() - pos_header_end) < expected_body_size)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
@@ -281,6 +279,52 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 	client.read_done = true;
 }
 
+void	Server::wait_cgi(struct clientSocket &client)
+{
+	if (client.cgi_executing == false || client.cgi_done == true)
+		return;
+//	std::cout<<"WAITING FOR CGI\n";
+//	std::cout << "DEBUG: Parent process. Waiting for child to complete" << std::endl;
+	int status;
+	if (waitpid(client.cgi_pid, &status, WNOHANG) == 0)
+		return ;
+	client.cgi_executing = false;
+	client.cgi_done = true;
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+		std::cout << "DEBUG: CGI program executed successfully" << std::endl;
+	} else {
+		std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
+		client.response =  ResponseBuilder::buildErrorResponse(client.match_config, client.request, "500", "Internal Server Error");
+		client.cgi_done = false;
+	}
+}
+
+void	Server::execute_cgi(struct clientSocket &client)
+{
+	if (client.response.getCgiPath().empty() || client.cgi_executing == true || client.cgi_done == true)// || client.write_operations > 0 || client.read_operations > 0)
+		return ;
+	std::cout<<"EXECUTING CGI!\n";
+    client.cgi_pid = fork();
+    if (client.cgi_pid == -1) {
+        std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
+        client.response = ResponseBuilder::buildErrorResponse(client.match_config, client.request, "500", "Internal Server Error");
+		return ;
+    } 
+	else if (client.cgi_pid == 0) {
+        std::cout << "DEBUG: Child process. Executing CGI script" << std::endl;
+		dup2(client.fd, STDOUT_FILENO);
+		std::string cgi_path = client.response.getCgiPath();
+		const CGIConfig& cgiConfig = client.match_config.getCgi();
+ 		char* args[] = {const_cast<char*>(cgiConfig.path.c_str()), const_cast<char*>(cgi_path.c_str()), NULL};
+         execv(cgiConfig.path.c_str(), args);
+        std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
+        exit(1);
+    }
+	client.write_operations++;
+	client.read_operations++;
+	client.cgi_executing = true;
+}
+
 void	Server::process_client_connection(struct clientSocket &client, struct serverSocket &server, int j)
 {
 	client.read_operations = 0;
@@ -288,6 +332,8 @@ void	Server::process_client_connection(struct clientSocket &client, struct serve
 	std::string buff(READ_BUFFER_SIZE, 0);
 	read_request(client, server, j);
 	init_http_process(client, server);
+	execute_cgi(client);
+	wait_cgi(client);
 	manage_files(client, server, j);
 	write_response(client, server, j);
 }
@@ -314,16 +360,12 @@ void	Server::run(){
 		}
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
-					int z = 0;
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 			{
-				z++;
-				std::cout<<"checking old client"<<z<<"\n";
 				process_client_connection(serverList[i].clientList[j], serverList[i], j);
 			}
 			if (FD_ISSET(serverList[i].fd, &read_set))
 			{
-				//std::cout<<"accepting new client\n";
 				accept_new_client_connection(serverList[i]);
 			}
 		}
