@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/26 18:42:13 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 14:08:28 by valeriafedo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,9 +238,12 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 
 void	Server::read_request(struct clientSocket &client, struct serverSocket &server, int j)
 {
+	/*We return from the function when we've read all available data, 
+	even if the request is incomplete. The event loop 
+	will call this function again when more data is available.*/
 	if (client.read_done == true || !FD_ISSET(client.fd, &read_set))
 		return ;
-	std::string	buff(READ_BUFFER_SIZE, 0);
+	std::string	buff(READ_BUFFER_SIZE, 0); //better to use char string is slower  because overhead of dynamic memory management(char and memset)
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(client.fd, &buff[0], READ_BUFFER_SIZE, 0);
 	if (bytes <= 0)
@@ -248,12 +251,26 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 		close_connection(client, server, j);
 		return ;
 	}
+	// else if (bytes == -1) {
+    // if (errno == EAGAIN || errno == EWOULDBLOCK) {
+    //     // No more data available right now, but connection is still open
+    //     break;
+	//else
+	//close_connection
+	//if (bytes == 0)
+	//connection was closed by client 
 	client.read_operations++;
 	for (int i = 0; i < bytes; i++)
 		client.read_buffer += buff[i];
 	pos_header_end = client.read_buffer.find("\r\n\r\n");
+    // if (pos_header_end == std::string::npos) {
+    //     // Header is incomplete, wait for more data
+    //     return;
+    // }
+	
 	if (pos_header_end == std::string::npos) //means header is incomplete because header ends with \r\n\r\h;
 	{
+		// we should not use setsockopt because non_blocking handles this differently
 		setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
 		return ;
 	}
@@ -261,6 +278,10 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 	if (pos_content_length != std::string::npos)
 	{
 		long expected_body_size = std::atol(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
+		// if (static_cast<int>(client.read_buffer.size() - pos_header_end - 4) < expected_body_size) {
+        //     // Body is incomplete, wait for more data
+        //     return;
+        // }
 		if (static_cast<int>(client.read_buffer.size() - pos_header_end) < expected_body_size)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
@@ -270,6 +291,10 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 	else if (client.read_buffer.find("Transfer-Encoding: chunked") != std::string::npos)
 	{
 		pos_zero = client.read_buffer.find("0\r\n\r\n");
+		// if (pos_zero == std::string::npos) {
+        //     // Chunked body is incomplete, wait for more data
+        //     return;
+        // }
 		if (pos_zero == std::string::npos || client.read_buffer[pos_zero + 5] != 0)
 		{
 			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
@@ -338,7 +363,7 @@ void	Server::process_client_connection(struct clientSocket &client, struct serve
 	write_response(client, server, j);
 }
 
-void	Server::init_sets_for_select(){
+void	Server::init_sets_for_select(){ //master stuff
 	FD_ZERO(&read_set);
 	FD_ZERO(&write_set);
 	for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
