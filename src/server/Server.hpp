@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/27 08:42:15 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 21:22:28 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,9 @@ class Server {
 		std::vector<serverSocket>	serverList;
 		fd_set						read_set, write_set;
 		int							last_socket;
+		clock_t						last, now;
+		const double				interval;
+		
 		struct clientSocket	client;
 		struct timeval timeout;
 		std::list<int>	monitor_fds;

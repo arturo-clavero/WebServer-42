@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequestBodySnatcher.cpp                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 22:14:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 16:03:57 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/27 21:28:34 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 	bool inHeaders = false;
 	bool inContent = false;
 
-	std::cout << "DEBUG: entering body parse for Post request" << std::endl;
+	//std::cout << "DEBUG: entering body parse for Post request" << std::endl;
 
 	while (std::getline(bodyStream, line)) {
 		if (line.find(boundary) != std::string::npos) {
@@ -65,6 +65,6 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 		parts.push_back(currentPart);
 	}
 
-	std::cout << "DEBUG: request body parsed " << std::endl;
+	//std::cout << "DEBUG: request body parsed " << std::endl;
 	return parts;
 }

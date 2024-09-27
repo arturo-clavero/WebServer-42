@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/26 17:29:48 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 22:02:48 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <config_file_path>" << std::endl;
         return 1;
-    }
-
+	}
+    
+	
 	std::vector<ServerConfig> config = ConfigParser::parse(argv[1]);
 	
 	//print each one
@@ -33,8 +34,11 @@ int main(int argc, char* argv[]) {
 		config[i].print();
 	}
 	try {
-		Server server(config);
-		server.run();	
+		while (1)
+		{
+			Server server(config);
+			server.run();
+		}
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 		return (1);

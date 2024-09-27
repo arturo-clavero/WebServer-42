@@ -6,12 +6,13 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/27 20:43:34 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 22:12:55 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <string.h>
+#include <ctime>
 
 int	extract_port(const std::string &str){
 	std::string::const_iterator semi_colon = std::find(str.begin(), str.end(), ':');
@@ -34,7 +35,7 @@ uint32_t	extract_host(const std::string &str){
 	return (oct[0] << 24 | oct[1] << 16 | oct[2] << 8 | oct[3]);
 }
 
-Server::Server(std::vector<ServerConfig>& config) : config(config) {
+Server::Server(std::vector<ServerConfig>& config) : config(config), last(clock()), interval(5.0 * CLOCKS_PER_SEC) {
 	std::map<std::string, std::vector<ServerConfig>	> combos;
 	for (int i = 0; i < static_cast<int>(config.size()); i++)
 		combos[config[i].getListen()].push_back(config[i]);
@@ -83,6 +84,11 @@ int	Server::server_sockets_for_listening(){
 			return (server_socket_error("Listen", &i));
 		monitor_fds.push_back(serverList[i].fd);
 	}
+	if (static_cast<int>(serverList.size()) == 0)
+	{
+		std::cerr<<"Sorry there are no valid servers for listening....\n";
+		exit(2);
+	}
 	return 0;
 }
 
@@ -97,7 +103,9 @@ void	Server::accept_new_client_connection(struct serverSocket &server){
 	client.fd = accept(server.fd, server.address_ptr, &server.address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
 	if (client.fd < 0) //no new connections ....
 		return ;
-	std::cout<<"\n\nnew client connection accepted\n\n";
+	static int p;
+	std::cout<<"\n\nnew client connection accepted "<<p<<"\n\n";
+	p++;
 	setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
 	int enable = 1;
 	setsockopt(client.fd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
@@ -146,8 +154,8 @@ void	Server::manage_files(struct clientSocket &client)
 	{
 		if (client.write_operations > 0)
 			return ;
-		std::cout<<"writing file\n";
-		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], 1);
+	//	std::cout<<"writing file\n";
+		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
 		client.write_operations++;
@@ -191,7 +199,7 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	client.request = RequestParser::parse(client.read_buffer);
 	find_match_config(client, server.possible_configs, client.request.getHost());
 	client.response = ResponseBuilder::build(client.request, client.match_config);
-	std::cout << "DEBUG: Response built" << std::endl;
+	//std::cout << "DEBUG: Response built" << std::endl;
 	if (!client.response.getFilePathForBody().empty())
 	{
 		client.file_fd = open(client.response.getFilePathForBody().c_str(), O_RDONLY);
@@ -272,10 +280,10 @@ void	Server::wait_cgi(struct clientSocket &client)
 	if (waitpid(client.cgi_pid, &status, WNOHANG) == 0)
 		return ;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-		std::cout << "DEBUG: CGI program executed successfully" << std::endl;
+		//std::cout << "DEBUG: CGI program executed successfully" << std::endl;
 		client.state = DISCONNECT;
 	} else {
-		std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
+		//std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
 		client.response =  ResponseBuilder::buildErrorResponse(client.match_config, client.request, "500", "Internal Server Error");
 		client.state = WRITE;
 	}
@@ -300,7 +308,7 @@ void	Server::execute_cgi(struct clientSocket &client)
 		return ;
     } 
 	else if (client.cgi_pid == 0) {
-        std::cout << "DEBUG: Child process. Executing CGI script" << std::endl;
+      //  std::cout << "DEBUG: Child process. Executing CGI script" << std::endl;
 		dup2(client.fd, STDOUT_FILENO);
 		std::string cgi_path = client.response.getCgiPath();
 		const CGIConfig& cgiConfig = client.match_config.getCgi();
@@ -337,9 +345,51 @@ void	Server::init_sets_for_select(){ //master stuff
 	}
 }
 
+void	check_memory()
+{
+	std::ifstream statm("/proc/self/statm");
+    if (statm.is_open()) {
+        unsigned long totalSize, residentSize;
+        statm >> totalSize >> residentSize;
+
+        const long pageSize = sysconf(_SC_PAGESIZE);
+        long totalMemory = sysconf(_SC_PHYS_PAGES) * pageSize / 1024; // Total memory in KB
+        double currentUsage = (residentSize * pageSize / 1024.0) / totalMemory; // Usage as a percentage
+
+      //  std::cout << "Current usage: " << currentUsage * 100 << "%" << std::endl;
+
+        if (currentUsage > .9) {
+            std::cout << "Warning: Memory usage exceeds threshold! Triggering cleanup." << std::endl;
+            
+        }
+    } else {
+        std::cerr << "Unable to open /proc/self/statm" << std::endl;
+    }
+}
+
+int server_running = 1;
+
+void	signalHandler(int signal)
+{
+	(void)signal;
+	server_running = 0;
+	//std::cout<<"STOP!\n";
+}
+
+void	set_up_signals()
+{
+	std::signal(SIGTERM, signalHandler);
+	std::signal(SIGKILL, signalHandler);
+	std::signal(SIGPIPE, signalHandler);
+	std::signal(SIGINT, signalHandler);//this is for control c not sure if w should override it too....
+
+}
+
 void	Server::run(){
+	//std::cout<<"RESTART\n";
+	//set_up_signals(); //we can use this for submission to avoid server dying but for now we should keep like this to see errors...
 	server_sockets_for_listening();
-	while (serverList.size() > 0)
+	while (server_running)
 	{
 		init_sets_for_select();
 		if (!monitor_fds.empty())
@@ -349,14 +399,14 @@ void	Server::run(){
 			{}
 				for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 				{
-					if (serverList[i].clientList.size() > 0)
-						std::cout<<"size -> "<<serverList[i].clientList.size()<<"\n";
+					// if (serverList[i].clientList.size() > 0)
+					// 	std::cout<<"size -> "<<serverList[i].clientList.size()<<"\n";
 					for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 					{
 						process_client_connection(serverList[i].clientList[j], serverList[i]);
 						if (serverList[i].clientList[j].state == DISCONNECT)
 						{
-							std::cout<<"CLIENT DISCONNECT\n";
+						//	std::cout<<"CLIENT DISCONNECT\n";
 							monitor_fds.remove(close(serverList[i].clientList[j].fd));
 							close(serverList[i].clientList[j].fd);
 							serverList[i].clientList.erase(serverList[i].clientList.begin() + j);
@@ -367,8 +417,20 @@ void	Server::run(){
 					{
 						accept_new_client_connection(serverList[i]);
 					}
-			//	}
-			}
+					now = clock();
+					if (now - last >= interval)
+					{
+						check_memory();
+						last = now;
+					}
+				}
+		//	}
 		}
 	}
+	server_running = 1;
+	//std::cout<<"BREAKING OUT\n";
+	//here we close all fds so we can bind again ... if a signal is oveerridden the loop will break clean and delete object 
+	//in case we ran out of memory or break a pipe or something
+	for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
+		close(*it);
 }

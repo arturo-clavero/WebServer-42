@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 12:22:31 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/27 22:02:55 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,13 @@
 #include <list>
 #include <signal.h>
 #include <sys/wait.h>
+#include <csignal>
 
 # define READ_BUFFER_SIZE 1024
 # define WRITE_BUFFER_SIZE 1024
+
+extern int		server_running;
+
+void	signalHandler(int signal);
 
 #endif

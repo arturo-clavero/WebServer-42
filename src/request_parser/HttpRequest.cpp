@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 06:03:02 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 21:28:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,11 @@ bool HttpRequest::hasHeader(const std::string& key) const {
 }
 
 void HttpRequest::printHeaders() const {
-    std::cout << "Headers:" << std::endl;
+    //std::cout << "Headers:" << std::endl;
     std::map<std::string, std::string>::const_iterator it;
-    for (it = headers_.begin(); it != headers_.end(); ++it) {
-        std::cout << "  " << it->first << ": " << it->second << std::endl;
-    }
+   // for (it = headers_.begin(); it != headers_.end(); ++it) {
+        //std::cout << "  " << it->first << ": " << it->second << std::endl;
+   // }
 }
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request) {
