@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 02:06:41 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 05:25:10 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ void	Server::init_client_struct(struct clientSocket &client){
 }
 
 void	Server::accept_new_client_connection(struct serverSocket &server){
+	if (!FD_ISSET(server.fd, &read_set))
+		return ;
 	client.fd = accept(server.fd, server.address_ptr, &server.address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
 	if (client.fd < 0) //no new connections ....
 		return ;
@@ -154,7 +156,6 @@ void	Server::manage_files(struct clientSocket &client)
 	{
 		if (client.write_operations > 0)
 			return ;
-	//	std::cout<<"writing file\n";
 		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
@@ -332,36 +333,45 @@ void	set_up_signals()
 
 }
 
+bool	Server::client_disconnected(struct serverSocket &server, int j)
+{
+	if (server.clientList[j].state != DISCONNECT)
+		return false;
+	// std::cout<<"\nmonitor size before: "<<monitor_fds.size()<<"\n";
+	// std::cout<<"fd to remove "<<server.clientList[j].fd<<"\n";
+	// std::cout<<"list before ";
+	// for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
+	// 	std::cout<<*it<<" ";
+	// std::cout<<"\n";
+//	std::cout<<"CLIENT DISCONNECT\n";
+	//monitor_fds.remove(server.clientList[j].fd);
+	// std::cout<<"monitor size after: "<<monitor_fds.size()<<"\n";
+	// std::cout<<"list after: ";
+	// 	for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
+	// 	std::cout<<*it<<" ";
+	// std::cout<<"\n\n";
+	close(server.clientList[j].fd);
+	server.clientList.erase(server.clientList.begin() + j);
+	return true;
+}
+
 void	Server::run(){
 	//set_up_signals(); //we can use this for submission to avoid server dying but for now we should keep like this to see errors...
 	server_sockets_for_listening();
 	while (server_running)
 	{
 		init_sets_for_select();
-		if (!monitor_fds.empty())
+		select(monitor_fds.back() + 1, &read_set, &write_set, 0, 0); //why ?
+		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
-			last_socket = monitor_fds.back() + 1;
-			if (select(last_socket + 1, &read_set, &write_set, 0, 0) > 0) //why ?
-			{}
-				for (int i = 0; i < static_cast<int>(serverList.size()); i++)
-				{
-					for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
-					{
-						process_client_connection(serverList[i].clientList[j], serverList[i]);
-						if (serverList[i].clientList[j].state == DISCONNECT)
-						{
-						//	std::cout<<"CLIENT DISCONNECT\n";
-							monitor_fds.remove(close(serverList[i].clientList[j].fd));
-							close(serverList[i].clientList[j].fd);
-							serverList[i].clientList.erase(serverList[i].clientList.begin() + j);
-							break ;
-						}
-					}
-					if (FD_ISSET(serverList[i].fd, &read_set))
-					{
-						accept_new_client_connection(serverList[i]);
-					}
-				}
+			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
+				process_client_connection(serverList[i].clientList[j], serverList[i]);
+			accept_new_client_connection(serverList[i]);
+			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
+			{
+				if (client_disconnected(serverList[i], j))
+					j = 0;
+			}
 		}
 	}
 	server_running = 1;

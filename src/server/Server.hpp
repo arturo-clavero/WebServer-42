@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/27 21:22:28 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 04:59:47 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ class Server {
 		void	write_response(struct clientSocket &client);
 		void	init_http_process(struct clientSocket &client, struct serverSocket &server);
 		void	init_sets_for_select();
+		bool	client_disconnected(struct serverSocket &server, int j);
 
 		
 
