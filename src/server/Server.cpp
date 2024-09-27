@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 02:03:03 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 02:06:41 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,6 @@ void	Server::process_client_connection(struct clientSocket &client, struct serve
 {
 	client.read_operations = 0;
 	client.write_operations = 0;
-	std::string buff(READ_BUFFER_SIZE, 0);
 	read_request(client);
 	init_http_process(client, server);
 	execute_cgi(client);
