@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriafedorova <valeriafedorova@studen    +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/27 14:08:28 by valeriafedo      ###   ########.fr       */
+/*   Updated: 2024/09/27 20:43:34 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,11 +90,7 @@ void	Server::init_client_struct(struct clientSocket &client){
 	client.read_buffer.clear();
 	client.write_buffer.clear();
 	client.write_offset = 0;
-	client.read_done = false;
-	client.http_done = false;
-	client.cgi_executing = false;
-	client.cgi_done = false;
-	client.file_done = false;
+	client.state = 0;
 }
 
 void	Server::accept_new_client_connection(struct serverSocket &server){
@@ -112,49 +108,29 @@ void	Server::accept_new_client_connection(struct serverSocket &server){
 	server.clientList.push_back(client);
 }
 
-
-void	Server::close_connection(struct clientSocket &client, struct serverSocket &server, int j)
+void	Server::write_response(struct clientSocket &client)
 {
-	std::cout<<"\n\nCLOSING CONNECTION\n\n";
-	monitor_fds.remove(client.fd);
-	close(client.fd);
-	server.clientList.erase(server.clientList.begin() + j);
-}
-
-void	Server::write_response(struct clientSocket &client, struct serverSocket &server, int j)
-{
-	if (client.file_done == false || client.write_operations > 0 || !FD_ISSET(client.fd, &write_set))
+	if (client.state != WRITE || client.write_operations > 0 || !FD_ISSET(client.fd, &write_set))
 		return ;
-	if (client.cgi_executing == true && client.cgi_done == false)
-		return ;
-	if (client.cgi_executing == false && client.cgi_done == true)
-	{
-		close_connection(client, server, j);
-		return ;
-	}
 	setsockopt(client.fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
 	int bytes = send(client.fd, &client.write_buffer[client.write_offset], WRITE_BUFFER_SIZE, 0);
 	if (bytes < 0)
 	{
-		 close_connection(client, server, j);
+		 client.state = DISCONNECT;
 		 return ;
 	}
 	client.write_operations++;
 	client.write_offset += bytes;
 	if (client.write_offset >= static_cast<int>(client.write_buffer.size()))
 	{
-		close_connection(client, server, j);
+		 client.state = DISCONNECT;
 		return ;
 	}
 }
 
-void	Server::manage_files(struct clientSocket &client, struct serverSocket &server, int j)
+void	Server::manage_files(struct clientSocket &client)
 {
-	(void)server;
-	(void)j;
-	if (client.http_done == false || client.file_done == true)
-		return ;
-	if (client.cgi_executing == true && client.cgi_done == false)
+	if (client.state != FILES)
 		return ;
 	//std::cout<<"MANAGING FILES\n";
 	if (!client.response.getFilePathForBody().empty() && client.file_fd > 0)
@@ -186,7 +162,7 @@ void	Server::manage_files(struct clientSocket &client, struct serverSocket &serv
 			return ;
 	}
 	client.write_buffer = client.response.toString();
-	client.file_done = true;
+	client.state++;
 }
 
 void	Server::find_match_config(struct clientSocket &client, std::vector<ServerConfig> &possible_configs, const std::string host)
@@ -210,21 +186,8 @@ void	Server::find_match_config(struct clientSocket &client, std::vector<ServerCo
 
 void	Server::init_http_process(struct clientSocket &client, struct serverSocket &server)
 {
-	if (client.read_done == false || client.http_done == true)
+	if (client.state != HTTP)
 		return ;
-	// //std::cout << "DEBUG: Client read buffer---------------------------" << std::endl;
-	// std::string buffer = client.read_buffer;
-	// std::istringstream iss(buffer);
-	// std::string line;
-	// std::vector<std::string> lines;
-	// while (std::getline(iss, line)) {
-	// 	lines.push_back(line);
-	// }
-	// int start = std::max(0, static_cast<int>(lines.size()) - 10);
-	// for (int i = start; i < static_cast<int>(lines.size()); ++i) {
-	// 	std::cout << "Line " << (i + 1) << ": " << lines[i] << std::endl;
-	// }
-	// std::cout << "DEBUG: ----------------------------------------" << std::endl;
 	client.request = RequestParser::parse(client.read_buffer);
 	find_match_config(client, server.possible_configs, client.request.getHost());
 	client.response = ResponseBuilder::build(client.request, client.match_config);
@@ -233,22 +196,19 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	{
 		client.file_fd = open(client.response.getFilePathForBody().c_str(), O_RDONLY);
 	}	
-	client.http_done = true;
+	client.state++;
 }
 
-void	Server::read_request(struct clientSocket &client, struct serverSocket &server, int j)
+void	Server::read_request(struct clientSocket &client)
 {
-	/*We return from the function when we've read all available data, 
-	even if the request is incomplete. The event loop 
-	will call this function again when more data is available.*/
-	if (client.read_done == true || !FD_ISSET(client.fd, &read_set))
+	if (client.state != READING || !FD_ISSET(client.fd, &read_set))
 		return ;
 	std::string	buff(READ_BUFFER_SIZE, 0); //better to use char string is slower  because overhead of dynamic memory management(char and memset)
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(client.fd, &buff[0], READ_BUFFER_SIZE, 0);
 	if (bytes <= 0)
 	{
-		close_connection(client, server, j);
+		client.state = DISCONNECT;
 		return ;
 	}
 	// else if (bytes == -1) {
@@ -301,38 +261,42 @@ void	Server::read_request(struct clientSocket &client, struct serverSocket &serv
 			return ; //incomplete body type 2!
 		}
 	}
-	client.read_done = true;
+	client.state++;
 }
 
 void	Server::wait_cgi(struct clientSocket &client)
 {
-	if (client.cgi_executing == false || client.cgi_done == true)
+	if (client.state != WAITCGI)
 		return;
-//	std::cout<<"WAITING FOR CGI\n";
-//	std::cout << "DEBUG: Parent process. Waiting for child to complete" << std::endl;
 	int status;
 	if (waitpid(client.cgi_pid, &status, WNOHANG) == 0)
 		return ;
-	client.cgi_executing = false;
-	client.cgi_done = true;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 		std::cout << "DEBUG: CGI program executed successfully" << std::endl;
+		client.state = DISCONNECT;
 	} else {
 		std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
 		client.response =  ResponseBuilder::buildErrorResponse(client.match_config, client.request, "500", "Internal Server Error");
-		client.cgi_done = false;
+		client.state = WRITE;
 	}
 }
 
 void	Server::execute_cgi(struct clientSocket &client)
 {
-	if (client.response.getCgiPath().empty() || client.cgi_executing == true || client.cgi_done == true)// || client.write_operations > 0 || client.read_operations > 0)
+	if (client.state != EXECUTECGI)
 		return ;
-	std::cout<<"EXECUTING CGI!\n";
+	if (client.response.getCgiPath().empty())
+	{
+		client.state = FILES;
+		return ;
+	}
+	if (client.write_operations > 0 || !FD_ISSET(client.fd, &write_set) || client.read_operations > 0 || !FD_ISSET(client.fd, &read_set))
+		return;
     client.cgi_pid = fork();
     if (client.cgi_pid == -1) {
         std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
         client.response = ResponseBuilder::buildErrorResponse(client.match_config, client.request, "500", "Internal Server Error");
+		client.state = FILES;
 		return ;
     } 
 	else if (client.cgi_pid == 0) {
@@ -347,20 +311,20 @@ void	Server::execute_cgi(struct clientSocket &client)
     }
 	client.write_operations++;
 	client.read_operations++;
-	client.cgi_executing = true;
+	client.state++;
 }
 
-void	Server::process_client_connection(struct clientSocket &client, struct serverSocket &server, int j)
+void	Server::process_client_connection(struct clientSocket &client, struct serverSocket &server)
 {
 	client.read_operations = 0;
 	client.write_operations = 0;
 	std::string buff(READ_BUFFER_SIZE, 0);
-	read_request(client, server, j);
+	read_request(client);
 	init_http_process(client, server);
 	execute_cgi(client);
-	wait_cgi(client);
-	manage_files(client, server, j);
-	write_response(client, server, j);
+	wait_cgi(client);	
+	manage_files(client);
+	write_response(client);
 }
 
 void	Server::init_sets_for_select(){ //master stuff
@@ -378,20 +342,32 @@ void	Server::run(){
 	while (serverList.size() > 0)
 	{
 		init_sets_for_select();
-		last_socket = monitor_fds.back() + 1;
-		if (select(last_socket + 1, &read_set, &write_set, 0, 0) <= 0)
+		if (!monitor_fds.empty())
 		{
-			std::cerr<<"select  failed -> "<<strerror(errno)<<"\n";
-		}
-		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
-		{
-			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
-			{
-				process_client_connection(serverList[i].clientList[j], serverList[i], j);
-			}
-			if (FD_ISSET(serverList[i].fd, &read_set))
-			{
-				accept_new_client_connection(serverList[i]);
+			last_socket = monitor_fds.back() + 1;
+			if (select(last_socket + 1, &read_set, &write_set, 0, 0) > 0)
+			{}
+				for (int i = 0; i < static_cast<int>(serverList.size()); i++)
+				{
+					if (serverList[i].clientList.size() > 0)
+						std::cout<<"size -> "<<serverList[i].clientList.size()<<"\n";
+					for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
+					{
+						process_client_connection(serverList[i].clientList[j], serverList[i]);
+						if (serverList[i].clientList[j].state == DISCONNECT)
+						{
+							std::cout<<"CLIENT DISCONNECT\n";
+							monitor_fds.remove(close(serverList[i].clientList[j].fd));
+							close(serverList[i].clientList[j].fd);
+							serverList[i].clientList.erase(serverList[i].clientList.begin() + j);
+							break ;
+						}
+					}
+					if (FD_ISSET(serverList[i].fd, &read_set))
+					{
+						accept_new_client_connection(serverList[i]);
+					}
+			//	}
 			}
 		}
 	}

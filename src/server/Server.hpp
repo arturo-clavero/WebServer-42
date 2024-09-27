@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/26 17:23:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/27 08:42:15 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,23 @@
 #include "request_parser/RequestParser.hpp"
 #include "response_builder/ResponseBuilder.hpp"
 
+enum connection_states
+{
+	READING,
+	HTTP,
+	EXECUTECGI,
+	WAITCGI,
+	FILES,
+	WRITE,
+	DISCONNECT,
+};
 
 struct	clientSocket{
 	int fd;
 	ServerConfig	match_config; //we match a config based on request *server_name
 	std::string		read_buffer, write_buffer; //buffer for receive and send, will be initialized to null
 	int				write_offset; //offset to see how much we have read or written (for incomplete operations)
-	bool			read_done, http_done, file_done, cgi_executing, cgi_done; //bool to see if reading/writing is done
+	int				state;
 	int				file_fd;
 	RequestResponse response;
 	HttpRequest		request;
@@ -58,13 +68,13 @@ class Server {
 		void	init_client_struct(struct clientSocket &client);
 		void	accept_new_client_connection(struct serverSocket &server);
 		void	close_connection(struct clientSocket &client, struct serverSocket &server, int j);
-		void	process_client_connection(struct clientSocket &client, struct serverSocket &socket, int j);
-		void	read_request(struct clientSocket &client, struct serverSocket &server, int j);
+		void	process_client_connection(struct clientSocket &client, struct serverSocket &socket);
+		void	read_request(struct clientSocket &client);
 		void	find_match_config(struct clientSocket &client, std::vector<ServerConfig> &possible_configs, const std::string host);
 		void	execute_cgi(struct clientSocket &client);
 		void	wait_cgi(struct clientSocket &client);
-		void	manage_files(struct clientSocket &client, struct serverSocket &server, int j);
-		void	write_response(struct clientSocket &client, struct serverSocket &server, int j);
+		void	manage_files(struct clientSocket &client);
+		void	write_response(struct clientSocket &client);
 		void	init_http_process(struct clientSocket &client, struct serverSocket &server);
 		void	init_sets_for_select();
 
