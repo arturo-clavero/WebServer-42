@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/27 22:12:55 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 02:03:03 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,8 @@ void	Server::read_request(struct clientSocket &client)
 {
 	if (client.state != READING || !FD_ISSET(client.fd, &read_set))
 		return ;
-	std::string	buff(READ_BUFFER_SIZE, 0); //better to use char string is slower  because overhead of dynamic memory management(char and memset)
+	char buff[READ_BUFFER_SIZE];
+	memset(buff, 0, READ_BUFFER_SIZE);
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(client.fd, &buff[0], READ_BUFFER_SIZE, 0);
 	if (bytes <= 0)
@@ -219,55 +220,24 @@ void	Server::read_request(struct clientSocket &client)
 		client.state = DISCONNECT;
 		return ;
 	}
-	// else if (bytes == -1) {
-    // if (errno == EAGAIN || errno == EWOULDBLOCK) {
-    //     // No more data available right now, but connection is still open
-    //     break;
-	//else
-	//close_connection
-	//if (bytes == 0)
-	//connection was closed by client 
 	client.read_operations++;
 	for (int i = 0; i < bytes; i++)
 		client.read_buffer += buff[i];
 	pos_header_end = client.read_buffer.find("\r\n\r\n");
-    // if (pos_header_end == std::string::npos) {
-    //     // Header is incomplete, wait for more data
-    //     return;
-    // }
-	
-	if (pos_header_end == std::string::npos) //means header is incomplete because header ends with \r\n\r\h;
-	{
-		// we should not use setsockopt because non_blocking handles this differently
-		setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-		return ;
-	}
+    if (pos_header_end == std::string::npos)// Header is incomplete, wait for more data
+    		return;
 	pos_content_length = client.read_buffer.find("Content-Length:");
 	if (pos_content_length != std::string::npos)
 	{
 		long expected_body_size = std::atol(client.read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
-		// if (static_cast<int>(client.read_buffer.size() - pos_header_end - 4) < expected_body_size) {
-        //     // Body is incomplete, wait for more data
-        //     return;
-        // }
-		if (static_cast<int>(client.read_buffer.size() - pos_header_end) < expected_body_size)
-		{
-			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-			return ; //incomplete body type 1!	
-		}
+		if (static_cast<int>(client.read_buffer.size() - pos_header_end - 4) < expected_body_size)// Body is incomplete, wait for more data
+            return;
 	}
 	else if (client.read_buffer.find("Transfer-Encoding: chunked") != std::string::npos)
 	{
 		pos_zero = client.read_buffer.find("0\r\n\r\n");
-		// if (pos_zero == std::string::npos) {
-        //     // Chunked body is incomplete, wait for more data
-        //     return;
-        // }
-		if (pos_zero == std::string::npos || client.read_buffer[pos_zero + 5] != 0)
-		{
-			setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
-			return ; //incomplete body type 2!
-		}
+		if (pos_zero == std::string::npos) // Chunked body is incomplete, wait for more data
+            return;
 	}
 	client.state++;
 }
@@ -345,28 +315,6 @@ void	Server::init_sets_for_select(){ //master stuff
 	}
 }
 
-void	check_memory()
-{
-	std::ifstream statm("/proc/self/statm");
-    if (statm.is_open()) {
-        unsigned long totalSize, residentSize;
-        statm >> totalSize >> residentSize;
-
-        const long pageSize = sysconf(_SC_PAGESIZE);
-        long totalMemory = sysconf(_SC_PHYS_PAGES) * pageSize / 1024; // Total memory in KB
-        double currentUsage = (residentSize * pageSize / 1024.0) / totalMemory; // Usage as a percentage
-
-      //  std::cout << "Current usage: " << currentUsage * 100 << "%" << std::endl;
-
-        if (currentUsage > .9) {
-            std::cout << "Warning: Memory usage exceeds threshold! Triggering cleanup." << std::endl;
-            
-        }
-    } else {
-        std::cerr << "Unable to open /proc/self/statm" << std::endl;
-    }
-}
-
 int server_running = 1;
 
 void	signalHandler(int signal)
@@ -386,7 +334,6 @@ void	set_up_signals()
 }
 
 void	Server::run(){
-	//std::cout<<"RESTART\n";
 	//set_up_signals(); //we can use this for submission to avoid server dying but for now we should keep like this to see errors...
 	server_sockets_for_listening();
 	while (server_running)
@@ -395,12 +342,10 @@ void	Server::run(){
 		if (!monitor_fds.empty())
 		{
 			last_socket = monitor_fds.back() + 1;
-			if (select(last_socket + 1, &read_set, &write_set, 0, 0) > 0)
+			if (select(last_socket + 1, &read_set, &write_set, 0, 0) > 0) //why ?
 			{}
 				for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 				{
-					// if (serverList[i].clientList.size() > 0)
-					// 	std::cout<<"size -> "<<serverList[i].clientList.size()<<"\n";
 					for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 					{
 						process_client_connection(serverList[i].clientList[j], serverList[i]);
@@ -417,14 +362,7 @@ void	Server::run(){
 					{
 						accept_new_client_connection(serverList[i]);
 					}
-					now = clock();
-					if (now - last >= interval)
-					{
-						check_memory();
-						last = now;
-					}
 				}
-		//	}
 		}
 	}
 	server_running = 1;
