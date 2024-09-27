@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 05:25:10 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 05:53:23 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -333,26 +333,20 @@ void	set_up_signals()
 
 }
 
-bool	Server::client_disconnected(struct serverSocket &server, int j)
+void	Server::delete_disconnected_clients(struct serverSocket &server)
 {
-	if (server.clientList[j].state != DISCONNECT)
-		return false;
-	// std::cout<<"\nmonitor size before: "<<monitor_fds.size()<<"\n";
-	// std::cout<<"fd to remove "<<server.clientList[j].fd<<"\n";
-	// std::cout<<"list before ";
-	// for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
-	// 	std::cout<<*it<<" ";
-	// std::cout<<"\n";
-//	std::cout<<"CLIENT DISCONNECT\n";
-	//monitor_fds.remove(server.clientList[j].fd);
-	// std::cout<<"monitor size after: "<<monitor_fds.size()<<"\n";
-	// std::cout<<"list after: ";
-	// 	for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
-	// 	std::cout<<*it<<" ";
-	// std::cout<<"\n\n";
-	close(server.clientList[j].fd);
-	server.clientList.erase(server.clientList.begin() + j);
-	return true;
+	for (int j = 0; j < static_cast<int>(server.clientList.size()); )
+	{
+		if (server.clientList[j].state == DISCONNECT)
+		{
+			FD_CLR(server.clientList[j].fd, &read_set);
+			FD_CLR(server.clientList[j].fd, &write_set);
+			close(server.clientList[j].fd);
+			server.clientList.erase(server.clientList.begin() + j);
+		}
+		else
+			j++;
+	}
 }
 
 void	Server::run(){
@@ -365,13 +359,11 @@ void	Server::run(){
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
-				process_client_connection(serverList[i].clientList[j], serverList[i]);
-			accept_new_client_connection(serverList[i]);
-			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 			{
-				if (client_disconnected(serverList[i], j))
-					j = 0;
+				process_client_connection(serverList[i].clientList[j], serverList[i]);
 			}
+			accept_new_client_connection(serverList[i]);
+			delete_disconnected_clients(serverList[i]);
 		}
 	}
 	server_running = 1;

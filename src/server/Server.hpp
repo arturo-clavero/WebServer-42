@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 04:59:47 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 05:53:11 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ class Server {
 		void	accept_new_client_connection(struct serverSocket &server);
 		void	close_connection(struct clientSocket &client, struct serverSocket &server, int j);
 		void	process_client_connection(struct clientSocket &client, struct serverSocket &socket);
+		void	delete_disconnected_clients(struct serverSocket &server);
 		void	read_request(struct clientSocket &client);
 		void	find_match_config(struct clientSocket &client, std::vector<ServerConfig> &possible_configs, const std::string host);
 		void	execute_cgi(struct clientSocket &client);
@@ -80,7 +81,6 @@ class Server {
 		void	write_response(struct clientSocket &client);
 		void	init_http_process(struct clientSocket &client, struct serverSocket &server);
 		void	init_sets_for_select();
-		bool	client_disconnected(struct serverSocket &server, int j);
 
 		
 
