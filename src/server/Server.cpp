@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 07:07:57 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 10:53:02 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,8 +339,11 @@ void	Server::delete_disconnected_clients(struct serverSocket &server)
 	{
 		if (server.clientList[j].state == DISCONNECT)
 		{
+							//std::cout<<"hey...\n";
+
 			FD_CLR(server.clientList[j].fd, &read_set);
 			FD_CLR(server.clientList[j].fd, &write_set);
+			monitor_fds.remove(server.clientList[j].fd);
 			close(server.clientList[j].fd);
 			server.clientList.erase(server.clientList.begin() + j);
 		}
@@ -355,7 +358,8 @@ void	Server::run(){
 	while (server_running)
 	{
 		init_sets_for_select();
-		select(monitor_fds.back() + 1, &read_set, &write_set, 0, 0);
+		if (select(*max_element(monitor_fds.begin(), monitor_fds.end()) + 1, &read_set, &write_set, 0, 0) < 0)
+			std::cerr<<"..."<<strerror(errno)<<"\n";
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
