@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 05:53:23 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 07:07:57 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,7 +355,7 @@ void	Server::run(){
 	while (server_running)
 	{
 		init_sets_for_select();
-		select(monitor_fds.back() + 1, &read_set, &write_set, 0, 0); //why ?
+		select(monitor_fds.back() + 1, &read_set, &write_set, 0, 0);
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
