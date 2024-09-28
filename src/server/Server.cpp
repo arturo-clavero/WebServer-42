@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 10:53:02 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/28 11:17:58 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ uint32_t	extract_host(const std::string &str){
 	return (oct[0] << 24 | oct[1] << 16 | oct[2] << 8 | oct[3]);
 }
 
-Server::Server(std::vector<ServerConfig>& config) : config(config), last(clock()), interval(5.0 * CLOCKS_PER_SEC) {
+Server::Server(std::vector<ServerConfig>& config) : config(config){
 	std::map<std::string, std::vector<ServerConfig>	> combos;
 	for (int i = 0; i < static_cast<int>(config.size()); i++)
 		combos[config[i].getListen()].push_back(config[i]);
@@ -49,8 +49,8 @@ Server::Server(std::vector<ServerConfig>& config) : config(config), last(clock()
 		serverList.push_back(new_server[i]);//add server struct to vector of servers...
 		i++;
 	}
-	timeout.tv_sec = 2;       // 2 seconds
-    timeout.tv_usec = 500000; // 500 milliseconds
+	timeout.tv_sec = 1;       // 2 seconds
+    timeout.tv_usec = 0; // 500 milliseconds
 	signal(SIGPIPE, SIG_IGN);
 }
 
@@ -269,7 +269,7 @@ void	Server::execute_cgi(struct clientSocket &client)
 		client.state = FILES;
 		return ;
 	}
-	if (client.write_operations > 0 || !FD_ISSET(client.fd, &write_set) || client.read_operations > 0 || !FD_ISSET(client.fd, &read_set))
+	if (client.write_operations > 0 || !FD_ISSET(client.fd, &write_set))
 		return;
     client.cgi_pid = fork();
     if (client.cgi_pid == -1) {
@@ -288,9 +288,12 @@ void	Server::execute_cgi(struct clientSocket &client)
         std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
         exit(1);
     }
-	client.write_operations++;
-	client.read_operations++;
-	client.state++;
+	else
+	{
+		client.write_operations++;
+		client.read_operations++;
+		client.state++;
+	}
 }
 
 void	Server::process_client_connection(struct clientSocket &client, struct serverSocket &server)
@@ -340,12 +343,26 @@ void	Server::delete_disconnected_clients(struct serverSocket &server)
 		if (server.clientList[j].state == DISCONNECT)
 		{
 							//std::cout<<"hey...\n";
-
+			//std::cout<<"Disconnected "<<server.clientList[j].fd<<" \n";
+			//print list before
+			
 			FD_CLR(server.clientList[j].fd, &read_set);
 			FD_CLR(server.clientList[j].fd, &write_set);
+			std::cout<<"list before : ";
+			for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
+				std::cout<<*it<<" ";
+			std::cout<<"\n";
+			//end print
 			monitor_fds.remove(server.clientList[j].fd);
+			//print list before
+			std::cout<<"list after : ";
+			for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
+				std::cout<<*it<<" ";
+			std::cout<<"\n\n";
+			//end print
 			close(server.clientList[j].fd);
 			server.clientList.erase(server.clientList.begin() + j);
+			
 		}
 		else
 			j++;
@@ -358,16 +375,18 @@ void	Server::run(){
 	while (server_running)
 	{
 		init_sets_for_select();
-		if (select(*max_element(monitor_fds.begin(), monitor_fds.end()) + 1, &read_set, &write_set, 0, 0) < 0)
-			std::cerr<<"..."<<strerror(errno)<<"\n";
+		if (select(*max_element(monitor_fds.begin(), monitor_fds.end()) + 1, &read_set, &write_set, 0, &timeout) < 0)
+			{std::cerr<<"...\n";
+		std::cerr<<strerror(errno)<<"\n";}
 		for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 		{
 			for (int j = 0; j < static_cast<int>(serverList[i].clientList.size()); j++)
 			{
+				std::cout<<"client "<<serverList[i].clientList[j].fd<<", state "<<serverList[i].clientList[j].state<<"\n";
 				process_client_connection(serverList[i].clientList[j], serverList[i]);
 			}
-			accept_new_client_connection(serverList[i]);
 			delete_disconnected_clients(serverList[i]);
+			accept_new_client_connection(serverList[i]);
 		}
 	}
 	server_running = 1;
