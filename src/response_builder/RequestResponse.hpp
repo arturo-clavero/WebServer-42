@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 16:33:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:24:45 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ public:
 	std::string getContentDisposition() const;
 	size_t getContentLength() const;
 	std::string getFilePathForBody() const;
-	const std::vector<int> getPostFileFds() const;
-	const std::vector<std::string> getPostFileContents() const;
 	std::string getCgiPath() const;
 	//Setters
 	void setBody(const std::string& body);
@@ -43,12 +41,8 @@ public:
 	void setContentDisposition(const std::string& contentDisposition);
 	void setFilePathForBody(const std::string& file_path_for_body);
 	void setContentLengthFromPath(const std::string& path);
-	void setPostFileContents(const std::vector<std::string> & contents);
-	void setPostFileFds(const std::vector<int> & fds);
 	void setCgiPath(const std::string& cgiPath);
 	
-	void popBackPostFileContents();
-	void popBackPostFileFds();
 
 	bool buildBodyFromFile(const ServerConfig& config, int file_fd);
     std::string toString() const;
@@ -61,8 +55,6 @@ private:
 	std::string contentType;
 	std::string contentDisposition;
 	size_t contentLength;
-	std::vector<std::string> postFileContents;
-	std::vector<int> postFileFds;
 
 	std::string cgi_path;
 

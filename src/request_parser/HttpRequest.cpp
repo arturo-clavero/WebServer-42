@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:13:14 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 21:28:44 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:50:34 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,9 @@ std::string HttpRequest::getPath() const { return path_; }
 std::string HttpRequest::getProtocol() const { return protocol_; }
 std::string HttpRequest::getBody() const { return body_; }
 std::string HttpRequest::getHost() const { return host_; } //for network version 1
-const std::vector<std::string> HttpRequest::getPostFileContents() const {return postFileContents_; }
-const std::vector<int> HttpRequest::getPostFileFds() const {return postFileFds_; }
 std::string HttpRequest::getCgiPath() const { return cgiPath_; }
-
+	std::string	&HttpRequest::getLastFileContent(){return postFileContents_.back();}
+	int			HttpRequest::getLastFileFd(){return postFileFds_.back();}
 std::string HttpRequest::getHeader(const std::string& key) const {
     std::map<std::string, std::string>::const_iterator it = headers_.find(key);
     return (it != headers_.end()) ? it->second : "";
@@ -72,6 +71,11 @@ bool HttpRequest::hasHeader(const std::string& key) const {
     return headers_.find(key) != headers_.end();
 }
 
+bool	HttpRequest::hasPostFileFds() { return !postFileFds_.empty();}
+bool	HttpRequest::hasPostFileContents() { return !postFileContents_.empty();}
+void	HttpRequest::popBackPostFileContents(){postFileContents_.pop_back();}
+void	HttpRequest::popBackPostFileFds(){postFileFds_.pop_back();}
+	
 void HttpRequest::printHeaders() const {
     //std::cout << "Headers:" << std::endl;
     std::map<std::string, std::string>::const_iterator it;

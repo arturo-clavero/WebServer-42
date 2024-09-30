@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 11:17:58 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:12:35 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,18 @@ int	Server::server_socket_error(std::string type, int *i){
 
 int	Server::server_sockets_for_listening(){
 	int opt = 1;
+	int flags;
 	struct sockaddr_in address_ipv4;
 	for (int i = 0; i < static_cast<int>(serverList.size()); i++)
 	{
-		serverList[i].fd = socket(AF_INET, SOCK_STREAM | O_NONBLOCK, 0); //created socket fd, NON-BLOCKING flag
+		serverList[i].fd = socket(AF_INET, SOCK_STREAM, 0); //created socket fd, NON-BLOCKING flag
 		if (serverList[i].fd == -1)
 			return (server_socket_error("Socket", &i));
+		flags = fcntl(serverList[i].fd, F_GETFL, 0);
+		if (flags == -1)
+			return (server_socket_error("fcntl F_GETFL", &i));
+		if (fcntl(serverList[i].fd, F_SETFL, flags | O_NONBLOCK) == -1)
+			return (server_socket_error("fcntl F_SETFL", &i));
 		setsockopt(serverList[i].fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));//We can bind to an address that is already bound. Without SO_REUSEADDR, server can fail to bind if the socket it is still held by the prev server run. 
 		memset(&address_ipv4, 0, sizeof(address_ipv4));
 		address_ipv4.sin_family = AF_INET;//family AF_INET for ipv4
@@ -97,6 +103,7 @@ void	Server::init_client_struct(struct clientSocket &client){
 	client.write_buffer.clear();
 	client.write_offset = 0;
 	client.state = 0;
+	client.read_timeout = 0;
 }
 
 void	Server::accept_new_client_connection(struct serverSocket &server){
@@ -108,11 +115,11 @@ void	Server::accept_new_client_connection(struct serverSocket &server){
 	static int p;
 	std::cout<<"\n\nnew client connection accepted "<<p<<"\n\n";
 	p++;
-	setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
+	/*setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout, sizeof(timeout));
 	int enable = 1;
 	setsockopt(client.fd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
 	int idle_time = 3; // 30 seconds
-    setsockopt(client.fd, IPPROTO_TCP, TCP_KEEPIDLE, &idle_time, sizeof(idle_time));
+    setsockopt(client.fd, IPPROTO_TCP, TCP_KEEPIDLE, &idle_time, sizeof(idle_time));*/
 	init_client_struct(client);
 	monitor_fds.push_back(client.fd);
 	server.clientList.push_back(client);
@@ -152,22 +159,22 @@ void	Server::manage_files(struct clientSocket &client)
 		if (body_done == false)
 			return ;
 	}
-	if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
+	if (client.request.hasPostFileContents() && client.request.hasPostFileFds())
 	{
 		if (client.write_operations > 0)
 			return ;
-		int bytes = write(client.response.getPostFileFds().back(), &(client.response.getPostFileContents().back())[client.write_offset], WRITE_BUFFER_SIZE);
+		int bytes = write(client.request.getLastFileFd(), &(client.request.getLastFileContent())[client.write_offset], WRITE_BUFFER_SIZE);
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
 		client.write_operations++;
 		client.write_offset += bytes;
-		if (client.write_offset < static_cast<int>(client.response.getPostFileContents().back().size()))
+		if (client.write_offset < static_cast<int>(client.request.getLastFileContent().size()))
 			return ;
 		client.write_offset = 0;
-		close(client.response.getPostFileFds().back());
-		client.response.popBackPostFileFds();
-		client.response.popBackPostFileContents();
-		if (!client.response.getPostFileContents().empty() && !client.response.getPostFileFds().empty())
+		close(client.request.getLastFileFd());
+		client.request.popBackPostFileFds();
+		client.request.popBackPostFileContents();
+		if (client.request.hasPostFileContents() && client.request.hasPostFileFds())
 			return ;
 	}
 	client.write_buffer = client.response.toString();
@@ -210,15 +217,29 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 
 void	Server::read_request(struct clientSocket &client)
 {
-	if (client.state != READING || !FD_ISSET(client.fd, &read_set))
+	if (client.state != READING) 
 		return ;
+	if (!FD_ISSET(client.fd, &read_set))
+	{
+		std::cout<<"client not ready for reading ... \n";
+		// if (++client.read_timeout > 100)//MAX BEFORE WE DISCONNECT 
+		// 	client.state = DISCONNECT;
+		return ;
+	}
+	// client.read_timeout = 0;
 	char buff[READ_BUFFER_SIZE];
 	memset(buff, 0, READ_BUFFER_SIZE);
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
-	int bytes = recv(client.fd, &buff[0], READ_BUFFER_SIZE, 0);
-	if (bytes <= 0)
+	int bytes = recv(client.fd, buff, READ_BUFFER_SIZE, 0);
+	std::cout<<"bytes: "<<bytes<<"\n";
+	if (bytes == 0)
 	{
 		client.state = DISCONNECT;
+		return ;
+	}
+	if (bytes == -1)
+	{
+		strerror(errno);
 		return ;
 	}
 	client.read_operations++;
@@ -342,27 +363,12 @@ void	Server::delete_disconnected_clients(struct serverSocket &server)
 	{
 		if (server.clientList[j].state == DISCONNECT)
 		{
-							//std::cout<<"hey...\n";
-			//std::cout<<"Disconnected "<<server.clientList[j].fd<<" \n";
-			//print list before
-			
+			std::cout<<"Disconnected "<<server.clientList[j].fd<<" \n";
 			FD_CLR(server.clientList[j].fd, &read_set);
 			FD_CLR(server.clientList[j].fd, &write_set);
-			std::cout<<"list before : ";
-			for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
-				std::cout<<*it<<" ";
-			std::cout<<"\n";
-			//end print
 			monitor_fds.remove(server.clientList[j].fd);
-			//print list before
-			std::cout<<"list after : ";
-			for (std::list<int>::iterator it = monitor_fds.begin(); it != monitor_fds.end(); it++)
-				std::cout<<*it<<" ";
-			std::cout<<"\n\n";
-			//end print
 			close(server.clientList[j].fd);
 			server.clientList.erase(server.clientList.begin() + j);
-			
 		}
 		else
 			j++;

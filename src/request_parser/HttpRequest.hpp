@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 06:01:26 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:51:14 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ public:
     std::string getHeader(const std::string& key) const;
 	std::string getHost() const; //for network version 1
     const std::map<std::string, std::string>& getHeaders() const;
-	const std::vector<std::string> getPostFileContents() const ;
-	const std::vector<int> getPostFileFds() const;
+	std::string	&getLastFileContent();
+	int			getLastFileFd();
 	std::string getCgiPath() const; 
 
     void setMethod(const std::string& method);
@@ -44,6 +44,12 @@ public:
 	void addPostFileFd(int fd);
     bool hasHeader(const std::string& key) const;
     void printHeaders() const;
+
+	void	popBackPostFileContents();
+	void	popBackPostFileFds();
+
+	bool	hasPostFileFds();
+	bool	hasPostFileContents();
 
 private:
     std::string method_;

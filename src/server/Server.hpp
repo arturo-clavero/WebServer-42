@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/28 11:10:40 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:05:33 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ struct	clientSocket{
 	HttpRequest		request;
 	int				read_operations, write_operations; //will be initialzed to 0 for every client loop, to track that we are not exceeding one operation
 	pid_t			cgi_pid;
+	int				read_timeout;
 };
 
 struct	serverSocket{

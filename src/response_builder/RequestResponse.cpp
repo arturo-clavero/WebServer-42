@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestResponse.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/25 16:33:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:25:48 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ std::string RequestResponse::getContentType() const { return this->contentType; 
 size_t RequestResponse::getContentLength() const { return this->contentLength; }
 std::string RequestResponse::getContentDisposition() const { return this->contentDisposition; }
 std::string RequestResponse::getFilePathForBody() const { return this->file_path_for_body; }
-const std::vector<int> RequestResponse::getPostFileFds() const { return postFileFds; }
-const std::vector<std::string> RequestResponse::getPostFileContents() const { return postFileContents;}
 std::string RequestResponse::getCgiPath() const { return this->cgi_path; }
 
 void RequestResponse::setBody(const std::string& body) { this->body = body; }
@@ -36,12 +34,8 @@ void RequestResponse::setContentType(const std::string& contentType) { this->con
 void RequestResponse::setContentLength(size_t contentLength) { this->contentLength = contentLength; }
 void RequestResponse::setContentDisposition(const std::string& contentDisposition) { this->contentDisposition = contentDisposition; }
 void RequestResponse::setFilePathForBody(const std::string& file_path_for_body) { this->file_path_for_body = file_path_for_body; }
-void RequestResponse::setPostFileContents(const std::vector<std::string> & contents) {postFileContents = contents; }
-void RequestResponse::setPostFileFds(const std::vector<int> & fds) {postFileFds = fds;}
 void RequestResponse::setCgiPath(const std::string& cgiPath) {this->cgi_path = cgiPath;}
 	
-void RequestResponse::popBackPostFileContents() {postFileContents.pop_back();}
-void RequestResponse::popBackPostFileFds() {postFileFds.pop_back();}
 
 std::string RequestResponse::toString() const {
 	

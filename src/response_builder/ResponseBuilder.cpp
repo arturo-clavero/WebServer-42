@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 21:30:34 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:23:24 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,11 +305,6 @@ RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpReq
     // Build success response
    // std::cout << "DEBUG: Building success response for POST" << std::endl;
     response = buildPostSuccessResponse(config, request, location);
-	if (!request.getPostFileContents().empty() && !request.getPostFileFds().empty())
-	{
-		response.setPostFileContents(request.getPostFileContents());
-		response.setPostFileFds(request.getPostFileFds());
-	}
 	//std::cout << "DEBUG: Exiting ResponseBuilder::buildPostResponse" << std::endl;
     return response;
 }
