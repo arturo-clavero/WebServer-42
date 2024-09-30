@@ -6,11 +6,13 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/30 19:12:35 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 21:46:57 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "Client.hpp"
+
 #include <string.h>
 #include <ctime>
 
@@ -98,14 +100,6 @@ int	Server::server_sockets_for_listening(){
 	return 0;
 }
 
-void	Server::init_client_struct(struct clientSocket &client){
-	client.read_buffer.clear();
-	client.write_buffer.clear();
-	client.write_offset = 0;
-	client.state = 0;
-	client.read_timeout = 0;
-}
-
 void	Server::accept_new_client_connection(struct serverSocket &server){
 	if (!FD_ISSET(server.fd, &read_set))
 		return ;
@@ -120,12 +114,12 @@ void	Server::accept_new_client_connection(struct serverSocket &server){
 	setsockopt(client.fd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
 	int idle_time = 3; // 30 seconds
     setsockopt(client.fd, IPPROTO_TCP, TCP_KEEPIDLE, &idle_time, sizeof(idle_time));*/
-	init_client_struct(client);
+	client.init_client_struct();
 	monitor_fds.push_back(client.fd);
 	server.clientList.push_back(client);
 }
 
-void	Server::write_response(struct clientSocket &client)
+void	Server::write_response(Client &client)
 {
 	if (client.state != WRITE || client.write_operations > 0 || !FD_ISSET(client.fd, &write_set))
 		return ;
@@ -145,7 +139,7 @@ void	Server::write_response(struct clientSocket &client)
 	}
 }
 
-void	Server::manage_files(struct clientSocket &client)
+void	Server::manage_files(Client &client)
 {
 	if (client.state != FILES)
 		return ;
@@ -181,7 +175,7 @@ void	Server::manage_files(struct clientSocket &client)
 	client.state++;
 }
 
-void	Server::find_match_config(struct clientSocket &client, std::vector<ServerConfig> &possible_configs, const std::string host)
+void	Server::find_match_config(Client &client, std::vector<ServerConfig> &possible_configs, const std::string host)
 {
 	std::vector<std::string> possible_names;
 	client.match_config = possible_configs[0];
@@ -200,7 +194,7 @@ void	Server::find_match_config(struct clientSocket &client, std::vector<ServerCo
 }
 
 
-void	Server::init_http_process(struct clientSocket &client, struct serverSocket &server)
+void	Server::init_http_process(Client &client, struct serverSocket &server)
 {
 	if (client.state != HTTP)
 		return ;
@@ -215,7 +209,7 @@ void	Server::init_http_process(struct clientSocket &client, struct serverSocket 
 	client.state++;
 }
 
-void	Server::read_request(struct clientSocket &client)
+void	Server::read_request(Client &client)
 {
 	if (client.state != READING) 
 		return ;
@@ -264,7 +258,7 @@ void	Server::read_request(struct clientSocket &client)
 	client.state++;
 }
 
-void	Server::wait_cgi(struct clientSocket &client)
+void	Server::wait_cgi(Client &client)
 {
 	if (client.state != WAITCGI)
 		return;
@@ -281,7 +275,7 @@ void	Server::wait_cgi(struct clientSocket &client)
 	}
 }
 
-void	Server::execute_cgi(struct clientSocket &client)
+void	Server::execute_cgi(Client &client)
 {
 	if (client.state != EXECUTECGI)
 		return ;
@@ -317,7 +311,7 @@ void	Server::execute_cgi(struct clientSocket &client)
 	}
 }
 
-void	Server::process_client_connection(struct clientSocket &client, struct serverSocket &server)
+void	Server::process_client_connection(Client &client, struct serverSocket &server)
 {
 	client.read_operations = 0;
 	client.write_operations = 0;
