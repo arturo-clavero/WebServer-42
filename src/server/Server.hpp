@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/30 21:53:00 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 22:44:01 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,29 +47,27 @@ class Server {
 	private:
 		std::vector<ServerConfig>	config;
 		std::vector<serverSocket>	serverList;
-		fd_set						read_set, write_set;
-		Client	client;
 		struct timeval timeout;
-		std::list<int>	monitor_fds;
 		
 		int		server_sockets_for_listening();
 		int		server_socket_error(std::string type, int *i);
 		void	accept_new_client_connection(struct serverSocket &server);
-		void	close_connection(Client &client, struct serverSocket &server, int j);
-		void	process_client_connection(Client &client, struct serverSocket &socket);
+		void	process_client_connection(Client &client, struct serverSocket &socket);//CLIENT
 		void	delete_disconnected_clients(struct serverSocket &server);
-		void	read_request(Client &client);
-		void	find_match_config(Client &client, std::vector<ServerConfig> &possible_configs, const std::string host);
-		void	execute_cgi(Client &client);
-		void	wait_cgi(Client &client);
-		void	manage_files(Client &client);
-		void	write_response(Client &client);
-		void	init_http_process(Client &client, struct serverSocket &server);
-		void	init_sets_for_select();
+		void	read_request(Client &client); //STATES
+		void	find_match_config(Client &client, std::vector<ServerConfig> &possible_configs, const std::string host);//UTILS
+		void	execute_cgi(Client &client);//STATES
+		void	wait_cgi(Client &client);//STATES
+		void	manage_files(Client &client);//STATES
+		void	write_response(Client &client);//STATES
+		void	init_http_process(Client &client, struct serverSocket &server);//STATES
+		void	init_sets_for_select();//MULTIPLEXING
 
 		
 
 	public:
+			fd_set						read_set, write_set;
+		std::list<int>	monitor_fds;
 		Server(std::vector<ServerConfig>& config);
 		void	run();
 		~Server();

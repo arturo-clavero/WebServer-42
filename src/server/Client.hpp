@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/30 21:53:33 by artclave         ###   ########.fr       */
+/*   Updated: 2024/09/30 22:48:17 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ class	Client{
 		HttpRequest		request;
 		int				read_operations, write_operations; //will be initialzed to 0 for every client loop, to track that we are not exceeding one operation
 		pid_t			cgi_pid;
-		Client();
+		Client(int fd_);
 		~Client();
-		void	init_client_struct();
+	//	void	init_client_struct();
 
 };
 
