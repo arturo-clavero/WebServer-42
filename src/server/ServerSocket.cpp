@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:25:22 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 14:50:06 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:06:17 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ void	ServerSocket::delete_disconnected_clients()
 {
 	for (int j = 0; j < static_cast<int>(clientList.size()); )
 	{
-		if (clientList[j].state == DISCONNECT)
+		if (clientList[j].get_state() == DISCONNECT)
 		{
-			std::cout<<"Disconnected "<<clientList[j].fd<<" \n";
-			multiplex->remove(clientList[j].fd);
-			close(clientList[j].fd);
+			std::cout<<"Disconnected "<<clientList[j].get_fd()<<" \n";
+			multiplex->remove(clientList[j].get_fd());
+			close(clientList[j].get_fd());
 			clientList.erase(clientList.begin() + j);
 		}
 		else

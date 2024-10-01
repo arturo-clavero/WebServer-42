@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 15:18:47 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:04:14 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,7 @@ class ServerSocket;
 class	ClientSocket{
 	private:
 		Multiplex	*multiplex;
-		void	read_request(); //STATES
-		void	init_http_process(std::vector<ServerConfig> &possible_configs);//STATES
-		void	find_match_config(std::vector<ServerConfig> &possible_configs, const std::string host);
-		void	execute_cgi();//STATES
-		void	wait_cgi();//STATES
-		void	manage_files();//STATES
-		void	write_response();//STATES
-		
-	public:
-		int				fd;//**SHARED ACROSS ALL
+				int				fd;//**SHARED ACROSS ALL
 		int				state; //**SHARED ACROSS ALL
 		int				read_operations, write_operations; //**SHARED ACROSS ALL
 
@@ -63,13 +54,21 @@ class	ClientSocket{
 		
 		int				write_offset; //IGN [INDEPENDENT VALUE IN 3ALL AND 4]
 		pid_t			cgi_pid; // IGN [INSIDE WAIT]
-
-
-
-
+		
+		void	read_request(); //STATES
+		void	init_http_process(std::vector<ServerConfig> &possible_configs);//STATES
+		void	find_match_config(std::vector<ServerConfig> &possible_configs, const std::string host);
+		void	execute_cgi();//STATES
+		void	wait_cgi();//STATES
+		void	manage_files();//STATES
+		void	write_response();//STATES
+		
+	public:
 		ClientSocket(Multiplex *server_multiplex, int fd_);
 		~ClientSocket();
 		void	process_connection(ServerSocket &socket);//CLIENT
+		int	get_fd() const;
+		int	get_state() const;
 		
 		
 		

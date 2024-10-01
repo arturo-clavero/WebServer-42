@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 15:20:03 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:05:10 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0) {}
 
 ClientSocket::~ClientSocket(){}
+
+int	ClientSocket::get_fd() const { return fd; }
+int	ClientSocket::get_state() const { return state; }
 
 void	ClientSocket::process_connection(ServerSocket &server)
 {
