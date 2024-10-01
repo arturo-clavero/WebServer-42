@@ -145,12 +145,25 @@
             font-weight: bold;
             border-radius: 5px;
         }
+        .view-guestbook-btn {
+            background-color: #FF00FF;
+            color: #00FFFF;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="/images/logo.gif" alt="WebServer 2000 Logo" class="logo">
-        <p>The future of the internet is here!</p>
+        <h1>Welcome to Webserver 2000!</h1>
         
         <button id="findMeButton" class="find-me-btn">Find Me!</button>
         
@@ -177,6 +190,8 @@
             <br>
             <button type="button" id="submitGuestbook">Submit Message</button>
         </form>
+
+        <a href="/guestbook.html" class="view-guestbook-btn">View Guestbook</a>
     </div>
 
     <div id="customContextMenu" class="custom-context-menu">
