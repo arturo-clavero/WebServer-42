@@ -43,7 +43,6 @@
         }
         .cool-image {
             max-width: 100%;
-            border: 5px solid #FF00FF;
             margin: 20px 0;
         }
         #uploadForm {
@@ -116,15 +115,31 @@
         .custom-context-menu button:hover {
             background-color: #F0F0F0;
         }
+        .find-me-btn {
+            background-color: #FF00FF;
+            color: #00FFFF;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin: 20px 0 40px; /* Increased bottom margin to 40px */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="/images/logo.gif" alt="WebServer 2000 Logo" class="logo">
-        <h1>Welcome {{FIRSTNAME}}</h1>
         <p>The future of the internet is here!</p>
         
-        <img src="/cgi-bin/imagegen.py" alt="Cool Image" class="cool-image">
+        <button id="findMeButton" class="find-me-btn">Find Me!</button>
+        
+        <div id="dynamicImages" style="display: none;">
+            <img id="nameImage" alt="Welcome Image" class="cool-image">
+            <br>
+            <img id="coolImage" alt="Cool Image" class="cool-image">
+        </div>
         
         <marquee>Upload your files to the COOLEST server on the web!</marquee>
         
@@ -238,6 +253,18 @@
 
         document.addEventListener('click', () => {
             customContextMenu.style.display = 'none';
+        });
+
+        // Add new code for the Find Me button
+        const findMeButton = document.getElementById('findMeButton');
+        const dynamicImages = document.getElementById('dynamicImages');
+        const nameImage = document.getElementById('nameImage');
+        const coolImage = document.getElementById('coolImage');
+
+        findMeButton.addEventListener('click', () => {
+            dynamicImages.style.display = 'block';
+            nameImage.src = "/cgi-bin/namegen.py";
+            coolImage.src = "/cgi-bin/picgen.py";
         });
 
         // Initial file list fetch
