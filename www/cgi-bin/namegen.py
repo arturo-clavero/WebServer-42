@@ -5,8 +5,6 @@ import json
 import random
 from PIL import Image, ImageDraw, ImageFont
 import io
-from oauthlib.oauth2 import BackendApplicationClient
-from requests_oauthlib import OAuth2Session
 
 def generate_welcome_image(welcome_message):
 
@@ -60,14 +58,20 @@ try:
     UID = "u-s4t2ud-c3d6d2965823c31456699f32da9c743e9c4b987831e1c53161df5c594206c4b4"
     SECRET = "REMOVED"
 
-    client = BackendApplicationClient(client_id=UID)
-    oauth = OAuth2Session(client=client)
+    # Get access token using client credentials
+    token_url = 'https://api.intra.42.fr/oauth/token'
+    data = {
+        'grant_type': 'client_credentials',
+        'client_id': UID,
+        'client_secret': SECRET
+    }
+    token_response = requests.post(token_url, data=data)
+    token = token_response.json().get('access_token')
 
-    token = oauth.fetch_token(token_url='https://api.intra.42.fr/oauth/token', client_id=UID, client_secret=SECRET)
-
+    # Use the token to make the API request
     url = f"https://api.intra.42.fr/v2/users/{os.environ.get('USER', '')}"
-
-    response = oauth.get(url)
+    headers = {'Authorization': f'Bearer {token}'}
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         user_data = response.json()

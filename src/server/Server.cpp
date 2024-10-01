@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 07:04:52 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 12:43:10 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,7 +297,7 @@ void	Server::execute_cgi(Client &client)
 		dup2(client.fd, STDOUT_FILENO);
 		std::string cgi_path = client.response.getCgiPath();
 		const CGIConfig& cgiConfig = client.match_config.getCgi();
- 		char* args[] = {const_cast<char*>(cgiConfig.path.c_str()), const_cast<char*>(cgi_path.c_str()), NULL};
+ 		char* args[] = {const_cast<char*>(cgiConfig.path.c_str()), const_cast<char*>(cgi_path.c_str()), const_cast<char*>(client.request.getBody().c_str()), NULL};
          execv(cgiConfig.path.c_str(), args);
         std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
         exit(1);

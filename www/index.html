@@ -126,6 +126,25 @@
             border-radius: 5px;
             margin: 20px 0 40px; /* Increased bottom margin to 40px */
         }
+        #guestbookForm {
+            margin-top: 20px;
+        }
+        #guestbookMessage {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            font-family: "Comic Sans MS", cursive;
+        }
+        #submitGuestbook {
+            background-color: #FF00FF;
+            color: #00FFFF;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +170,13 @@
         
         <h2>Your Awesome Gallery</h2>
         <ul id="fileList"></ul>
+
+        <h2>Guestbook</h2>
+        <form id="guestbookForm">
+            <textarea id="guestbookMessage" placeholder="Leave a message in our guestbook!"></textarea>
+            <br>
+            <button type="button" id="submitGuestbook">Submit Message</button>
+        </form>
     </div>
 
     <div id="customContextMenu" class="custom-context-menu">
@@ -265,6 +291,33 @@
             dynamicImages.style.display = 'block';
             nameImage.src = "/cgi-bin/namegen.py";
             coolImage.src = "/cgi-bin/picgen.py";
+        });
+
+        // Guestbook functionality
+        const guestbookForm = document.getElementById('guestbookForm');
+        const guestbookMessage = document.getElementById('guestbookMessage');
+        const submitGuestbook = document.getElementById('submitGuestbook');
+
+        submitGuestbook.addEventListener('click', () => {
+            const message = guestbookMessage.value;
+            if (message.trim() !== '') {
+                fetch('/cgi-bin/guestbook.py', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `message=${encodeURIComponent(message)}`
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Guestbook message submitted:', data);
+                    guestbookMessage.value = ''; // Clear the textarea
+                    alert('Thank you for signing our guestbook!');
+                })
+                .catch(error => console.error('Error submitting guestbook message:', error));
+            } else {
+                alert('Please enter a message before submitting.');
+            }
         });
 
         // Initial file list fetch

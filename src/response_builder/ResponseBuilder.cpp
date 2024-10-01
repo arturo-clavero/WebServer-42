@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseBuilder.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/30 18:23:24 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 12:39:31 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -405,12 +405,7 @@ RequestResponse ResponseBuilder::buildCGIResponse(ServerConfig& config, HttpRequ
         return buildErrorResponse(config, request, "404", "Not Found");
     }
 
-    // Check if the file has the correct extension
-    size_t dotPos = fullPath.find_last_of('.');
-    if (dotPos == std::string::npos || fullPath.substr(dotPos) != cgiConfig.ext) {
-    //    std::cout << "DEBUG: Invalid CGI file extension. Expected: " << cgiConfig.ext << ", Found: " << (dotPos != std::string::npos ? fullPath.substr(dotPos) : "no extension") << std::endl;
-        return buildErrorResponse(config, request, "404", "Not Found");
-    }
+
 	RequestResponse response;
 
 	response.setCgiPath(fullPath);
