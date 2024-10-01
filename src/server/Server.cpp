@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/09/30 22:49:40 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 07:04:52 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ Server::Server(std::vector<ServerConfig>& config) : config(config){
 	}
 	timeout.tv_sec = 1;       // 2 seconds
     timeout.tv_usec = 0; // 500 milliseconds
-	signal(SIGPIPE, SIG_IGN);
 }
 
 Server::~Server(){}
