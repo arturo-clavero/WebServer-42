@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 22:02:48 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 15:19:36 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "includes.hpp"
 
-#include "server/Server.hpp"
+#include "server/ServerCore.hpp"
 #include "config/ConfigParser.hpp"
 #include "config/ServerConfig.hpp"
 #include "request_parser/HttpRequest.hpp"
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 	try {
 		while (1)
 		{
-			Server server(config);
+			ServerCore server(config);
 			server.run();
 		}
 	} catch (std::exception &e) {

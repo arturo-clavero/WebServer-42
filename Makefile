@@ -18,8 +18,12 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/post_request_body_handling/PostRequestBodyPart.cpp \
 	   $(SRC_DIR)/response_builder/RequestResponse.cpp \
 	   $(SRC_DIR)/response_builder/ResponseUtils.cpp \
-	   $(SRC_DIR)/server/Server.cpp \
-	   $(SRC_DIR)/server/Client.cpp \
+	  	$(SRC_DIR)/server/ServerCore.cpp \
+	   $(SRC_DIR)/server/Multiplex.cpp \
+	   $(SRC_DIR)/server/ServerSocket.cpp \
+	   $(SRC_DIR)/server/ClientSocket.cpp \
+	   $(SRC_DIR)/server/Utils.cpp \
+
 
 # Object files
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
