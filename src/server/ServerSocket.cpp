@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:25:22 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 22:06:17 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:02:29 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,18 @@ void	ServerSocket::start_listening()
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw(strerror(errno)) ;
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));//We can bind to an address that is already bound. Without SO_REUSEADDR, server can fail to bind if the socket it is still held by the prev server run. 
-	this->set_address();
-	if (bind(fd, address_ptr, address_len) == -1) //binding socket to address of the port we are supposed to listen from
+	struct sockaddr_in address_ipv4;
+	memset(&address_ipv4, 0, sizeof(address_ipv4));
+	
+	address_ipv4.sin_family = AF_INET;//family AF_INET for ipv4
+	address_ipv4.sin_addr.s_addr = htonl(host); //converts ip int from host byte order to network byte order
+	//inet_pton ....
+	
+	address_ipv4.sin_port = htons(port); //converts port from host byte order to network byte order
+	
+	address_ptr = (struct sockaddr *)&address_ipv4;
+	address_len = sizeof(address_ipv4);
+	if (bind(fd, (struct sockaddr *)&address_ipv4, sizeof(address_ipv4)) == -1) //binding socket to address of the port we are supposed to listen from
 		throw(strerror(errno)) ;
 	if (listen(fd, 32) == -1) //listen to max 32 users
 		throw(strerror(errno)) ;
@@ -61,9 +71,22 @@ void	ServerSocket::accept_new_client_connection()
 	int client_fd;
 	if (!multiplex->ready_to_read(fd))
 		return ;
-	client_fd = accept(fd, address_ptr, &address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
+	//this->set_address();
+	struct sockaddr_in address_ipv4;
+	memset(&address_ipv4, 0, sizeof(address_ipv4));
+	address_ipv4.sin_family = AF_INET;//family AF_INET for ipv4
+	address_ipv4.sin_port = htons(port); //converts port from host byte order to network byte order
+	address_ipv4.sin_addr.s_addr = htonl(host); //converts ip int from host byte order to network byte order
+
+	address_len = sizeof(address_ipv4);
+	client_fd = accept(fd, (struct sockaddr *)&address_ipv4, &address_len);//accept connections! (Now the client can connect) can only use flags with accept4 which is not allowed in subject //this client fd is a duplicate of our listenning fd but we will use for reading/writing because other fd is listening.... 
 	if (client_fd < 0) //no new connections ....
 		return ;
+	//setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&multiplex->timeout, sizeof(multiplex->timeout));
+	//int enable = 1;
+	//setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
+	//int idle_time = 3; // 30 seconds
+    //setsockopt(fd, IPPROTO_TCP, TCPq_KEEPIDLE, &idle_time, sizeof(idle_time));
 	multiplex->add(client_fd);
 	clientList.push_back(ClientSocket(multiplex, client_fd));
 }
@@ -74,7 +97,7 @@ void	ServerSocket::delete_disconnected_clients()
 	{
 		if (clientList[j].get_state() == DISCONNECT)
 		{
-			std::cout<<"Disconnected "<<clientList[j].get_fd()<<" \n";
+			//std::cout<<"Disconnected "<<clientList[j].get_fd()<<" \n";
 			multiplex->remove(clientList[j].get_fd());
 			close(clientList[j].get_fd());
 			clientList.erase(clientList.begin() + j);

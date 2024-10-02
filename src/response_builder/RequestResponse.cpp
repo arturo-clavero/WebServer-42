@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/30 18:25:48 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:08:26 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ bool RequestResponse::buildBodyFromFile(const ServerConfig& config, int file_fd)
 	(void)config;
 	std::string	buff(READ_BUFFER_SIZE, 0);
 	int bytes = read(file_fd, &buff[0], READ_BUFFER_SIZE);
+	//std::cout<<"bytes: "<<bytes<<"\n";
 	for (int i = 0; i < bytes; i++)
 		this->body += buff[i];
 //	if (bytes < 0)

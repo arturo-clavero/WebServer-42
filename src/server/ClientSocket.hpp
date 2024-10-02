@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 22:04:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:53:26 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,7 @@ class	ClientSocket{
 		void	process_connection(ServerSocket &socket);//CLIENT
 		int	get_fd() const;
 		int	get_state() const;
-		
-		
-		
-		
-
+	
 	//	void	init_client_struct();
 
 };

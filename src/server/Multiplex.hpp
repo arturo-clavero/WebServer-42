@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 07:06:04 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 14:40:02 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:33:40 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ class Multiplex
 		fd_set			read_set;
 		fd_set			write_set;
 		std::list<int>	active_fds;
-		struct timeval	timeout;
 
 	public:
+		struct timeval	timeout;
 		Multiplex();
 		~Multiplex();
 

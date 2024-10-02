@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 22:02:55 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:08:10 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@
 #include <sys/wait.h>
 #include <csignal>
 
-# define READ_BUFFER_SIZE 1024
-# define WRITE_BUFFER_SIZE 1024
+# define READ_BUFFER_SIZE 100
+# define WRITE_BUFFER_SIZE 100
 
 extern int		server_running;
 

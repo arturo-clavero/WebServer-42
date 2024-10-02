@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 22:05:10 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:18:21 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,14 @@ void	ClientSocket::read_request() //STATES
 		return ;
 	if (!multiplex->ready_to_read(fd))
 	{
-		std::cout<<"client not ready for reading ... \n";
+	//	std::cout<<"client not ready for reading ... \n";
 		return ;
 	}
 	char buff[READ_BUFFER_SIZE];
 	memset(buff, 0, READ_BUFFER_SIZE);
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(fd, buff, READ_BUFFER_SIZE, 0);
-	std::cout<<"bytes: "<<bytes<<"\n";
+	//std::cout<<"bytes: "<<bytes<<"\n";
 	if (bytes == 0)
 	{
 		state = DISCONNECT;
@@ -55,7 +55,7 @@ void	ClientSocket::read_request() //STATES
 	}
 	if (bytes == -1)
 	{
-		strerror(errno);
+		//strerror(errno);
 		return ;
 	}
 	read_operations++;
@@ -63,19 +63,28 @@ void	ClientSocket::read_request() //STATES
 		read_buffer += buff[i];
 	pos_header_end = read_buffer.find("\r\n\r\n");
     if (pos_header_end == std::string::npos)// Header is incomplete, wait for more data
-    		return;
+	{
+		//setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&multiplex->timeout, sizeof(multiplex->timeout));
+    	return;
+	}
 	pos_content_length = read_buffer.find("Content-Length:");
 	if (pos_content_length != std::string::npos)
 	{
 		long expected_body_size = std::atol(read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
 		if (static_cast<int>(read_buffer.size() - pos_header_end - 4) < expected_body_size)// Body is incomplete, wait for more data
-            return;
+        {
+			//setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&multiplex->timeout, sizeof(multiplex->timeout));
+			return;
+		}
 	}
 	else if (read_buffer.find("Transfer-Encoding: chunked") != std::string::npos)
 	{
 		pos_zero = read_buffer.find("0\r\n\r\n");
 		if (pos_zero == std::string::npos) // Chunked body is incomplete, wait for more data
-            return;
+        {
+			//setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&multiplex->timeout, sizeof(multiplex->timeout));
+			return ;
+		}
 	}
 	state++;
 }
@@ -85,11 +94,13 @@ void	ClientSocket::init_http_process(std::vector<ServerConfig> &possible_configs
 	if (state != HTTP)
 		return ;
 	request = RequestParser::parse(read_buffer);
+	read_buffer.clear();
 	find_match_config(possible_configs, request.getHost());
 	response = ResponseBuilder::build(request, match_config);
 	//std::cout << "DEBUG: Response built" << std::endl;
 	if (!response.getFilePathForBody().empty())
 	{
+		//std::cout<<"file name"<<response.getFilePathForBody().c_str()<<"\n";
 		file_fd = open(response.getFilePathForBody().c_str(), O_RDONLY);
 	}	
 	state++;
@@ -165,11 +176,16 @@ void	ClientSocket::wait_cgi()//STATES
 		return ;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 		//std::cout << "DEBUG: CGI program executed successfully" << std::endl;
+		//response = RequestResponse();
+		//request = HttpRequest();
 		state = DISCONNECT;
 	} else {
 		//std::cerr << "ERROR: CGI program failed. Exit status: " << WEXITSTATUS(status) << std::endl;
 		response =  ResponseBuilder::buildErrorResponse(match_config, request, "500", "Internal Server Error");
 		state = WRITE;
+		write_buffer = response.toString();
+		//response = RequestResponse();
+		//request = HttpRequest();
 	}
 }
 
@@ -178,20 +194,31 @@ void	ClientSocket::manage_files()//STATES
 	if (state != FILES)
 		return ;
 	//std::cout<<"MANAGING FILES\n";
-	if (!response.getFilePathForBody().empty() && file_fd > 0)
+	//std::cout<<"file fd: "<<file_fd<<"\n";
+	if (!response.getFilePathForBody().empty()) 
 	{
+		//std::cout<<"check1\n";
+		if (file_fd < 0)
+			return ;
 		if (read_operations > 0)
 			return ;
+		//std::cout<<"check2\n";
 		int body_done = response.buildBodyFromFile(match_config, file_fd);
 		read_operations ++;
+		//std::cout<<"body done: "<<body_done<<"\n";
 		if (body_done == false)
 			return ;
+		close(file_fd);
+		//std::cout<<"check3\n";
 	}
 	if (request.hasPostFileContents() && request.hasPostFileFds())
 	{
 		if (write_operations > 0)
 			return ;
-		int bytes = write(request.getLastFileFd(), &(request.getLastFileContent())[write_offset], WRITE_BUFFER_SIZE);
+		int max = static_cast<int>(write_buffer.size()) - write_offset;
+		if (max > WRITE_BUFFER_SIZE)
+			max = WRITE_BUFFER_SIZE;
+		int bytes = write(request.getLastFileFd(), &(request.getLastFileContent())[write_offset], max);
 		if (bytes < 0)
 			return ; //some error saving teh file what to do here?
 		write_operations++;
@@ -206,6 +233,8 @@ void	ClientSocket::manage_files()//STATES
 			return ;
 	}
 	write_buffer = response.toString();
+	//static int z;
+	//std::cout<<++z<<" RESPONSE:\n"<<write_buffer<<"\n";
 	state++;
 }
 
@@ -214,7 +243,10 @@ void	ClientSocket::write_response()//STATES
 	if (state != WRITE || write_operations > 0 || !multiplex->ready_to_write(fd))
 		return ;
 	//setsockopt(client.fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
-	int bytes = send(fd, &write_buffer[write_offset], WRITE_BUFFER_SIZE, 0);
+	int max = static_cast<int>(write_buffer.size()) - write_offset;
+	if (max > WRITE_BUFFER_SIZE)
+		max = WRITE_BUFFER_SIZE;
+	int bytes = send(fd, &write_buffer[write_offset], max, 0);
 	if (bytes < 0)
 	{
 		 state = DISCONNECT;

@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 07:07:40 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 14:35:57 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/01 22:40:01 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ void	Multiplex::reset_select()
 		FD_SET(*it, &read_set);
 		FD_SET(*it, &write_set);
 	}
-	select(*max_element(active_fds.begin(), active_fds.end()) + 1, &read_set, &write_set, 0, &timeout);
+	//select(*max_element(active_fds.begin(), active_fds.end()) + 1, &read_set, &write_set, 0, &timeout);
+	select(*max_element(active_fds.begin(), active_fds.end()) + 1, &read_set, &write_set, 0, 0);
 }

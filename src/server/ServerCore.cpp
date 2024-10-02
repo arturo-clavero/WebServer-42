@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 22:05:37 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:19:23 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	ServerCore::set_up_server_sockets(std::map<std::string, std::vector<ServerC
 
 void	ServerCore::run(){
 	//set_up_signals(); //UNCOMMENT!
+	signal(SIGPIPE, SIG_IGN);
 	set_up_server_sockets(unique_host_port_configs());
 	while (server_running)
 	{
@@ -74,7 +75,7 @@ void	ServerCore::run(){
 		{
 			for (std::vector<ClientSocket>::iterator client_it = server_it->getClients().begin(); client_it != server_it->getClients().end(); client_it++)
 			{
-				std::cout<<"client "<<client_it->get_fd()<<", state "<<client_it->get_state()<<"\n";
+				//std::cout<<"clienmake runt "<<client_it->get_fd()<<", state "<<client_it->get_state()<<"\n";
 				client_it->process_connection(*server_it);
 			}
 			server_it->delete_disconnected_clients();
