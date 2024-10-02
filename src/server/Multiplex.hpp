@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 07:06:04 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 22:33:40 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 20:02:04 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ class Multiplex
 		void	remove(int fd);
 		bool	ready_to_read(int fd);
 		bool	ready_to_write(int fd);
-		void	close_all_active_fds();
 };
 
 #endif

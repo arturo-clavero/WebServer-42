@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 09:57:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 21:28:00 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:53:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
     request.setPath(decodedPath);
     request.setProtocol(protocol);
 
-    //std::cout << "Parsed request line: " << method << " " << path << " " << protocol << std::endl;
-
     // Parse headers
     while (std::getline(iss, line) && !line.empty() && line != "\r") {
         size_t colon_pos = line.find(':');
@@ -56,19 +54,16 @@ HttpRequest RequestParser::parse(const std::string& request_str) {
 			if (key == "Host")
 				request.setHost(value);
             if (!key.empty()) {
-                //std::cout << "Adding header: '" << key << "' : '" << value << "'" << std::endl;
                 request.addHeader(key, value);
             }
         }
     }
-	//std::cout << "DEBUG: Headers parsed" << std::endl;
     // Parse body (if present)
     std::string body;
     while (std::getline(iss, line)) {
         body += line + "\n";
     }
     request.setBody(body);
-	//std::cout << "DEBUG: Request parsed"  << std::endl;
     return request;
 }
 

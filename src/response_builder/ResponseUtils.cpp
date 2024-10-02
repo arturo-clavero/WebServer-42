@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 09:41:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/01 12:40:54 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:56:51 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,21 @@ bool ResponseUtils::isRequestValid(const HttpRequest& request) {
 	return true;
 }
 bool ResponseUtils::isCGIRequest(const ServerConfig& config, const HttpRequest& request) {
-  //  std::cout << "DEBUG: Entering isCGIRequest" << std::endl;
     const CGIConfig& cgiConfig = config.getCgi();
     if (cgiConfig.root.empty()) {
-      //  std::cout << "DEBUG: CGI root is empty, not a CGI request" << std::endl;
         return false;
     }
-    
     std::string requestPath = request.getPath();
-    //std::cout << "DEBUG: Request path: " << requestPath << std::endl;
-   // std::cout << "DEBUG: CGI root: " << cgiConfig.root << std::endl;
-    
     if (requestPath.compare(0, 8, "/cgi-bin") == 0) {
-       // std::cout << "DEBUG: Request path starts with /cgi-bin" << std::endl;
-        
         // Check if the file has the correct extension
         size_t dotPos = requestPath.find_last_of('.');
         if (dotPos != std::string::npos) {
             std::string extension = requestPath.substr(dotPos);
-         //   std::cout << "DEBUG: File extension: " << extension << std::endl;
             if (extension == cgiConfig.ext) {
-           //     std::cout << "DEBUG: CGI request detected" << std::endl;
                 return true;
             }
         }
     }
-    
-   // std::cout << "DEBUG: Not a CGI request" << std::endl;
     return false;
 }
 
@@ -89,18 +77,13 @@ LocationConfig ResponseUtils::findLocation(const std::string& path, const Server
 }
 
 FileType ResponseUtils::getTargetType(const HttpRequest& request) {
-	//std::cout << "DEBUG: Entering getTargetType with path: " << request.getPath() << std::endl;
-
 	if (request.getPath().find(".") != std::string::npos) {
-		//std::cout << "DEBUG: Found a dot in the path, returning IS_FILE" << std::endl;
 		return IS_FILE;
 	}
 	else if (request.getPath().find("/") != std::string::npos) {
-	//	std::cout << "DEBUG: Found a slash in the path, returning IS_DIRECTORY" << std::endl;
 		return IS_DIRECTORY;
 	}
 	else {
-		//std::cout << "DEBUG: No dot or slash found, returning NOT_FOUND" << std::endl;
 		return NOT_FOUND;
 	}
 }
@@ -143,8 +126,6 @@ std::string ResponseUtils::getContentType(const std::string& path) {
 }
 
 bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& filename, const std::string& content, HttpRequest &request) {
-    
-	//std::cout<<"CHECK\n\n";// Construct the full path
 	(void)request;
 	(void)content;
 	std::string fullPath = folderPath;
@@ -156,9 +137,6 @@ bool ResponseUtils::openFiles(const std::string& folderPath, const std::string& 
 	int fd = open(fullPath.c_str(), O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 		return false;
-	//std::cout<<"fd: "<<fd<<std::endl;
-	//std::cout<<"content: "<<content<<std::endl;
-	//std::cout<<"size: "<<content.size()<<std::endl;
 	request.addPostFileFd(fd);
 	request.addPostFileContent(content);
     return true;

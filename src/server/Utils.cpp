@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:31:51 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 18:55:53 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:27:12 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,8 @@ uint32_t	Utils::extract_host(const std::string &str){
 	for (int i = 0; i < 4; i++)
 	{
 		std::string substr = str.substr(it[i] - str.begin(), it[i + 1] - it[i] - 1);
-		std::cout<<substr<<"\n";
 		oct[i] = static_cast<uint8_t>(std::atoi(substr.c_str()));
 	}
-	std::cout<<"RESULT: ";
-	uint32_t result = oct[0] << 24 | oct[1] << 16 | oct[2] << 8 | oct[3];
-	std::cout<<result<<"\n";
 	return (oct[0] << 24 | oct[1] << 16 | oct[2] << 8 | oct[3]);
 }
 

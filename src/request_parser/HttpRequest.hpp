@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:11:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/30 18:51:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:53:17 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ public:
     std::string getProtocol() const;
     std::string getBody() const;
     std::string getHeader(const std::string& key) const;
-	std::string getHost() const; //for network version 1
+	std::string getHost() const; 
     const std::map<std::string, std::string>& getHeaders() const;
 	std::string	&getLastFileContent();
 	int			getLastFileFd();
@@ -38,7 +38,7 @@ public:
     void setProtocol(const std::string& protocol);
     void setBody(const std::string& body);
     void addHeader(const std::string& key, const std::string& value);
-	void setHost(const std::string & host); //for network version 1
+	void setHost(const std::string & host);
 	void setCgiPath(const std::string &path);
 	void addPostFileContent(const std::string & content);
 	void addPostFileFd(int fd);
@@ -57,7 +57,7 @@ private:
     std::string protocol_;
     std::map<std::string, std::string> headers_;
     std::string body_;
-	std::string host_; //for network version 1
+	std::string host_;
 	std::vector<std::string> postFileContents_;
 	std::vector<int> postFileFds_;
 	std::string		cgiPath_;

@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/30 18:24:45 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 23:00:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ public:
 	void setCgiPath(const std::string& cgiPath);
 	
 
-	bool buildBodyFromFile(const ServerConfig& config, int file_fd);
+	bool buildBodyFromFile(const ServerConfig& config, int file_fd, int *state);
     std::string toString() const;
 
 private:

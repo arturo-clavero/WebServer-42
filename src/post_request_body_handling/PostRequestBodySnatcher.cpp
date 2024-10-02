@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 22:14:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/09/27 21:28:34 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:53:00 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,6 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 	PostRequestBodyPart currentPart;
 	bool inHeaders = false;
 	bool inContent = false;
-
-	//std::cout << "DEBUG: entering body parse for Post request" << std::endl;
-
 	while (std::getline(bodyStream, line)) {
 		if (line.find(boundary) != std::string::npos) {
 			if (inContent) {
@@ -39,7 +36,7 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 			size_t colonPos = line.find(':');
 			if (colonPos != std::string::npos) {
 				std::string key = line.substr(0, colonPos);
-				std::string value = line.substr(colonPos + 2); // Skip ": "
+				std::string value = line.substr(colonPos + 2);
 				if (key == "Content-Disposition") {
 					size_t namePos = value.find("name=\"");
 					if (namePos != std::string::npos) {
@@ -64,7 +61,5 @@ std::vector<PostRequestBodyPart> PostRequestBodySnatcher::parse(const std::strin
 	if (inContent) {
 		parts.push_back(currentPart);
 	}
-
-	//std::cout << "DEBUG: request body parsed " << std::endl;
 	return parts;
 }

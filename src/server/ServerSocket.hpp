@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:20:53 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/01 15:19:05 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 20:02:35 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ class ServerSocket
 		std::vector<ServerConfig>	possible_configs;
 		std::vector<ClientSocket>	clientList;
 		Multiplex					*multiplex;
-		void	set_address();
 
 	public:
 		ServerSocket(std::map<std::string, std::vector<ServerConfig> >::iterator it, Multiplex *core_multiplex);

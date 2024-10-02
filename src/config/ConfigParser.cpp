@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigParser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/01 12:40:33 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:49:31 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,15 +109,9 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                 } else {
                     // Handle server-level configurations
                     if (key == "listen") {
-                    //    int port; 
 						std::string listen;
                         iss >> listen;
-                        //currentServer.setPort(port);
 						currentServer.setListen(listen);
-                    // } else if (key == "host") {
-                    //     std::string host;
-                    //     iss >> host;
-                    //     currentServer.setHost(host);
                     } else if (key == "server_name") {
 						std::string::iterator it1, it2;
 						std::vector<std::string> vec;

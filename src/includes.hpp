@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 18:08:10 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/02 23:01:00 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,15 @@
 # define READ_BUFFER_SIZE 100
 # define WRITE_BUFFER_SIZE 100
 
-extern int		server_running;
-
-void	signalHandler(int signal);
+enum connection_states
+{
+	READING,
+	HTTP,
+	EXECUTECGI,
+	WAITCGI,
+	FILES,
+	WRITE,
+	DISCONNECT,
+};
 
 #endif

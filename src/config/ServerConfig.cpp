@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 14:12:10 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/01 12:39:21 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/10/02 19:50:35 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,9 @@
 // Default constructor
 ServerConfig::ServerConfig() { }
 
-
 // Copy constructor
 ServerConfig::ServerConfig(const ServerConfig& other)
-    : //port(other.port),
-     // host(other.host),
-	 listen(other.listen),
+    : listen(other.listen),
       serverNames(other.serverNames),
       errorPages(other.errorPages),
       clientMaxBodySize(other.clientMaxBodySize),
@@ -34,8 +31,6 @@ ServerConfig::ServerConfig(const ServerConfig& other)
 // Copy assignment operator
 ServerConfig& ServerConfig::operator=(const ServerConfig& other) {
     if (this != &other) {
-       // port = other.port;
-        //host = other.host;
 		listen = other.listen;
         serverNames = other.serverNames;
         errorPages = other.errorPages;
@@ -53,9 +48,7 @@ ServerConfig::~ServerConfig() {
 }
 
 // Getters
-//int ServerConfig::getPort() const { return port; }
-//std::string ServerConfig::getHost() const { return host; }
-const std::string& ServerConfig::getListen() const { return listen; } //for network version 1
+const std::string& ServerConfig::getListen() const { return listen; } 
 const std::vector<std::string>& ServerConfig::getServerNames() const { return serverNames; }
 const std::map<std::string, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
 size_t ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }
@@ -67,9 +60,7 @@ const CGIConfig& ServerConfig::getCgi() const { return cgi; }
 int ServerConfig::getListenSocket() const { return listen_socket; }
 const struct sockaddr_in& ServerConfig::getAddress() const { return address; }
 // Setters
-//void ServerConfig::setPort(int value) { port  = value; }
-//void ServerConfig::setHost(const std::string& value) { host = value; }
-void ServerConfig::setListen(const std::string& value) { listen = value;} //for network version 1
+void ServerConfig::setListen(const std::string& value) { listen = value;} 
 void ServerConfig::setServerNames(const std::vector<std::string>& value) { serverNames = value; }
 void ServerConfig::setErrorPages(const std::map<std::string, std::string>& value) { errorPages = value; }
 void ServerConfig::setClientMaxBodySize(size_t value) { clientMaxBodySize = value; }
@@ -81,9 +72,7 @@ void ServerConfig::setListenSocket(int value) { listen_socket = value; }
 void ServerConfig::setAddress(const struct sockaddr_in& value) { address = value; }
 void ServerConfig::print() const {
     std::cout << "Server Configuration:" << std::endl;
-  //  std::cout << "Port: " << port << std::endl;
-  //  std::cout << "Host: " << host << std::endl;
-	std::cout << "Listen: " << listen << std::endl; //for network version 1
+	std::cout << "Listen: " << listen << std::endl;
 	std::cout << "Server Names: ";
 	for (int i = 0; i < static_cast<int>(serverNames.size()); i++)
 		std::cout<<serverNames[i]<<" ";
