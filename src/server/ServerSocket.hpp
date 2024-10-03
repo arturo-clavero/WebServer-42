@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:20:53 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 20:02:35 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:05:44 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ class ServerSocket
 		int				fd;
 		uint32_t		host;
 		int				port;
-		struct sockaddr *address_ptr;
-		socklen_t		address_len;
 		std::vector<ServerConfig>	possible_configs;
 		std::vector<ClientSocket>	clientList;
 		Multiplex					*multiplex;

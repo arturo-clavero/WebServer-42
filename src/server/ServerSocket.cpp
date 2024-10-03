@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:25:22 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 20:04:03 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:06:22 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ ServerSocket::ServerSocket(std::map<std::string, std::vector<ServerConfig> >::it
 ServerSocket::ServerSocket(){}
 ServerSocket::~ServerSocket(){}
 
+std::vector<ClientSocket>	&ServerSocket::getClients() {return clientList; }
+std::vector<ServerConfig>	&ServerSocket::get_possible_configs() {return possible_configs; }
+
 void	ServerSocket::start_listening()
 {
 	int opt = 1;
@@ -39,12 +42,9 @@ void	ServerSocket::start_listening()
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	struct sockaddr_in address_ipv4;
 	memset(&address_ipv4, 0, sizeof(address_ipv4));
-	
 	address_ipv4.sin_family = AF_INET;
 	address_ipv4.sin_addr.s_addr = htonl(host);
-	address_ipv4.sin_port = htons(port);
-	address_ptr = (struct sockaddr *)&address_ipv4;
-	address_len = sizeof(address_ipv4);
+	address_ipv4.sin_port = htons(port);;
 	if (bind(fd, (struct sockaddr *)&address_ipv4, sizeof(address_ipv4)) == -1)
 		throw(strerror(errno)) ;
 	if (listen(fd, 32) == -1)
@@ -62,8 +62,7 @@ void	ServerSocket::accept_new_client_connection()
 	address_ipv4.sin_family = AF_INET;
 	address_ipv4.sin_port = htons(port);
 	address_ipv4.sin_addr.s_addr = htonl(host);
-
-	address_len = sizeof(address_ipv4);
+	socklen_t address_len = sizeof(address_ipv4);
 	client_fd = accept(fd, (struct sockaddr *)&address_ipv4, &address_len);
 	if (client_fd < 0)
 		return ;
@@ -85,6 +84,3 @@ void	ServerSocket::delete_disconnected_clients()
 			j++;
 	}
 }
-
-std::vector<ClientSocket>	&ServerSocket::getClients() {return clientList; }
-std::vector<ServerConfig>	&ServerSocket::get_possible_configs() {return possible_configs; }
