@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:15:30 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/03 16:14:26 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:48:46 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,10 +161,10 @@ RequestResponse ResponseBuilder::buildErrorResponse(ServerConfig& config, HttpRe
 	//check if error page is specified at the server
 	if (config.getErrorPages().find(code) != config.getErrorPages().end())
 	{
-		std::cout<<"getting page .. \n";
+		//std::cout<<"getting page .. \n";
 		response.setContentType("text/html");
 		std::string path = config.getRoot() + config.getErrorPages().find(code)->second;
-		std::cout<<"path: "<<path<<"\n";
+		//std::cout<<"path: "<<path<<"\n";
 		response.setFilePathForBody(path);
 		response.setContentLengthFromPath(path);
 	}

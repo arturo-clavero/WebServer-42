@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/03 15:20:38 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 18:22:25 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class	ClientSocket{
 		clock_t			start_time;
 		bool			timeout;
 		int				pipe_fd[2];
+		bool			no_perm;
 		
 		void	read_request();
 		void	init_http_process(std::vector<ServerConfig> &possible_configs);

@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/03 16:45:12 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 20:22:42 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ServerSocket.hpp"
 #include "Utils.hpp"
 
-ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0), timeout(false) {}
+ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0), timeout(false), no_perm(false) {}
 
 ClientSocket::~ClientSocket(){}
 
@@ -130,6 +130,7 @@ void	ClientSocket::execute_cgi()
 	}
 	// if (write_operations > 0 || !multiplex->ready_to_write(fd))
 	// 	return;
+	std::cout<<"execute cgi \n";
 	pipe(pipe_fd);
     cgi_pid = fork();
     if (cgi_pid == -1) {
@@ -170,6 +171,7 @@ void	ClientSocket::wait_cgi()
 {
 	if (state != WAITCGI)
 		return;
+//	std::cout<<"wait cgu\n";
 	int status;
 	if (waitpid(cgi_pid, &status, WNOHANG) == 0)
 	{
@@ -179,8 +181,19 @@ void	ClientSocket::wait_cgi()
 		kill(cgi_pid, SIGINT);
 		timeout = true;
 	}
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-		state = CORRECT_CGI;
+	if (WIFEXITED(status)) {
+		if (WEXITSTATUS(status) == 0)
+			state = CORRECT_CGI;
+		else
+		{
+			std::cout<<"exit code: "<<WEXITSTATUS(status)<<"\n";
+			state = INCORRECT_CGI;
+			if (WEXITSTATUS(status) == 2)
+			{
+				std::cout<<"changed perm\n";
+				no_perm = true;
+			}
+		}
 	}
 	
 	else if (WIFSIGNALED(status)) {
@@ -194,16 +207,22 @@ void	ClientSocket::incorrect_cgi()
 		return;
 	read_operations = 0;
 	multiplex->remove(pipe_fd[0]);
+	std::cout<<"incorrect cgi\n\n";
 	if (timeout == true)
 	{
-		std::cout<<"seding specific shit\n";
+		//std::cout<<"seding specific shit\n";
 		response =  ResponseBuilder::buildErrorResponse(match_config, request, "504", "Gateway Timeout");
+	}
+	else if (no_perm == true)
+
+	{
+		response =  ResponseBuilder::buildErrorResponse(match_config, request, "403", "Forbidden");
 	}
 	else
 		response =  ResponseBuilder::buildErrorResponse(match_config, request, "500", "Internal Server Error");
-	std::cout<<"BODY: \n"<<response.getBody()<<"\n";
+	//std::cout<<"BODY: \n"<<response.getBody()<<"\n";
 	write_buffer = response.toString();
-	std::cout<<write_buffer<<"\n";
+	//std::cout<<write_buffer<<"\n";
 	if (!response.getFilePathForBody().empty())
 	{
 		file_fd = open(response.getFilePathForBody().c_str(), O_RDONLY);
@@ -221,11 +240,11 @@ void	ClientSocket::correct_cgi()
 	//std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = read(pipe_fd[0], buff, READ_BUFFER_SIZE);
 	std::cout<<"bytes: "<<bytes<<"\n";
-	if (bytes == 0)
-	{
-		state = DISCONNECT;
-		return ;
-	}
+	// if (bytes == 0)
+	// {
+	// 	//state = DISCONNECT;
+	// 	return ;
+	// }
 	if (bytes == -1)
 	{
 		return ;//need to check what to do nxt (erno)
@@ -233,13 +252,15 @@ void	ClientSocket::correct_cgi()
 	read_operations++;
 	for (int i = 0; i < bytes; i++)
 		write_buffer += buff[i];
-	std::cout<<"write buffer sixe: "<<write_buffer.size();
-	if (bytes <= static_cast<int>(write_buffer.size()))
-{
-	multiplex->remove(pipe_fd[0]);
-	std::cout<<"WRITE BUFFER:\n"<<write_buffer<<"\n";
-	state = WRITE;
-}
+//	std::cout<<"write buffer sixe: "<<write_buffer.size();
+	if (bytes < static_cast<int>(write_buffer.size()))
+	{
+		std::cout<<"finished ... \n";
+		multiplex->remove(pipe_fd[0]);
+		//std::cout<<"WRITE BUFFER:\n"<<write_buffer<<"\n";
+		state = WRITE;
+	}
+	std::cout<<"state: "<<state<<"\n";
 }
 
 void	ClientSocket::manage_files()
@@ -248,6 +269,7 @@ void	ClientSocket::manage_files()
 		return ;
 	if (!response.getFilePathForBody().empty()) 
 	{
+		//std::cout<<"GET FILES\n";
 		if (file_fd < 0)
 			return ;
 		if (read_operations > 0)
@@ -313,7 +335,7 @@ void	ClientSocket::write_response()
 	//std::cout<<"write offset-> "<<write_offset<<" write_buffer size-> "<<static_cast<int>(write_buffer.size())<<"\n";
 	if (write_offset >= static_cast<int>(write_buffer.size()))
 	{
-		std::cout<<write_buffer<<"\n";
+		//std::cout<<write_buffer<<"\n";
 		std::cout<<"disconnect...\n";
 		state = DISCONNECT;
 		return ;
