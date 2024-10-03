@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 23:01:00 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 16:34:28 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,12 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <csignal>
+#include <ctime> // Import the ctime library
+
 
 # define READ_BUFFER_SIZE 100
 # define WRITE_BUFFER_SIZE 100
+# define MAX_TIME_CGI	20 //should be 20 or 30please update!
 
 enum connection_states
 {
@@ -50,6 +53,8 @@ enum connection_states
 	HTTP,
 	EXECUTECGI,
 	WAITCGI,
+	CORRECT_CGI,
+	INCORRECT_CGI,
 	FILES,
 	WRITE,
 	DISCONNECT,

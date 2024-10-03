@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 23:32:23 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 16:45:12 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ServerSocket.hpp"
 #include "Utils.hpp"
 
-ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0) {}
+ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0), timeout(false) {}
 
 ClientSocket::~ClientSocket(){}
 
@@ -29,7 +29,9 @@ void	ClientSocket::process_connection(ServerSocket &server)
 	read_request();
 	init_http_process(server.get_possible_configs());
 	execute_cgi();
-	wait_cgi();	
+	wait_cgi();
+	correct_cgi();
+	incorrect_cgi();
 	manage_files();
 	write_response();
 }
@@ -46,15 +48,6 @@ void	ClientSocket::read_request()
 	memset(buff, 0, READ_BUFFER_SIZE);
 	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(fd, buff, READ_BUFFER_SIZE, 0);
-	/*_read returns the number of bytes read, which might be 
-	less than buffer_size if there are fewer than buffer_size
-	 bytes left in the file, or if the file was opened in text
-	  mode.
-	If the function tries to read at end of file, it returns 0. If fd isn't
-	valid, the file isn't open for reading, or the file is locked, the 
-	invalid parameter handler is invoked, as described in Parameter 
-	validation. If execution is allowed to continue, the function 
-	returns -1 and sets errno to EBADF or just return .*/
 	if (bytes == 0)
 	{
 		state = DISCONNECT;
@@ -135,8 +128,9 @@ void	ClientSocket::execute_cgi()
 		state = FILES;
 		return ;
 	}
-	if (write_operations > 0 || !multiplex->ready_to_write(fd))
-		return;
+	// if (write_operations > 0 || !multiplex->ready_to_write(fd))
+	// 	return;
+	pipe(pipe_fd);
     cgi_pid = fork();
     if (cgi_pid == -1) {
         std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
@@ -145,7 +139,9 @@ void	ClientSocket::execute_cgi()
 		return ;
     } 
 	else if (cgi_pid == 0) {
-		dup2(fd, STDOUT_FILENO);
+		close(pipe_fd[0]);
+		dup2(pipe_fd[1], STDOUT_FILENO);
+		close(pipe_fd[1]);
 		std::string cgi_path = response.getCgiPath();
 		const CGIConfig& cgiConfig = match_config.getCgi();
  		std::string request_body = request.getBody(); // Store the body in a variable
@@ -161,9 +157,12 @@ void	ClientSocket::execute_cgi()
     }
 	else
 	{
-		write_operations++;
-		read_operations++;
+		close(pipe_fd[1]);
 		state++;
+		start_time = clock();
+		read_operations++;
+		multiplex->add(pipe_fd[0]);
+		//std::cout<<"start_time: "<<start_time<<"\n";
 	}
 }
 
@@ -174,15 +173,73 @@ void	ClientSocket::wait_cgi()
 	int status;
 	if (waitpid(cgi_pid, &status, WNOHANG) == 0)
 	{
-		return ;
+		if ((clock() - start_time)/CLOCKS_PER_SEC < MAX_TIME_CGI)
+			return ;
+		std::cout<<"KIlled the child....\n";
+		kill(cgi_pid, SIGINT);
+		timeout = true;
 	}
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-		state = DISCONNECT;
-	} else {
-		response =  ResponseBuilder::buildErrorResponse(match_config, request, "500", "Internal Server Error");
-		state = WRITE;
-		write_buffer = response.toString();
+		state = CORRECT_CGI;
 	}
+	
+	else if (WIFSIGNALED(status)) {
+		state = INCORRECT_CGI;
+	}
+}
+
+void	ClientSocket::incorrect_cgi()
+{
+	if (state != INCORRECT_CGI)
+		return;
+	read_operations = 0;
+	multiplex->remove(pipe_fd[0]);
+	if (timeout == true)
+	{
+		std::cout<<"seding specific shit\n";
+		response =  ResponseBuilder::buildErrorResponse(match_config, request, "504", "Gateway Timeout");
+	}
+	else
+		response =  ResponseBuilder::buildErrorResponse(match_config, request, "500", "Internal Server Error");
+	std::cout<<"BODY: \n"<<response.getBody()<<"\n";
+	write_buffer = response.toString();
+	std::cout<<write_buffer<<"\n";
+	if (!response.getFilePathForBody().empty())
+	{
+		file_fd = open(response.getFilePathForBody().c_str(), O_RDONLY);
+	}	
+	state = FILES;
+}
+
+void	ClientSocket::correct_cgi()
+{
+	if (state != CORRECT_CGI || read_operations > 0 || !multiplex->ready_to_read(pipe_fd[0]))
+		return ;
+	std::cout<<"correct cgi: "<<read_operations<<"\n";
+	char buff[READ_BUFFER_SIZE];
+	memset(buff, 0, READ_BUFFER_SIZE);
+	//std::size_t	pos_zero, pos_content_length, pos_header_end;
+	int bytes = read(pipe_fd[0], buff, READ_BUFFER_SIZE);
+	std::cout<<"bytes: "<<bytes<<"\n";
+	if (bytes == 0)
+	{
+		state = DISCONNECT;
+		return ;
+	}
+	if (bytes == -1)
+	{
+		return ;//need to check what to do nxt (erno)
+	}
+	read_operations++;
+	for (int i = 0; i < bytes; i++)
+		write_buffer += buff[i];
+	std::cout<<"write buffer sixe: "<<write_buffer.size();
+	if (bytes <= static_cast<int>(write_buffer.size()))
+{
+	multiplex->remove(pipe_fd[0]);
+	std::cout<<"WRITE BUFFER:\n"<<write_buffer<<"\n";
+	state = WRITE;
+}
 }
 
 void	ClientSocket::manage_files()
@@ -236,21 +293,12 @@ void	ClientSocket::write_response()
 {
 	if (state != WRITE || write_operations > 0 || !multiplex->ready_to_write(fd))
 		return ;
+
 	int max = static_cast<int>(write_buffer.size()) - write_offset;
 	if (max > WRITE_BUFFER_SIZE)
 		max = WRITE_BUFFER_SIZE;
 	int bytes = send(fd, &write_buffer[write_offset], max, 0);
-	/*If successful, _write returns the number of bytes written. 
-		A return value of -1 indicates an error. If invalid parameters 
-		are passed, this function invokes the invalid parameter handler,
-		as described in Parameter validation. If execution is allowed 
-		to continue, the function returns -1 which means the file descriptor is 
-		invalid or the file isn't opened for writing;.*/
-	// if (bytes == -1)
-	// {
-	// 	 state = DISCONNECT;
-	// 	 return ;
-	// }
+//	std::cout<<"bytes: "<<bytes<<"\n";
 	if (bytes == 0)
 	{
 		state = DISCONNECT;
@@ -262,8 +310,11 @@ void	ClientSocket::write_response()
 	}
 	write_operations++;
 	write_offset += bytes;
+	//std::cout<<"write offset-> "<<write_offset<<" write_buffer size-> "<<static_cast<int>(write_buffer.size())<<"\n";
 	if (write_offset >= static_cast<int>(write_buffer.size()))
 	{
+		std::cout<<write_buffer<<"\n";
+		std::cout<<"disconnect...\n";
 		state = DISCONNECT;
 		return ;
 	}

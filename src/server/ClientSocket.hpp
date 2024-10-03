@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 23:00:52 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:20:38 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,17 @@ class	ClientSocket{
 		
 		int				write_offset;
 		pid_t			cgi_pid;
+		clock_t			start_time;
+		bool			timeout;
+		int				pipe_fd[2];
 		
 		void	read_request();
 		void	init_http_process(std::vector<ServerConfig> &possible_configs);
 		void	find_match_config(std::vector<ServerConfig> &possible_configs, const std::string host);
 		void	execute_cgi();
 		void	wait_cgi();
+		void	correct_cgi();
+		void	incorrect_cgi();
 		void	manage_files();
 		void	write_response();
 		
