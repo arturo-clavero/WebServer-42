@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/03 20:22:42 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/03 20:38:16 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,12 +253,13 @@ void	ClientSocket::correct_cgi()
 	for (int i = 0; i < bytes; i++)
 		write_buffer += buff[i];
 //	std::cout<<"write buffer sixe: "<<write_buffer.size();
-	if (bytes < static_cast<int>(write_buffer.size()))
+	if (bytes < READ_BUFFER_SIZE)
 	{
 		std::cout<<"finished ... \n";
 		multiplex->remove(pipe_fd[0]);
-		//std::cout<<"WRITE BUFFER:\n"<<write_buffer<<"\n";
+		std::cout<<"WRITE BUFFER:\n"<<write_buffer<<"\n";
 		state = WRITE;
+		
 	}
 	std::cout<<"state: "<<state<<"\n";
 }
