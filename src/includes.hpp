@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/03 16:34:28 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:19:28 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,7 @@ enum connection_states
 	WRITE,
 	DISCONNECT,
 };
+
+
 
 #endif

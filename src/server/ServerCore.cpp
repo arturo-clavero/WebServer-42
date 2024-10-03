@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/03 17:54:21 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:14:51 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,21 @@
 #include <string.h>
 #include <ctime>
 
-ServerCore::ServerCore(std::vector<ServerConfig>& config) : config(config){}
+ServerCore::ServerCore(Configs& config) : config(config){}
 ServerCore::~ServerCore(){}
 
-std::map<std::string, std::vector<ServerConfig>	> ServerCore::unique_host_port_configs()
+HostPortConfigMap ServerCore::unique_host_port_configs()
 {
-	std::map<std::string, std::vector<ServerConfig>	> combos;
+	HostPortConfigMap combos;
 	for (int i = 0; i < static_cast<int>(config.size()); i++)
 		combos[config[i].getListen()].push_back(config[i]);
 	config.clear();
 	return combos;
 }
 
-void	ServerCore::set_up_server_sockets(std::map<std::string, std::vector<ServerConfig> > combos)
+void	ServerCore::set_up_server_sockets(HostPortConfigMap combos)
 {
-	for (std::map<std::string, std::vector<ServerConfig> >::iterator it = combos.begin(); it != combos.end(); it++)
+	for (HostPortConfigMap::iterator it = combos.begin(); it != combos.end(); it++)
 	{
 		try
 		{
@@ -39,7 +39,10 @@ void	ServerCore::set_up_server_sockets(std::map<std::string, std::vector<ServerC
 			new_server.start_listening();
 			serverList.push_back(new_server);
 		}
-		catch (char *mssg) {std::cerr<<mssg<<"\n";}
+		catch (char *mssg)
+		{
+			std::cerr<<mssg<<"\n";
+		}
 	}
 	if (static_cast<int>(serverList.size()) == 0)
 	{
@@ -55,11 +58,10 @@ void	ServerCore::run(){
 	while (true)
 	{
 		multiplex.reset_select();
-		for	(std::vector<ServerSocket>::iterator server_it = serverList.begin(); server_it != serverList.end(); server_it++)
+		for	(Servers::iterator server_it = serverList.begin(); server_it != serverList.end(); server_it++)
 		{
-			for (std::vector<ClientSocket>::iterator client_it = server_it->getClients().begin(); client_it != server_it->getClients().end(); client_it++)
+			for (Clients::iterator client_it = server_it->getClients().begin(); client_it != server_it->getClients().end(); client_it++)
 			{
-			//	std::cout<<client_it->get_fd()<<" state: "<<client_it->get_state()<<'\n';
 				client_it->process_connection(*server_it);
 			}
 			server_it->delete_disconnected_clients();

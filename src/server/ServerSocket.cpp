@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:25:22 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:06:22 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:13:24 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
 #include "Utils.hpp"
 
-ServerSocket::ServerSocket(std::map<std::string, std::vector<ServerConfig> >::iterator it, Multiplex *core_multiplex)
+ServerSocket::ServerSocket(HostPortConfigMap::iterator it, Multiplex *core_multiplex)
 	:
 	host(Utils::extract_host(it->first)),
 	port(Utils::extract_port(it->first)),
@@ -24,8 +24,8 @@ ServerSocket::ServerSocket(std::map<std::string, std::vector<ServerConfig> >::it
 ServerSocket::ServerSocket(){}
 ServerSocket::~ServerSocket(){}
 
-std::vector<ClientSocket>	&ServerSocket::getClients() {return clientList; }
-std::vector<ServerConfig>	&ServerSocket::get_possible_configs() {return possible_configs; }
+Clients	&ServerSocket::getClients() {return clientList; }
+Configs	&ServerSocket::get_possible_configs() {return possible_configs; }
 
 void	ServerSocket::start_listening()
 {

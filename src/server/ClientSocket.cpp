@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/03 21:03:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:15:28 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	ClientSocket::read_request()
 	state++;
 }
 
-void	ClientSocket::init_http_process(std::vector<ServerConfig> &possible_configs)
+void	ClientSocket::init_http_process(Configs &possible_configs)
 {
 	if (state != HTTP)
 		return ;
@@ -100,7 +100,7 @@ void	ClientSocket::init_http_process(std::vector<ServerConfig> &possible_configs
 	state++;
 }
 
-void	ClientSocket::find_match_config(std::vector<ServerConfig> &possible_configs, const std::string host)
+void	ClientSocket::find_match_config(Configs &possible_configs, const std::string host)
 {
 	std::vector<std::string> possible_names;
 	match_config = possible_configs[0];

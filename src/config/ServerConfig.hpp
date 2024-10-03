@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 13:38:57 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 19:51:25 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:19:33 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,6 @@ private:
 	struct sockaddr_in address;
 };
 
+typedef std::vector<ServerConfig> Configs;
+typedef std::map<std::string, std::vector<ServerConfig>	> HostPortConfigMap;
 #endif
