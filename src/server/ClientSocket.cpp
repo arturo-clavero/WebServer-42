@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:15:28 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:40:15 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,10 @@ void	ClientSocket::process_connection(ServerSocket &server)
 
 void	ClientSocket::read_request()
 {
-	if (state != READING) 
+	if (state != READING || !multiplex->ready_to_read(fd))
 		return ;
-	if (!multiplex->ready_to_read(fd))
-	{
-		return ;
-	}
 	char buff[READ_BUFFER_SIZE];
 	memset(buff, 0, READ_BUFFER_SIZE);
-	std::size_t	pos_zero, pos_content_length, pos_header_end;
 	int bytes = recv(fd, buff, READ_BUFFER_SIZE, 0);
 	if (bytes == 0)
 	{
@@ -55,33 +50,24 @@ void	ClientSocket::read_request()
 	}
 	if (bytes == -1)
 	{
-		return ;//need to check what to do nxt (erno)
+		return ;
 	}
 	read_operations++;
 	for (int i = 0; i < bytes; i++)
 		read_buffer += buff[i];
-	pos_header_end = read_buffer.find("\r\n\r\n");
-    if (pos_header_end == std::string::npos)// Header is incomplete, wait for more data
+	std::size_t	header, content_length;
+	if (!Utils::is_found(header, "\r\n\r\n", read_buffer))
+		return;
+	if (Utils::is_found(content_length, "Content-Length:", read_buffer))
 	{
-    	return;
-	}
-	pos_content_length = read_buffer.find("Content-Length:");
-	if (pos_content_length != std::string::npos)
-	{
-		long expected_body_size = std::atol(read_buffer.substr(pos_content_length + 16, pos_header_end).c_str());
-		if (static_cast<int>(read_buffer.size() - pos_header_end - 4) < expected_body_size)// Body is incomplete, wait for more data
-        {
-			return;
-		}
-	}
-	else if (read_buffer.find("Transfer-Encoding: chunked") != std::string::npos)
-	{
-		pos_zero = read_buffer.find("0\r\n\r\n");
-		if (pos_zero == std::string::npos) // Chunked body is incomplete, wait for more data
-        {
+		long expected_body_size = std::atol(read_buffer.substr(content_length + 16, header).c_str());
+		long current_body_size = static_cast<int>(read_buffer.size() - header - 4);
+		if (current_body_size < expected_body_size)
 			return ;
-		}
 	}
+	else if (Utils::is_found("Transfer-Encoding: chunked", read_buffer) \
+			&& !Utils::is_found("0\r\n\r\n", read_buffer))
+		return ;
 	state++;
 }
 
@@ -91,7 +77,7 @@ void	ClientSocket::init_http_process(Configs &possible_configs)
 		return ;
 	request = RequestParser::parse(read_buffer);
 	read_buffer.clear();
-	find_match_config(possible_configs, request.getHost());
+	match_config = Utils::find_match_config(possible_configs, request.getHost());
 	response = ResponseBuilder::build(request, match_config);
 	if (!response.getFilePathForBody().empty())
 	{
@@ -99,25 +85,6 @@ void	ClientSocket::init_http_process(Configs &possible_configs)
 	}	
 	state++;
 }
-
-void	ClientSocket::find_match_config(Configs &possible_configs, const std::string host)
-{
-	std::vector<std::string> possible_names;
-	match_config = possible_configs[0];
-	for (int i = 0; i < static_cast<int>(possible_configs.size()); i++)
-	{
-		possible_names = possible_configs[i].getServerNames();
-		for (int j = 0; j < static_cast<int>(possible_names.size()); j++)
-		{
-			if (possible_names[j] == host)
-			{
-				match_config = possible_configs[i];
-				return ;
-			}
-		}
-	}
-}
-
 
 void	ClientSocket::execute_cgi()
 {
@@ -176,9 +143,10 @@ void	ClientSocket::wait_cgi()
 		cgi_error_code = "504";
 		cgi_error_message = "Gateway Timeout";
 	}
-	state = INCORRECT_CGI;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		state = CORRECT_CGI;
+	else
+		state = INCORRECT_CGI;
 	else if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
 	{
 		cgi_error_code = "403";

@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:31:51 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 19:27:12 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:39:21 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,3 +33,28 @@ uint32_t	Utils::extract_host(const std::string &str){
 	return (oct[0] << 24 | oct[1] << 16 | oct[2] << 8 | oct[3]);
 }
 
+ServerConfig	Utils::find_match_config(Configs &possible_configs, const std::string host)
+{
+	std::vector<std::string> possible_names;
+	for (int i = 0; i < static_cast<int>(possible_configs.size()); i++)
+	{
+		possible_names = possible_configs[i].getServerNames();
+		for (int j = 0; j < static_cast<int>(possible_names.size()); j++)
+		{
+			if (possible_names[j] == host)
+				return possible_configs[i];
+		}
+	}
+	return possible_configs[0];
+}
+
+bool	Utils::is_found(std::size_t &result, std::string needle, std::string &haystack)
+{
+	result = haystack.find(needle);
+	return (result != std::string::npos);
+}
+
+bool	Utils::is_found(std::string needle, std::string &haystack)
+{
+	return (haystack.find(needle) != std::string::npos);
+}

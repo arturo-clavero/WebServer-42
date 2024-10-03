@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:17:44 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 04:27:49 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ class	ClientSocket{
 		
 		void	read_request();
 		void	init_http_process(Configs &possible_configs);
-		void	find_match_config(Configs &possible_configs, const std::string host);
 		void	execute_cgi();
 		void	wait_cgi();
 		void	correct_cgi();
