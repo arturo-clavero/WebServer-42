@@ -23,6 +23,7 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/server/ServerSocket.cpp \
 	   $(SRC_DIR)/server/ClientSocket.cpp \
 	   $(SRC_DIR)/server/Utils.cpp \
+	   $(SRC_DIR)/server/Cgi.cpp \
 
 
 # Object files

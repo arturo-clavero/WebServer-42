@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:40:15 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:01:15 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,12 @@
 #include "ServerSocket.hpp"
 #include "Utils.hpp"
 
-ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : multiplex(server_multiplex), fd(fd_), state(0), write_offset(0), cgi_error_code("500"), cgi_error_message("Internal Server Error") {}
+ClientSocket::ClientSocket(Multiplex *server_multiplex, int fd_) : 
+	multiplex(server_multiplex),
+	fd(fd_), 
+	state(0), 
+	write_offset(0)
+	{}
 
 ClientSocket::~ClientSocket(){}
 
@@ -28,10 +33,7 @@ void	ClientSocket::process_connection(ServerSocket &server)
 	write_operations = 0;
 	read_request();
 	init_http_process(server.get_possible_configs());
-	execute_cgi();
-	wait_cgi();
-	correct_cgi();
-	incorrect_cgi();
+	cgi.process(this);
 	manage_files();
 	write_response();
 }
@@ -84,106 +86,6 @@ void	ClientSocket::init_http_process(Configs &possible_configs)
 		file_fd = open(response.getFilePathForBody().c_str(), O_RDONLY);
 	}	
 	state++;
-}
-
-void	ClientSocket::execute_cgi()
-{
-	if (state != EXECUTECGI)
-		return ;
-	if (response.getCgiPath().empty())
-	{
-		state = FILES;
-		return ;
-	}
-	pipe(pipe_fd);
-    cgi_pid = fork();
-    if (cgi_pid == -1) {
-        std::cerr << "ERROR: Fork failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
-        response = ResponseBuilder::buildErrorResponse(match_config, request, "500", "Internal Server Error");
-		state = FILES;
-		return ;
-    } 
-	else if (cgi_pid == 0) {
-		close(pipe_fd[0]);
-		dup2(pipe_fd[1], STDOUT_FILENO);
-		close(pipe_fd[1]);
-		std::string cgi_path = response.getCgiPath();
-		const CGIConfig& cgiConfig = match_config.getCgi();
- 		std::string request_body = request.getBody(); // Store the body in a variable
-		char* args[] = {
-			const_cast<char*>(cgiConfig.path.c_str()),  // Python interpreter path
-			const_cast<char*>(cgi_path.c_str()),        // Script path
-			const_cast<char*>(request_body.c_str()),    // Argument to the script
-			NULL
-		};
-		execv(cgiConfig.path.c_str(), args);
-        std::cerr << "ERROR: execv failed. Errno: " << errno << " - " << strerror(errno) << std::endl;
-        exit(1);
-    }
-	else
-	{
-		close(pipe_fd[1]);
-		state++;
-		start_time = clock();
-		read_operations++;
-		multiplex->add(pipe_fd[0]);
-	}
-}
-
-void	ClientSocket::wait_cgi()
-{
-	if (state != WAITCGI)
-		return;
-	int status;
-	if (waitpid(cgi_pid, &status, WNOHANG) == 0)
-	{
-		if ((clock() - start_time)/CLOCKS_PER_SEC < MAX_TIME_CGI)
-			return ;
-		kill(cgi_pid, SIGINT);
-		cgi_error_code = "504";
-		cgi_error_message = "Gateway Timeout";
-	}
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-		state = CORRECT_CGI;
-	else
-		state = INCORRECT_CGI;
-	else if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
-	{
-		cgi_error_code = "403";
-		cgi_error_message = "Forbidden";
-	}
-}
-
-void	ClientSocket::incorrect_cgi()
-{
-	if (state != INCORRECT_CGI)
-		return;
-	read_operations = 0;
-	multiplex->remove(pipe_fd[0]);
-	response =  ResponseBuilder::buildErrorResponse(match_config, request, cgi_error_code, cgi_error_message);
-	write_buffer = response.toString();
-	if (!response.getFilePathForBody().empty())
-		file_fd = open(response.getFilePathForBody().c_str(), O_RDONLY);
-	state = FILES;
-}
-
-void	ClientSocket::correct_cgi()
-{
-	if (state != CORRECT_CGI || read_operations > 0 || !multiplex->ready_to_read(pipe_fd[0]))
-		return ;
-	char buff[READ_BUFFER_SIZE];
-	memset(buff, 0, READ_BUFFER_SIZE);
-	int bytes = read(pipe_fd[0], buff, READ_BUFFER_SIZE);
-	if (bytes == -1)
-		return ;
-	read_operations++;
-	for (int i = 0; i < bytes; i++)
-		write_buffer += buff[i];
-	if (bytes < READ_BUFFER_SIZE)
-	{
-		multiplex->remove(pipe_fd[0]);
-		state = WRITE;
-	}
 }
 
 void	ClientSocket::manage_files()

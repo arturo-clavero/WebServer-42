@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:27:49 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:05:13 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,38 +21,34 @@
 #include "request_parser/RequestParser.hpp"
 #include "response_builder/ResponseBuilder.hpp"
 #include "Multiplex.hpp"
+#include "Cgi.hpp"
 
 class ServerCore;
 class ServerSocket;
 
 class	ClientSocket{
+	friend class Cgi;
+	
 	private:
-		Multiplex	*multiplex;
-				int				fd;
+		Multiplex		*multiplex;
+		int				fd;
 		int				state;
 		int				read_operations, write_operations;
-
-		std::string		read_buffer;
+		
 		ServerConfig	match_config;
-		int				file_fd;
 		RequestResponse response;
 		HttpRequest		request;
 
+		std::string		read_buffer;
+		int				file_fd;
 		std::string		write_buffer;
-		
 		int				write_offset;
-		pid_t			cgi_pid;
-		clock_t			start_time;
-		int				pipe_fd[2];
-		std::string		cgi_error_code;
-		std::string		cgi_error_message;
+		
+		Cgi				cgi;
+		File			file;
 		
 		void	read_request();
 		void	init_http_process(Configs &possible_configs);
-		void	execute_cgi();
-		void	wait_cgi();
-		void	correct_cgi();
-		void	incorrect_cgi();
 		void	manage_files();
 		void	write_response();
 		
