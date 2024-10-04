@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:35:37 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:05:13 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:16:17 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class	ClientSocket{
 		int				write_offset;
 		
 		Cgi				cgi;
-		File			file;
+		//File			file;
 		
 		void	read_request();
 		void	init_http_process(Configs &possible_configs);

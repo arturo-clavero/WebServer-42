@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 04:42:21 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:00:57 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:15:52 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	Cgi::process(ClientSocket *client)
 	{
 		pipe(pipe_fd);
 		client->multiplex->add(pipe_fd[0]);
+		client->multiplex->add(pipe_fd[1]);
 		substate++;
 		return ;
 	}
@@ -45,7 +46,7 @@ void	Cgi::process(ClientSocket *client)
 
 void	Cgi::execute_cgi(ClientSocket *client)
 {
-	if (substate != EXECUTECGI)
+	if (substate != EXECUTECGI || !client->multiplex->ready_to_write(pipe_fd[1]))
 		return ;
     cgi_pid = fork();
     if (cgi_pid == -1) {
@@ -73,7 +74,7 @@ void	Cgi::execute_cgi(ClientSocket *client)
     }
 	else
 	{
-		close(pipe_fd[1]);
+		client->multiplex->remove(pipe_fd[1]);
 		substate++;
 		start_time = clock();
 		client->read_operations++;
