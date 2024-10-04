@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 04:41:36 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:01:08 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:19:35 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,15 @@ class Cgi
 		std::string		cgi_error_message;
 		int				substate;
 		
-		void	execute_cgi(ClientSocket *client);
+		void	execute_cgi(ClientSocket &client);
 		void	wait_cgi();
-		void	correct_cgi(ClientSocket *client);
-		void	incorrect_cgi(ClientSocket *client);
+		void	correct_cgi(ClientSocket &client);
+		void	incorrect_cgi(ClientSocket &client);
 
 	public:
 		Cgi();
 		~Cgi();
-		void	process(ClientSocket *this_client);
+		void	process(ClientSocket  &this_client);
 };
 
 #endif

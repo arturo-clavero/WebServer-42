@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:01:15 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/04 07:19:51 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	ClientSocket::process_connection(ServerSocket &server)
 	write_operations = 0;
 	read_request();
 	init_http_process(server.get_possible_configs());
-	cgi.process(this);
+	cgi.process(*this);
 	manage_files();
 	write_response();
 }
