@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:31:51 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:39:21 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 06:15:46 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,13 @@
 
 int	Utils::extract_port(const std::string &str){
 	std::string::const_iterator semi_colon = std::find(str.begin(), str.end(), ':');
+	if (semi_colon == str.end())
+		return 8080;
 	int pos = std::distance(str.begin(), semi_colon);
-	return (std::atoi(str.substr(pos + 1).c_str()));
+	std::string	port_string = str.substr(pos + 1);
+	if (port_string.empty())
+		return 8080;
+	return (std::atoi(port_string.c_str()));
 }
 
 uint32_t	Utils::extract_host(const std::string &str){

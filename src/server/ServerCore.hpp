@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:33:26 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 05:06:52 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:14:56 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include "Multiplex.hpp"
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
-
 
 class ServerCore {
 	private:
