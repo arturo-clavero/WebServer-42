@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:20:53 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:20:32 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:07:07 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVERSOCKET_HPP
 # define SERVERSOCKET_HPP
 
-#include "includes.hpp"
+#include "../includes.hpp"
 #include "ClientSocket.hpp"
 
 class ServerSocket

@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 07:06:04 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/02 20:02:04 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:08:14 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MULTIPLEX_HPP
 # define MULTIPLEX_HPP
 
-#include "includes.hpp"
+#include "../includes.hpp"
 
 class Multiplex
 {

@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:16:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 23:00:44 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:07:37 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REQUEST_RESPONSE_HPP
 #define REQUEST_RESPONSE_HPP
 
-#include "includes.hpp"
+#include "../includes.hpp"
 #include "../config/ServerConfig.hpp"
 
 

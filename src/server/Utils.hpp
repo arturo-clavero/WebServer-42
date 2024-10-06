@@ -6,15 +6,15 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:30:45 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 04:36:59 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:07:18 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include "includes.hpp"
-#include "config/ServerConfig.hpp"
+#include "../includes.hpp"
+#include "../config/ServerConfig.hpp"
 
 class	Utils
 {

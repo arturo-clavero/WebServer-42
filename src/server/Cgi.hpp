@@ -6,14 +6,14 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 04:41:36 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:19:35 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:08:54 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CGI_HPP 
 # define CGI_HPP 
 
-#include "includes.hpp"
+#include "../includes.hpp"
 class ClientSocket;
 
 enum	substate
