@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 05:04:34 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 05:10:26 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,11 @@ void	ClientSocket::manage_files()
 	}
 	if (request.hasPostFileContents() && request.hasPostFileFds())
 	{
-		//std::cout<<"POST!\n";
 		if (write_operations > 0)
 			return ;
 		int max = static_cast<int>(request.getLastFileContent().size()) - write_offset;
 		if (max > WRITE_BUFFER_SIZE)
 			max = WRITE_BUFFER_SIZE;
-		//std::cout<<"max: "<<max<<"\n";
 		int bytes = write(request.getLastFileFd(), &(request.getLastFileContent())[write_offset], max);
 		if (bytes == 0)
 		{
@@ -122,11 +120,9 @@ void	ClientSocket::manage_files()
 		if (bytes == -1)
 			return ;
 		write_operations++;
-				//std::cout<<"write offset: "<<write_offset<<"\n";
 		write_offset += bytes;
 		if (write_offset < static_cast<int>(request.getLastFileContent().size()))
 			return ;
-		std::cout<<"write offset + bytes: "<<write_offset<<"\n";
 		write_offset = 0;
 		close(request.getLastFileFd());
 		request.popBackPostFileFds();
@@ -135,7 +131,6 @@ void	ClientSocket::manage_files()
 			return ;
 	}
 	write_buffer = response.toString();
-	std::cout<<"WRITE BUFFER IS : "<<write_buffer<<"\n";
 	state++;
 }
 
