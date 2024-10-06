@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:09:33 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 20:08:06 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 06:24:56 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,9 @@ int main(int argc, char* argv[]) {
         return 1;
 	}
 	std::vector<ServerConfig> config = ConfigParser::parse(argv[1]);
-	try {
-		ServerCore server(config);
-		server.run();
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-		return (1);
-	}
+	if (config.empty())
+		return 1;
+	ServerCore server(config);
+	server.run();
     return 0;
 }

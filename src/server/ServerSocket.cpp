@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:25:22 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 06:21:41 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 06:29:47 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,12 @@ void	ServerSocket::start_listening()
 	int flags;
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd == -1)
-		throw(strerror(errno)) ;
+		Utils::exit_on_error(strerror(errno));
 	flags = fcntl(fd, F_GETFL, 0);
 	if (flags == -1)
-		throw(strerror(errno)) ;
+		Utils::exit_on_error(strerror(errno));
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw(strerror(errno)) ;
+		Utils::exit_on_error(strerror(errno));
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	struct sockaddr_in address_ipv4;
 	memset(&address_ipv4, 0, sizeof(address_ipv4));
@@ -46,9 +46,9 @@ void	ServerSocket::start_listening()
 	address_ipv4.sin_addr.s_addr = htonl(host);
 	address_ipv4.sin_port = htons(port);;
 	if (bind(fd, (struct sockaddr *)&address_ipv4, sizeof(address_ipv4)) == -1)
-		throw(strerror(errno)) ;
+		Utils::exit_on_error(strerror(errno));
 	if (listen(fd, 32) == -1)
-		throw(strerror(errno)) ;
+		Utils::exit_on_error(strerror(errno));
 	multiplex->add(fd);
 }
 
