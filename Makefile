@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 # Directories
 SRC_DIR = src
@@ -19,13 +19,12 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/post_request_body_handling/PostRequestBodyPart.cpp \
 	   $(SRC_DIR)/response_builder/RequestResponse.cpp \
 	   $(SRC_DIR)/response_builder/ResponseUtils.cpp \
-	  	$(SRC_DIR)/server/ServerCore.cpp \
+	   $(SRC_DIR)/server/ServerCore.cpp \
 	   $(SRC_DIR)/server/Multiplex.cpp \
 	   $(SRC_DIR)/server/ServerSocket.cpp \
 	   $(SRC_DIR)/server/ClientSocket.cpp \
 	   $(SRC_DIR)/server/Utils.cpp \
 	   $(SRC_DIR)/server/Cgi.cpp \
-
 
 # Object files
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
@@ -44,12 +43,12 @@ $(OBJ_DIR)/%.d: $(SRC_DIR)/%.cpp
 NAME = webserv
 
 # Targets
-all: $(NAME)
+all: $(NAME) 
 
-$(NAME): $(OBJS) 
+$(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ 
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp Makefile
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -I$(INC_DIR) -c $< -o $@
 
@@ -66,5 +65,6 @@ re: fclean all
 
 file: all
 	./$(NAME) conf/default.conf > output.txt
+
 
 .PHONY: all clean fclean re
