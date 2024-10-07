@@ -232,7 +232,10 @@ RequestResponse ResponseBuilder::buildPostResponse(ServerConfig& config, HttpReq
         response = buildErrorResponse(config, request, "405", "Method Not Allowed");
         return response;
     }
-    
+    if (request.getBody().empty()){
+		 response = buildErrorResponse(config, request, "400", "Bad request");
+        return response;
+	}
     // Check if the target location exists and is writable
     std::string path = location.root + request.getPath();
     if (access(path.c_str(), W_OK) == -1) {
