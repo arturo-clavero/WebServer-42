@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 21:44:25 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 05:10:26 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:25:02 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,34 +42,16 @@ void	ClientSocket::read_request()
 {
 	if (state != READING || !multiplex->ready_to_read(fd))
 		return ;
-	char buff[READ_BUFFER_SIZE];
-	memset(buff, 0, READ_BUFFER_SIZE);
-	int bytes = recv(fd, buff, READ_BUFFER_SIZE, 0);
-	if (bytes == 0)
-	{
-		state = DISCONNECT;
+	char buff[MAX_BUFFER_SIZE];
+	memset(buff, 0, MAX_BUFFER_SIZE);
+	int bytes = recv(fd, buff, MAX_BUFFER_SIZE, 0);
+	if (Utils::read_write_error(bytes, &state))
 		return ;
-	}
-	if (bytes == -1)
-	{
-		return ;
-	}
 	read_operations++;
 	for (int i = 0; i < bytes; i++)
 		read_buffer += buff[i];
-	std::size_t	header, content_length;
-	if (!Utils::is_found(header, "\r\n\r\n", read_buffer))
+	if (!Utils::complete_http_message(read_buffer))
 		return;
-	if (Utils::is_found(content_length, "Content-Length:", read_buffer))
-	{
-		long expected_body_size = std::atol(read_buffer.substr(content_length + 16, header).c_str());
-		long current_body_size = static_cast<int>(read_buffer.size() - header - 4);
-		if (current_body_size < expected_body_size)
-			return ;
-	}
-	else if (Utils::is_found("Transfer-Encoding: chunked", read_buffer) \
-			&& !Utils::is_found("0\r\n\r\n", read_buffer))
-		return ;
 	state++;
 }
 
@@ -109,16 +91,11 @@ void	ClientSocket::manage_files()
 		if (write_operations > 0)
 			return ;
 		int max = static_cast<int>(request.getLastFileContent().size()) - write_offset;
-		if (max > WRITE_BUFFER_SIZE)
-			max = WRITE_BUFFER_SIZE;
+		if (max > MAX_BUFFER_SIZE)
+			max = MAX_BUFFER_SIZE;
 		int bytes = write(request.getLastFileFd(), &(request.getLastFileContent())[write_offset], max);
-		if (bytes == 0)
-		{
-			state = DISCONNECT;
-			return ;
-		}
-		if (bytes == -1)
-			return ;
+		if (Utils::read_write_error(bytes, &state))
+			return;
 		write_operations++;
 		write_offset += bytes;
 		if (write_offset < static_cast<int>(request.getLastFileContent().size()))
@@ -140,15 +117,10 @@ void	ClientSocket::write_response()
 		return ;
 
 	int max = static_cast<int>(write_buffer.size()) - write_offset;
-	if (max > WRITE_BUFFER_SIZE)
-		max = WRITE_BUFFER_SIZE;
+	if (max > MAX_BUFFER_SIZE)
+		max = MAX_BUFFER_SIZE;
 	int bytes = send(fd, &write_buffer[write_offset], max, 0);
-	if (bytes == 0)
-	{
-		state = DISCONNECT;
-		return ;
-	}
-	if (bytes == -1)
+	if (Utils::read_write_error(bytes, &state))
 		return ;
 	write_operations++;
 	write_offset += bytes;

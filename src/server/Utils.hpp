@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:30:45 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 06:32:16 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:21:14 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class	Utils
 		static bool			is_found(std::size_t &result, std::string needle, std::string &haystack);
 		static bool			is_found(std::string needle, std::string &haystack);
 		static void			exit_on_error(std::string mssg);
+		static bool			read_write_error(int bytes, int *state);
+		static bool			complete_http_message(std::string &buffer);
 };
 
 #endif

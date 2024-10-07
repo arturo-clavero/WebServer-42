@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 04:42:21 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:20:03 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:24:54 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,15 +122,15 @@ void	Cgi::correct_cgi(ClientSocket &client)
 {
 	if (substate != CORRECT_CGI || client.read_operations > 0 || !client.multiplex->ready_to_read(pipe_fd[0]))
 		return ;
-	char buff[READ_BUFFER_SIZE];
-	memset(buff, 0, READ_BUFFER_SIZE);
-	int bytes = read(pipe_fd[0], buff, READ_BUFFER_SIZE);
-	if (bytes == -1)
+	char buff[MAX_BUFFER_SIZE];
+	memset(buff, 0, MAX_BUFFER_SIZE);
+	int bytes = read(pipe_fd[0], buff, MAX_BUFFER_SIZE);
+	if (Utils::read_write_error(bytes, &client.state))
 		return ;
 	client.read_operations++;
 	for (int i = 0; i < bytes; i++)
 		client.write_buffer += buff[i];
-	if (bytes < READ_BUFFER_SIZE)
+	if (bytes < MAX_BUFFER_SIZE || Utils::complete_http_message(client.write_buffer))
 	{
 		client.multiplex->remove(pipe_fd[0]);
 		client.state = WRITE;

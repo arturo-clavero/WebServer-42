@@ -6,12 +6,12 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 10:17:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/02 22:59:58 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:24:54 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestResponse.hpp"
-
+#include "../server/Utils.hpp"
 RequestResponse::RequestResponse() {
 }
 
@@ -67,22 +67,14 @@ void RequestResponse::setContentLengthFromPath(const std::string& path) {
 
 bool RequestResponse::buildBodyFromFile(const ServerConfig& config, int file_fd, int *state) {
 	(void)config;
-	std::string	buff(READ_BUFFER_SIZE, 0);
-	int bytes = read(file_fd, &buff[0], READ_BUFFER_SIZE);
+	std::string	buff(MAX_BUFFER_SIZE, 0);
+	int bytes = read(file_fd, &buff[0], MAX_BUFFER_SIZE);
 	for (int i = 0; i < bytes; i++)
 		this->body += buff[i];
-	if (bytes == 0)
-	{
-		*state = DISCONNECT;
+	if (Utils::read_write_error(bytes, state))
 		return false;
-	}
-	if (bytes == -1)
+	if (bytes < MAX_BUFFER_SIZE)
 	{
-		return false;//need to check what to do nxt (erno)
-	}
-	if (bytes < READ_BUFFER_SIZE)
-	{
-		//READING COMPLETE
 		return true;		
 	}
 	return false;

@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:31:51 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 06:32:27 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:20:49 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,36 @@ void	Utils::exit_on_error(std::string mssg)
 {
 	std::cerr<<mssg<<"\n";
 	exit(1);
+}
+
+bool	Utils::read_write_error(int bytes, int *state)
+{
+	if (bytes == 0)
+	{
+		*state = DISCONNECT;
+		return true;
+	}
+	if (bytes == -1)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool	Utils::complete_http_message(std::string &buffer)
+{
+	std::size_t	header, content_length;
+	if (!Utils::is_found(header, "\r\n\r\n", buffer))
+		return false;
+	if (Utils::is_found(content_length, "Content-Length:", buffer))
+	{
+		long expected_body_size = std::atol(buffer.substr(content_length + 16, header).c_str());
+		long current_body_size = static_cast<int>(buffer.size() - header - 4);
+		if (current_body_size < expected_body_size)
+			return false;
+	}
+	else if (Utils::is_found("Transfer-Encoding: chunked", buffer) \
+			&& !Utils::is_found("0\r\n\r\n", buffer))
+		return false;
+	return true;
 }

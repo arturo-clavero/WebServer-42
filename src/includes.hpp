@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/04 06:09:31 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:25:22 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,8 @@
 #include <ctime> // Import the ctime library
 
 
-# define READ_BUFFER_SIZE 100
-# define WRITE_BUFFER_SIZE 100
-# define MAX_TIME_CGI	20 //should be 20 or 30please update!
+# define MAX_BUFFER_SIZE 100
+# define MAX_TIME_CGI	10 //should be 10-30 please update!
 
 enum connection_states
 {
