@@ -20,7 +20,6 @@ ServerSocket::ServerSocket(HostPortConfigMap::iterator it, Multiplex *core_multi
 	possible_configs(it->second), 
 	multiplex(core_multiplex)
 	{}
-	
 ServerSocket::ServerSocket(){}
 ServerSocket::~ServerSocket(){}
 
@@ -40,11 +39,13 @@ bool	ServerSocket::start_listening()
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		return Utils::error();
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	if (port < 1024)
+		return Utils::error("Port not valid");
 	struct sockaddr_in address_ipv4;
 	memset(&address_ipv4, 0, sizeof(address_ipv4));
 	address_ipv4.sin_family = AF_INET;
 	address_ipv4.sin_addr.s_addr = htonl(host);
-	address_ipv4.sin_port = htons(port);;
+	address_ipv4.sin_port = htons(port);
 	if (bind(fd, (struct sockaddr *)&address_ipv4, sizeof(address_ipv4)) == -1)
 		return Utils::error();
 	if (listen(fd, 32) == -1)

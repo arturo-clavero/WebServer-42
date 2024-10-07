@@ -18,8 +18,6 @@ int	Utils::extract_port(const std::string &str){
 		return 8080;
 	int pos = std::distance(str.begin(), semi_colon);
 	std::string	port_string = str.substr(pos + 1);
-	if (port_string.empty())
-		return 8080;
 	return (std::atoi(port_string.c_str()));
 }
 

@@ -24,7 +24,7 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
     LocationConfig currentLocation;
     CGIConfig currentCGI;
     int braceCount = 0;
-	currentServer.setClientMaxBodySize(-1);
+	// currentServer.setClientMaxBodySize(-1);
 
     while (std::getline(file, line)) {
         std::istringstream iss(line);
@@ -133,7 +133,8 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
                     } else if (key == "client_max_body_size") {
                         std::string sizeStr;
                         iss >> sizeStr;
-                        size_t clientMaxBodySize = static_cast<size_t>(std::atof(sizeStr.substr(0, sizeStr.length() - 1).c_str()) * 1024 * 1024);
+                        long long clientMaxBodySize = static_cast<long long>(std::atof(sizeStr.substr(0, sizeStr.length() - 1).c_str()) * 1024 * 1024);
+
                         currentServer.setClientMaxBodySize(clientMaxBodySize);
                     } else if (key == "root") {
                         std::string root;
@@ -149,9 +150,7 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
         }
     }
 
-    if (inServer) {
+    if (inServer)
         servers.push_back(currentServer);
-    }
-
     return servers;
 }

@@ -16,8 +16,9 @@
 ResponseUtils::ResponseUtils() {
 }
 
-bool ResponseUtils::isRequestTooLarge(const HttpRequest& request, const size_t& clientMaxBodySize) {
-	if (clientMaxBodySize > 0 && request.getBody().size() > clientMaxBodySize) {
+bool ResponseUtils::isRequestTooLarge(const HttpRequest& request, const size_t& clientMaxBodySize) 
+{
+	if (clientMaxBodySize >= 0 && request.getBody().size() > clientMaxBodySize) {
 		return true;
 	}
 	return false;

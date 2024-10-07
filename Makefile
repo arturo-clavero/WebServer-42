@@ -46,7 +46,7 @@ NAME = webserv
 # Targets
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) 
 	$(CXX) $(CXXFLAGS) $^ -o $@ 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
@@ -63,9 +63,6 @@ re: fclean all
 
 # Include generated dependencies
 -include $(DEPS)
-
-run: all
-	./$(NAME) conf/default.conf
 
 file: all
 	./$(NAME) conf/default.conf > output.txt

@@ -14,8 +14,7 @@
 #include "ServerConfig.hpp"
 
 // Default constructor
-ServerConfig::ServerConfig() { }
-
+ServerConfig::ServerConfig() : clientMaxBodySize(-1) {}
 // Copy constructor
 ServerConfig::ServerConfig(const ServerConfig& other)
     : listen(other.listen),
@@ -51,7 +50,7 @@ ServerConfig::~ServerConfig() {
 const std::string& ServerConfig::getListen() const { return listen; } 
 const std::vector<std::string>& ServerConfig::getServerNames() const { return serverNames; }
 const std::map<std::string, std::string>& ServerConfig::getErrorPages() const { return errorPages; }
-size_t ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }
+long long ServerConfig::getClientMaxBodySize() const { return clientMaxBodySize; }
 const std::string& ServerConfig::getRoot() const { return root; }
 const std::string& ServerConfig::getIndex() const { return index; }
 std::vector<LocationConfig>& ServerConfig::getLocations() { return locations; }
@@ -63,7 +62,7 @@ const struct sockaddr_in& ServerConfig::getAddress() const { return address; }
 void ServerConfig::setListen(const std::string& value) { listen = value;} 
 void ServerConfig::setServerNames(const std::vector<std::string>& value) { serverNames = value; }
 void ServerConfig::setErrorPages(const std::map<std::string, std::string>& value) { errorPages = value; }
-void ServerConfig::setClientMaxBodySize(size_t value) { clientMaxBodySize = value; }
+void ServerConfig::setClientMaxBodySize(long long value) { clientMaxBodySize = value; }
 void ServerConfig::setRoot(const std::string& value) { root = value; }
 void ServerConfig::setIndex(const std::string& value) { index = value; }
 void ServerConfig::setLocations(const std::vector<LocationConfig>& value) { locations = value; }
