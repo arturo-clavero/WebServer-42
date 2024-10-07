@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:31:54 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/04 07:01:27 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:36:37 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,22 +33,12 @@ void	ServerCore::set_up_server_sockets(HostPortConfigMap combos)
 {
 	for (HostPortConfigMap::iterator it = combos.begin(); it != combos.end(); it++)
 	{
-		try
-		{
 			ServerSocket new_server(it, &multiplex);
-			new_server.start_listening();
-			serverList.push_back(new_server);
-		}
-		catch (char *mssg)
-		{
-			std::cerr<<mssg<<"\n";
-		}
+			if (new_server.start_listening())
+				serverList.push_back(new_server);
 	}
 	if (static_cast<int>(serverList.size()) == 0)
-	{
-		std::cerr<<"Sorry there are no valid servers for listening....\n";
-		exit(2);
-	}
+		Utils::error("Sorry there are no valid servers for listening....\n", EXIT);
 }
 
 

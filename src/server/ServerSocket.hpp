@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 13:20:53 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 05:07:07 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:36:01 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class ServerSocket
 		ServerSocket(HostPortConfigMap::iterator it, Multiplex *core_multiplex);
 		ServerSocket();
 		~ServerSocket();
-		void	start_listening();
+		bool	start_listening();
 		void	accept_new_client_connection();
 		void	delete_disconnected_clients();
 		Clients	&getClients();

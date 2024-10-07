@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:08:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/07 07:25:22 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:36:30 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ enum connection_states
 	DISCONNECT,
 };
 
+# define EXIT 0 
+# define DONT_EXIT 1
 
 
 #endif

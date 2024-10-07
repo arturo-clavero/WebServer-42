@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:30:45 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 07:21:14 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:42:09 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class	Utils
 		static ServerConfig	find_match_config(Configs &possible_configs, const std::string host);
 		static bool			is_found(std::size_t &result, std::string needle, std::string &haystack);
 		static bool			is_found(std::string needle, std::string &haystack);
-		static void			exit_on_error(std::string mssg);
+		static bool			error(std::string mssg = strerror(errno), int should_exit = DONT_EXIT);
 		static bool			read_write_error(int bytes, int *state);
 		static bool			complete_http_message(std::string &buffer);
 };

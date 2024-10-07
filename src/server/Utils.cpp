@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 14:31:51 by artclave          #+#    #+#             */
-/*   Updated: 2024/10/07 07:20:49 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:40:47 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,12 @@ bool	Utils::is_found(std::string needle, std::string &haystack)
 	return (haystack.find(needle) != std::string::npos);
 }
 
-void	Utils::exit_on_error(std::string mssg)
+bool	Utils::error(std::string mssg, int should_exit)
 {
 	std::cerr<<mssg<<"\n";
-	exit(1);
+	if (should_exit == EXIT)
+		exit(1);
+	return false;
 }
 
 bool	Utils::read_write_error(int bytes, int *state)

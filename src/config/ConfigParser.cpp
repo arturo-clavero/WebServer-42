@@ -6,7 +6,7 @@
 /*   By: artclave <artclave@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 20:06:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/10/07 06:28:48 by artclave         ###   ########.fr       */
+/*   Updated: 2024/10/07 07:37:54 by artclave         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ std::vector<ServerConfig> ConfigParser::parse(const std::string& configFile) {
     ServerConfig currentServer;
     std::ifstream file(configFile.c_str());
     if (!file.is_open())
-		Utils::exit_on_error("Unable to open config file: " + configFile);
+		Utils::error("Unable to open config file: " + configFile, EXIT);
     std::string line;
     bool inServer = false;
     bool inLocation = false;
